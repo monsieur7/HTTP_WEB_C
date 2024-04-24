@@ -11,6 +11,10 @@
 #include <string>
 #include <sstream>
 #include <poll.h>
+#include <csignal>
+
+// DEBUG :
+#include <iostream>
 
 class Socket
 {
@@ -33,4 +37,6 @@ public:
     std::vector<int> pollClients(int timeout);
     int getFdfromClient(int client_num);
     void flushRecvBuffer(int client_fd);
+    void sendSocket(const std::string &msg, int client_fd);
+    std::string receiveSocket(int client_fd);
 };
