@@ -6,8 +6,8 @@ TEST(ParseString, parseHeader)
     ParseString data(input);
     std::vector<std::string> lines = data.parseHeader();
 
-    ASSERT_EQ(lines.size(), 4);
-    ASSERT_EQ(lines[0], "Première ligne");
-    ASSERT_EQ(lines[1], "Deuxième ligne");
-    ASSERT_EQ(lines[2], "Troisième ligne");
+    EXPECT_EQ(lines.size(), 4);
+    EXPECT_EQ(lines[0], "Première ligne");
+    EXPECT_EQ(lines[1], "Deuxième ligne");
+    EXPECT_EQ(lines[2], "Troisième ligne");
 }
