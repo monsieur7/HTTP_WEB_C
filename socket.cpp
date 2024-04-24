@@ -144,7 +144,7 @@ std::vector<int> Socket::pollClients(int timeout)
         return std::vector<int>();
     }
     std::vector<int> ready_clients;
-    for (int i = 0; i < fds.size() - 1; i++)
+    for (int i = 0; i < fds.size() - 1; i++) //-1 because the last one is the server socket
     {
         if (fds[i].revents & POLLIN)
         {
