@@ -16,14 +16,13 @@ Socket::~Socket()
         close(client);
     }
 }
-
 void Socket::createSocket()
 {
     this->_socket = socket(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
     if (this->_socket == -1)
     {
         perror("Socket creation failed");
-        Socket::~Socket();
+        this->~Socket();
         exit(1);
     }
     // set socket to be reusable
@@ -31,25 +30,26 @@ void Socket::createSocket()
     if (setsockopt(this->_socket, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt)))
     {
         perror("setsockopt");
-        Socket::~Socket();
+        this->~Socket();
+
 
         exit(1);
     }
     // set socket to be non-blocking
-    /*
+    
     if (fcntl(this->_socket, F_SETFL, O_NONBLOCK) < 0)
     {
         perror("fcntl");
         exit(1);
     }
-    */
+    
     // set socket to allow ipv4 and ipv6
 
     int no = 0;
     if (setsockopt(this->_socket, IPPROTO_IPV6, IPV6_V6ONLY, (void *)&no, sizeof(no)) < 0)
     {
         perror("setsockopt");
-        Socket::~Socket();
+        this->~Socket();
 
         exit(1);
     }
@@ -59,7 +59,7 @@ void Socket::bindSocket()
     if (bind(this->_socket, (struct sockaddr *)&this->_addr_in, sizeof(this->_addr_in)) == -1)
     {
         perror("Socket bind failed");
-        Socket::~Socket();
+        this->~Socket();
 
         exit(1);
     }
@@ -70,7 +70,7 @@ void Socket::listenSocket()
     if (listen(this->_socket, 10) == -1)
     {
         perror("Socket listen failed");
-        Socket::~Socket();
+        this->~Socket();
 
         exit(1);
     }
@@ -84,7 +84,7 @@ void Socket::acceptSocket()
     if (new_socket == -1)
     {
         perror("Socket accept failed");
-        Socket::~Socket();
+        this->~Socket();
 
         exit(1);
     }
@@ -96,7 +96,7 @@ void Socket::sendSocket(const void *buf, size_t len, int client_fd)
     if (send(client_fd, buf, len, 0) == -1)
     {
         perror("Socket send failed");
-        Socket::~Socket();
+        this->~Socket();
 
         exit(1);
     }
@@ -107,7 +107,7 @@ void Socket::recvSocket(void *buf, size_t len, int client_fd)
     if (recv(client_fd, buf, len, 0) == -1)
     {
         perror("Socket recv failed");
-        Socket::~Socket();
+        this->~Socket();
         exit(1);
     }
 }
