@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 project(HTTP_WEB_C)
 set(SOURCES main.cpp socket.cpp socket.hpp parseString.cpp parseString.hpp)
 
+# set MIN C++ version
+set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 # link against boost :
