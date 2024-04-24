@@ -3,12 +3,14 @@
 
 ParseString::ParseString(std::string data) : data_(data) {}
 
-std::vector<std::string> ParseString::parseHTML() {
+std::vector<std::string> ParseString::parseHeader()
+{
     std::vector<std::string> result;
     size_t start = 0;
     size_t end = 0;
 
-    while ((end = data_.find("\r\n", start)) != std::string::npos) {
+    while ((end = data_.find("\r\n", start)) != std::string::npos)
+    {
         result.push_back(data_.substr(start, end - start));
         start = end + 2; // On avance de 2 pour sauter "\r\n"
     }
@@ -17,5 +19,4 @@ std::vector<std::string> ParseString::parseHTML() {
     result.push_back(data_.substr(start));
 
     return result;
-
 }

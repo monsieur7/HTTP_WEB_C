@@ -12,13 +12,12 @@
 #include <sstream>
 #include <poll.h>
 
-class ParseString{
-  private:
-    std::string data_; 
+class ParseString
+{
+private:
+  std::string data_;
 
-  public:
-    ParseString(std::string data);
-    std::vector<std::string> parseHTML();
-
-
+public:
+  ParseString(std::string data);
+  std::vector<std::string> parseHeader();
 };

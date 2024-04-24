@@ -11,9 +11,10 @@ int main()
     s.bindSocket();
     std::string input = "Première ligne\r\nDeuxième ligne\r\nTroisième ligne\r\n";
     ParseString data(input);
-    std::vector<std::string> lines = data.parseHTML();
+    std::vector<std::string> lines = data.parseHeader();
 
-    for (const auto& line : lines) {
+    for (const auto &line : lines)
+    {
         std::cout << line << std::endl;
     }
 
