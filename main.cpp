@@ -5,16 +5,20 @@
 int main()
 {
     Socket s(8080);
+
     s.createSocket();
     s.bindSocket();
-    s.listenSocket();
-    s.acceptSocket();
+    while (true)
+    {
+        s.listenSocket();
+        std::vector<int> clients = s.pollClients(1000);
+        for (int i = 0; i < clients.size(); i++)
+        {
+            std::cout << s.printClientInfo(clients[i]) << std::endl;
+            s.sendSocket("Hello from server", 17, clients[i]);
+            s.flushRecvBuffer(clients[i]);
+        }
+    }
 
-    std::string message = "Hello from server!";
-    std::cout << s.printClientInfo(0) << std::endl;
-    s.sendSocket(message.c_str(), message.size(), 0);
-    char buffer[1024];
-    s.recvSocket(buffer, sizeof(buffer), 0);
-    std::cout << "Received: " << buffer << std::endl;
     return 0;
 }

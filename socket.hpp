@@ -10,6 +10,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <poll.h>
 
 class Socket
 {
@@ -26,7 +27,10 @@ public:
     void bindSocket();
     void listenSocket();
     void acceptSocket();
-    void sendSocket(const void *buf, size_t len, int client);
-    void recvSocket(void *buf, size_t len, int client);
+    void sendSocket(const void *buf, size_t len, int client_fd);
+    void recvSocket(void *buf, size_t len, int client_fd);
     std::string printClientInfo(int client);
+    std::vector<int> pollClients(int timeout);
+    int getFdfromClient(int client_num);
+    void flushRecvBuffer(int client_fd);
 };
