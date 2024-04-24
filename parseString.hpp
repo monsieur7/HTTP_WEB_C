@@ -14,11 +14,11 @@
 
 class ParseString{
   private:
-    std::string data_;
-    void parseHTML();
+    std::string data_; 
 
   public:
     ParseString(std::string data);
+    std::vector<std::string> parseHTML();
 
 
 };

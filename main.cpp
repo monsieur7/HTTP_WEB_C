@@ -1,4 +1,5 @@
 #include "socket.hpp"
+#include "parseString.hpp"
 #include <iostream>
 #include <string>
 
@@ -8,6 +9,14 @@ int main()
 
     s.createSocket();
     s.bindSocket();
+    std::string input = "Première ligne\r\nDeuxième ligne\r\nTroisième ligne\r\n";
+    ParseString data(input);
+    std::vector<std::string> lines = data.parseHTML();
+
+    for (const auto& line : lines) {
+        std::cout << line << std::endl;
+    }
+
     while (true)
     {
         s.listenSocket();
