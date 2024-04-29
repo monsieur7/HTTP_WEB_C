@@ -37,6 +37,7 @@ std::map<std::string, std::string> ParseString::parseRequest()
             std::smatch match;
             if (std::regex_match(line, match, header_regex))
             {
+                // match[0] contains the whole string (the string that matched the entire regular expression)
                 std::string key = match[1];
                 std::string value = match[2];
 

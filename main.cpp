@@ -26,7 +26,8 @@ int main()
         {
             std::cout << s.printClientInfo(clients[i]) << std::endl;
             s.sendSocket("Hello from server", 17, clients[i]);
-            s.flushRecvBuffer(clients[i]);
+            std::string received = s.receiveSocket(clients[i]);
+            std::cout << received << std::endl;
         }
     }
 

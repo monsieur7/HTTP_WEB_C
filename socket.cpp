@@ -194,7 +194,19 @@ std::string Socket::receiveSocket(int client_fd)
     do
     {
         bytes_read = recv(client_fd, buf, 1024, MSG_DONTWAIT);
-        ss << std::string(buf, bytes_read);
+        if (bytes_read == -1)
+        {
+            if (errno != EWOULDBLOCK && errno != EAGAIN)
+            {
+
+                perror("Socket recv failed");
+                this->~Socket();
+            }
+        }
+        else
+        {
+            ss << std::string(buf, bytes_read);
+        }
     } while (bytes_read > 0);
     return ss.str();
 }
