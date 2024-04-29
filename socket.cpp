@@ -1,4 +1,12 @@
 #include "socket.hpp"
+// Signal handler function
+// TODO : move this to a separate file (main.cpp)
+void signalHandler(int signum) // https://stackoverflow.com/questions/343219/is-it-possible-to-use-signal-inside-a-c-class
+{
+    std::cout << "Caught signal " << signum << std::endl;
+
+    exit(1);
+}
 
 Socket::Socket(int port)
 {
@@ -6,8 +14,11 @@ Socket::Socket(int port)
     this->_addr_in.sin6_family = AF_INET6;
     this->_addr_in.sin6_port = htons(port);
     memcpy(&this->_addr_in.sin6_addr, &in6addr_any, sizeof(in6addr_any));
-    // set action for SIGINT :
-    signal(SIGINT, SIG_IGN);
+    // sigaction for sigint :
+    struct sigaction act;
+    sigemptyset(&act.sa_mask);
+    act.sa_handler = signalHandler;
+    sigaction(SIGINT, &act, NULL);
 }
 
 Socket::~Socket()

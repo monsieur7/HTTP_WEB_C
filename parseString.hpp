@@ -1,23 +1,16 @@
-
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <string.h>
+#include <iostream>
 #include <vector>
 #include <string>
-#include <sstream>
-#include <poll.h>
-
+#include <map>
+#include <regex>
 class ParseString
 {
 private:
   std::string data_;
+  std::map<std::string, std::string> headers_;
 
 public:
   ParseString(std::string data);
   std::vector<std::string> parseHeader();
+  std::map<std::string, std::string> parseRequest();
 };
