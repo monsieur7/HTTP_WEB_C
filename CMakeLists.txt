@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(HTTP_WEB_C)
-set(SOURCES main.cpp socket.cpp socket.hpp parseString.cpp parseString.hpp)
+set(SOURCES main.cpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp)
 
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
@@ -11,6 +11,7 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 find_package(Boost 1.58.0 COMPONENTS system REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O2 -Wall -Wextra -Wpedantic")
 
 # CMAKE google TEST :
 include(FetchContent)
@@ -30,6 +31,7 @@ add_executable(
     tests/parseUnitTest.cc
     socket.cpp
     parseString.cpp
+    generateHeaders.cpp
 )
 target_link_libraries(
     unit_tests

@@ -64,3 +64,12 @@ std::map<std::string, std::string> ParseString::parseRequest()
 
     return result;
 }
+
+void ParseString::setData(std::string data)
+{
+    data_ = data;
+}
+const std::string &ParseString::getData() const
+{
+    return data_;
+}

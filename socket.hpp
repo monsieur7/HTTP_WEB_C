@@ -39,4 +39,5 @@ public:
     void flushRecvBuffer(int client_fd);
     void sendSocket(const std::string &msg, int client_fd);
     std::string receiveSocket(int client_fd);
+    void closeSocket(int client_fd);
 };

@@ -13,4 +13,6 @@ public:
   ParseString(std::string data);
   std::vector<std::string> parseHeader();
   std::map<std::string, std::string> parseRequest();
+  void setData(std::string data);
+  const std::string &getData() const;
 };

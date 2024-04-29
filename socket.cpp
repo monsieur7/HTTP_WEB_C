@@ -13,6 +13,7 @@ Socket::Socket(int port)
     this->_socket = 0;
     this->_addr_in.sin6_family = AF_INET6;
     this->_addr_in.sin6_port = htons(port);
+
     memcpy(&this->_addr_in.sin6_addr, &in6addr_any, sizeof(in6addr_any));
     // sigaction for sigint :
     struct sigaction act;
@@ -157,7 +158,7 @@ std::vector<int> Socket::pollClients(int timeout)
         return std::vector<int>();
     }
     std::vector<int> ready_clients;
-    for (int i = 0; i < fds.size() - 1; i++) //-1 because the last one is the server socket
+    for (auto i = 0; i < fds.size() - 1; i++) //-1 because the last one is the server socket
     {
         if (fds[i].revents & POLLIN)
         {
@@ -214,4 +215,9 @@ std::string Socket::receiveSocket(int client_fd)
 void Socket::sendSocket(const std::string &msg, int client_fd)
 {
     sendSocket(msg.c_str(), msg.size(), client_fd);
+}
+void Socket::closeSocket(int client_fd)
+{
+    close(client_fd);
+    std::erase(this->_clients, client_fd);
 }
