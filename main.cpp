@@ -3,14 +3,21 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <filesystem>
 
 int main()
 {
     Socket s(8080);
 
     // open index.html :
-    std::ifstream file("/home/nolane/Desktop/ESIREM/STAGE_PT/HTTP_WEB_C/index.html");
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nConnection: Close\r\n\r\n";
+    std::filesystem::path path = std::filesystem::current_path();
+    path /= "../index.html";
+
+    std::ifstream file(path);
+
+    size_t file_size = std::filesystem::file_size(path);
+
+    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n";
     std::string response404 = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nConnection: Close\r\n\r\n";
     // TODO : keep alive !
     s.createSocket();

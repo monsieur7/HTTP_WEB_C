@@ -2,7 +2,7 @@
 #include "../parseString.hpp"
 #include "../generateHeaders.hpp"
 
-class ParseStringTest : public ::testing::Test
+class ParseStringTest : public ::testing::Test // TEXT FIXTURE !
 {
 protected:
     ParseStringTest(std::string data) : instance(data){};
@@ -72,4 +72,12 @@ TEST(generateHeaders, GenerateResponse)
     generateHeaders response(headers);
     std::string result = response.generateResponse();
     std::string expected = "HTTP/1.1 200 OK\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0\r\n\r\n";
+}
+TEST(generateHeaders, EmptyResponse)
+{
+    std::map<std::string, std::string> headers;
+    generateHeaders response(headers);
+    std::string result = response.generateResponse();
+    std::string expected = "HTTP/1.1 200 OK\r\n\r\n";
+    EXPECT_EQ(result, expected);
 }
