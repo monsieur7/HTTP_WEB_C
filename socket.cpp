@@ -201,7 +201,10 @@ std::string Socket::receiveSocket(int client_fd)
             {
 
                 perror("Socket recv failed");
-                this->~Socket();
+                close(client_fd);
+                // remove client from list
+                std::erase(this->_clients, client_fd);
+                return "";
             }
         }
         else
