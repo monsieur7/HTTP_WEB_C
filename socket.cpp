@@ -221,3 +221,18 @@ void Socket::closeSocket(int client_fd)
     close(client_fd);
     std::erase(this->_clients, client_fd);
 }
+
+void Socket::sendFile(std::filesystem::directory_entry file_entry, int client_fd)
+{
+    int file_size = file_entry.file_size();
+    std::filesystem::path file_path = file_entry.path();
+    std::ifstream file_stream(file_path, std::ios::binary);
+    char buf[1024];
+    while (file_size > 0)
+    {
+        file_stream.read(buf, 1024);
+        sendSocket(buf, file_stream.gcount(), client_fd);
+        file_size -= file_stream.gcount();
+    }
+    file_stream.close();
+}
