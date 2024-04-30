@@ -1,4 +1,4 @@
-#include "socket.hpp"
+#include "socketSecure.hpp"
 #include "parseString.hpp"
 #include <iostream>
 #include <string>
@@ -6,7 +6,7 @@
 #include <filesystem>
 #include "FileTypeDetector.hpp"
 #include <format>
-
+#define PORT 8080
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
     if (file[0] != '/')
@@ -24,7 +24,6 @@ std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_en
 }
 int main()
 {
-    Socket s(8080);
     // OPENSSL INIT :
 
     FileTypeDetector ftd;
@@ -37,6 +36,17 @@ int main()
     std::filesystem::path path = std::filesystem::current_path();
     path /= "../";
     path /= dir;
+
+    // key :
+    std::filesystem::path keyPath = std::filesystem::current_path();
+    keyPath /= "..";
+    keyPath /= "raspberrypi-fr.local.key";
+
+    // crt :
+    std::filesystem::path certPath = std::filesystem::current_path();
+    certPath /= "..";
+    certPath /= "raspberrypi-fr.local.crt";
+
     // list all files in this dir:
     std::vector<std::filesystem::directory_entry> files;
     std::map<std::filesystem::directory_entry, std::string> file_types;
@@ -51,11 +61,11 @@ int main()
         std::string type = ftd.getFileType(extension);
         file_types[file] = type;
     }
-
-    int file_size = 0;
+    SocketSecure s(PORT, certPath, keyPath);
     auto file = std::ifstream(path / "index.html", std::ios::binary);
     std::string response404 = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nConnection: Close\r\n\r\n";
     // TODO : keep alive !
+
     s.createSocket();
     s.bindSocket();
     ParseString p("");
