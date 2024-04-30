@@ -12,6 +12,8 @@
 #include <sstream>
 #include <poll.h>
 #include <csignal>
+#include <filesystem>
+#include <fstream>
 
 // DEBUG :
 #include <iostream>
@@ -40,4 +42,5 @@ public:
     void sendSocket(const std::string &msg, int client_fd);
     std::string receiveSocket(int client_fd);
     void closeSocket(int client_fd);
+    void sendFile(std::filesystem::directory_entry file, int client_fd);
 };

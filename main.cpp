@@ -4,20 +4,53 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
-
+#include "FileTypeDetector.hpp"
+#include <format>
+std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
+{
+    if (file[0] != '/')
+    {
+        return std::filesystem::directory_entry();
+    }
+    for (const auto &entry : files)
+    {
+        if (entry.first.path().filename() == file.substr(1))
+        {
+            return entry.first;
+        }
+    }
+    return std::filesystem::directory_entry();
+}
 int main()
 {
     Socket s(8080);
+    FileTypeDetector ftd;
+    ftd.addSingleFileType("html", "text/html");
+    ftd.addSingleFileType("css", "text/css");
+    ftd.addSingleFileType("js", "text/javascript");
+    ftd.addSingleFileType("txt", "");
 
-    // open index.html :
+    std::string dir = "www";
     std::filesystem::path path = std::filesystem::current_path();
-    path /= "../index.html";
+    path /= "../";
+    path /= dir;
+    // list all files in this dir:
+    std::vector<std::filesystem::directory_entry> files;
+    std::map<std::filesystem::directory_entry, std::string> file_types;
+    for (const auto &entry : std::filesystem::directory_iterator(path))
+    {
+        files.push_back(entry);
+    }
+    for (const auto &file : files)
+    {
+        std::cout << file << std::endl;
+        std::string extension = file.path().extension();
+        std::string type = ftd.getFileType(extension);
+        file_types[file] = type;
+    }
 
-    std::ifstream file(path);
-
-    size_t file_size = std::filesystem::file_size(path);
-
-    std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n";
+    int file_size = 0;
+    auto file = std::ifstream(path / "index.html", std::ios::binary);
     std::string response404 = "HTTP/1.1 404 Not Found\r\nContent-Type: text/html\r\nConnection: Close\r\n\r\n";
     // TODO : keep alive !
     s.createSocket();
@@ -39,36 +72,22 @@ int main()
             }
             if (headers["Path"] == "/")
             {
-                s.sendSocket(response.c_str(), response.size(), clients[i]);
-
-                if (file.is_open())
-                {
-                    std::cout << "File is open" << std::endl;
-
-                    // Create a buffer to hold file data
-                    char buffer[1024];
-                    while (!file.eof())
-                    {
-                        // Read data into the buffer
-                        file.read(buffer, sizeof(buffer));
-                        // Send the buffer over the network
-                        s.sendSocket(buffer, file.gcount(), clients[i]);
-                    }
-                    std::cout << "File sent" << std::endl;
-                    // Reset the file stream to the beginning of the file
-                    file.clear();
-                    file.seekg(0, std::ios::beg);
-                    // close the connection
-                    s.closeSocket(clients[i]);
-                }
-                else
-                {
-                    s.sendSocket(response404.c_str(), response404.size(), clients[i]);
-                }
+                headers["Path"] = "/index.html"; // default file
             }
+            std::filesystem::directory_entry file = findFile(file_types, headers["Path"]);
+            if (file.path().filename() != "")
+            {
+                int file_size = file.file_size();
+                std::string response = std::format("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\nContent-Length: {0} \r\n\r\n", file_size); // we cannot use a variable here :(
+                s.sendSocket(response.c_str(), response.size(), clients[i]);
+                s.sendFile(file, clients[i]);
+            }
+            // search in files if there is a file with this name and send it
+            // if not send 404
             else
             {
                 s.sendSocket(response404.c_str(), response404.size(), clients[i]);
+                s.closeSocket(clients[i]); // close the connection
             }
         }
     }
