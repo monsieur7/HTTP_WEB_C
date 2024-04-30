@@ -20,7 +20,7 @@
 
 class Socket
 {
-private:
+protected:
     int _socket;
     struct sockaddr_in6 _addr_in;
     std::vector<int> _clients;

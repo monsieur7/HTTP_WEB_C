@@ -6,6 +6,7 @@
 #include <filesystem>
 #include "FileTypeDetector.hpp"
 #include <format>
+
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
     if (file[0] != '/')
@@ -24,6 +25,8 @@ std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_en
 int main()
 {
     Socket s(8080);
+    // OPENSSL INIT :
+
     FileTypeDetector ftd;
     ftd.addSingleFileType("html", "text/html");
     ftd.addSingleFileType("css", "text/css");
