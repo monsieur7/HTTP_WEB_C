@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(HTTP_WEB_C)
-set(SOURCES main.cpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp)
+set(SOURCES main.cpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp)
 
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
@@ -29,6 +29,8 @@ enable_testing()
 add_executable(
     unit_tests
     tests/parseUnitTest.cc
+    tests/FileTypeDetectorTest.cc
+    FileTypeDetector.cpp
     socket.cpp
     parseString.cpp
     generateHeaders.cpp
