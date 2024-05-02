@@ -78,7 +78,7 @@ public:
 class BME280
 {
 public:
-  SensorCalibration calib;
+  SensorCalibration calibration;
 
   BME280(void);
   float readPressure(void);
@@ -106,7 +106,7 @@ private:
 
   // Private functions
   uint8_t readRegister(uint8_t);
-  int16_t readRegisterInt16(uint8_t offset);
+  int16_t readRegisterInt16(uint8_t );
   void writeRegister(uint8_t, uint8_t);
   int _file;
 };
