@@ -101,7 +101,6 @@ private:
   int32_t t_fine;
 
   // Private functions
-  void readRegisterRegion(uint8_t *, uint8_t, uint8_t);
   uint8_t readRegister(uint8_t);
   int16_t readRegisterInt16(uint8_t offset);
   void writeRegister(uint8_t, uint8_t);

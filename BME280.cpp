@@ -62,22 +62,15 @@ void BME280::reset()
     usleep(2000); // Attente de 2 ms pour la réinitialisation
 }
 
-void BME280::readRegisterRegion(uint8_t *output, uint8_t offset, uint8_t length)
-{
-    // Lecture d'une région de registres
-    uint8_t buffer[length];
-    readRegisterRegion(buffer, offset, length); // TODO : a refaire
-    for (int i = 0; i < length; i++)
-    {
-        output[i] = buffer[i];
-    }
-}
-
 uint8_t BME280::readRegister(uint8_t offset)
 {
     // Lecture d'un registre
     uint8_t data;
-    readRegisterRegion(&data, offset, 1);
+    if (read(_file, &offset, 1) != 1)
+    {
+        std::cerr << "Échec de la lecture du registre du BME280" << std::endl;
+        return 0;
+    }
     return data;
 }
 
@@ -176,6 +169,10 @@ int16_t BME280::readRegisterInt16(uint8_t offset)
 {
     // Lecture d'un registre de 16 bits
     uint8_t buffer[2];
-    readRegisterRegion(buffer, offset, 2);
+    if (read(_file, buffer, 2) != 2)
+    {
+        std::cerr << "Échec de la lecture du registre du BME280" << std::endl;
+        return 0;
+    }
     return (buffer[0] << 8) | buffer[1];
 }
