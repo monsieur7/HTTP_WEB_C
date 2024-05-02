@@ -5,7 +5,7 @@
 #include <fstream>
 #include <filesystem>
 #include "FileTypeDetector.hpp"
-#include <format>
+// #include <format>
 #define PORT 8080
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
@@ -91,7 +91,7 @@ int main()
             if (file.path().filename() != "")
             {
                 int file_size = file.file_size();
-                std::string response = std::format("HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\nContent-Length: {0} \r\n\r\n", file_size); // we cannot use a variable here :(
+                std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n";
                 s.sendSocket(response.c_str(), response.size(), clients[i]);
                 s.sendFile(file, clients[i]);
             }
