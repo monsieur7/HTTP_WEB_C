@@ -47,6 +47,9 @@
 #define BME280_TEMPERATURE_XLSB_REG 0xFC // Temperature XLSB
 #define BME280_HUMIDITY_MSB_REG 0xFD     // Humidity MSB
 #define BME280_HUMIDITY_LSB_REG 0xFE     // Humidity LSB
+#ifndef BME280_H
+#define BME280_H
+
 struct SensorCalibration
 {
 public:
@@ -71,6 +74,7 @@ public:
   int16_t dig_H5;
   uint8_t dig_H6;
 };
+
 class BME280
 {
 public:
@@ -106,3 +110,6 @@ private:
   void writeRegister(uint8_t, uint8_t);
   int _file;
 };
+
+#endif // BME280_H
+

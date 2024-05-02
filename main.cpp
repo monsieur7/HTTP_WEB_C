@@ -7,6 +7,7 @@
 #include <filesystem>
 #include "FileTypeDetector.hpp"
 #include <format>
+#include "BME280.hpp"
 #define PORT 8080
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
@@ -25,6 +26,26 @@ std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_en
 }
 int main()
 {
+
+    BME280 bme280;
+    
+    // Initialise le capteur BME280
+    if (bme280.begin() != 0) {
+        std::cerr << "Erreur lors de l'initialisation du capteur BME280." << std::endl;
+        return 1;
+    }
+    
+    // Lecture des données de température, de pression, d'humidité et d'altitude
+    float temperature = bme280.readTemp();
+    float pressure = bme280.readPressure();
+    float humidity = bme280.readHumidity();
+    float altitude = bme280.readAltitude();
+    
+    // Affichage des données lues
+    std::cout << "Température : " << temperature << " °C" << std::endl;
+    std::cout << "Pression : " << pressure << " hPa" << std::endl;
+    std::cout << "Humidité : " << humidity << " %" << std::endl;
+    std::cout << "Altitude : " << altitude << " m" << std::endl;
     // OPENSSL INIT :
 
     FileTypeDetector ftd;

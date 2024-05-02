@@ -4,7 +4,7 @@ project(HTTP_WEB_C)
 set(SOURCES main.cpp socket.cpp socket.hpp
     parseString.cpp parseString.hpp generateHeaders.cpp
     generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp
-    socketSecure.cpp socketSecure.hpp)
+    socketSecure.cpp socketSecure.hpp BME280.hpp BME280.cpp)
 
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
