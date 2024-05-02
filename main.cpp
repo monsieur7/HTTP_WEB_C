@@ -1,5 +1,6 @@
 #include "socketSecure.hpp"
 #include "parseString.hpp"
+#include "BME280.hpp"
 #include <iostream>
 #include <string>
 #include <fstream>
