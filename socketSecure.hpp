@@ -17,7 +17,7 @@ public:
     void sendSocket(const std::string &msg, int client_fd) override;
     std::string receiveSocket(int client_fd) override;
     void flushRecvBuffer(int client_fd) override;
-    void closeSocket(int client_fd);
+    void closeSocket(int client_fd) override;
     // std::vector<int> pollClients(int timeout); //TODO : check if reusing this is possible
     void sendFile(std::filesystem::directory_entry file, int client_fd) override;
 

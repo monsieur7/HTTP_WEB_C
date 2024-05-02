@@ -6,7 +6,7 @@
 #include <fstream>
 #include <filesystem>
 #include "FileTypeDetector.hpp"
-//#include <format>
+// #include <format>
 #define PORT 8080
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
