@@ -96,80 +96,47 @@ uint8_t LTR559::readRegister(uint8_t reg)
 
 float LTR559::getLux()
 {
-
-    // get status :
+    // Get status from ALS_PS_STATUS register
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
-    // print in binary the status
-    std::cout << std::bitset<8>(status) << std::endl;
-    if ((status >> LTR559_ALS_PS_STATUS_ALS_DATA_VALID_BIT == 1))
+
+    // Check if ALS data is valid and ready
+    if (!(status & (1 << LTR559_ALS_PS_STATUS_ALS_DATA_VALID_BIT)))
     {
         std::cerr << "ALS data not valid" << std::endl;
-        return _lux;
-    }
-    /*if (!(status >> LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT == 0))
-    {
-        std::cerr << "ALS interrupt not set" << std::endl;
-        return _lux;
-    }
-    */
-    // TODO : fix that
-    if ((status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT == 0))
-    {
-        std::cerr << "ALS data not set" << std::endl;
-        return _lux;
+        return _lux; // Return previous lux value
     }
 
-    // there is an interrupt
-
-    uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
+    // Read ALS data registers
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
+    uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
 
-    uint32_t als = (uint32_t)(als1 << 8 | als0);
-    std::cerr << "ALS : " << als << std::endl;
-    // See https://gitlab.com/pimoroni/ltr559-python/-/blob/master/library/ltr559/__init__.py?ref_type=heads
-    uint32_t ratio = 0;
-    if (als0 + als1 == 0)
-    {
-        ratio = 101;
-    }
-    else
-    {
-        ratio = (als1 * 100) / (als0 + als1);
-    }
-    std::cerr << "ratio : " << ratio << std::endl;
+    // Calculate ALS ratio
+    uint32_t als_ratio = (als1 * 100) / (als0 + als1);
 
+    // Determine Lux Index based on ALS ratio
     int idx = 0;
-    if (ratio < 45)
-    {
+    if (als_ratio < 45)
         idx = 0;
-    }
-    else if (ratio < 64)
-    {
+    else if (als_ratio < 64)
         idx = 1;
-    }
-    else if (ratio < 85)
-    {
+    else if (als_ratio < 85)
         idx = 2;
-    }
     else
-    {
         idx = 3;
-    }
 
-    // calculate lux
-    _lux = (als0 * _ch0_c[idx]) - (als1 * _ch1_c[idx]);
-    std::cerr << "lux before div : " << _lux << std::endl;
-    if (_lux < 0)
-    {
-        _lux = 0;
-        return _lux;
-    }
-    // TODO : move gain and integration time to a variable
-    _lux = _lux / 50.0f; // integration time
-    _lux = _lux / 100.0f;
-    _lux = _lux / 4.0f; // gain
-    _lux = _lux / 10000.0f;
-    return _lux;
+    // Apply calibration coefficients to calculate lux
+    float lux = (als0 * _ch0_c[idx]) - (als1 * _ch1_c[idx]);
+    lux /= 50.0f; // Integration time in ms (50 ms default)
+    lux /= 100.0f;
+    lux /= 4.0f;     // GAIN OF 4
+    lux /= 10000.0f; // Scale conversion factor for lux
+
+    // Clamp negative lux readings to 0
+    if (lux < 0)
+        lux = 0;
+
+    _lux = lux;  // Update the stored lux value
+    return _lux; // Return the calculated lux value
 }
 
 uint16_t LTR559::readRegisterInt16(uint8_t offset)
