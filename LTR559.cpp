@@ -106,6 +106,7 @@ float LTR559::getLux()
     uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
 
     // Calculate ALS ratio
+<<<<<<< HEAD
     float als_ratio = (als1 * 100) / (als0 + als1);
 
     // Determine _lux value based on ALS ratio
@@ -133,6 +134,41 @@ float LTR559::getLux()
     }
 
     return _lux;
+=======
+    if (als0 + als1 == 0)
+    {
+        als_ratio = 101;
+    }
+    else
+    {
+        als_ratio = (als1 * 100) / (als0 + als1);
+    }
+
+    // Determine Lux Index based on ALS ratio
+    int idx = 0;
+    if (als_ratio < 45)
+        idx = 0;
+    else if (als_ratio < 64)
+        idx = 1;
+    else if (als_ratio < 85)
+        idx = 2;
+    else
+        idx = 3;
+
+    // Apply calibration coefficients to calculate lux
+    float lux = (als0 * _ch0_c[idx]) - (als1 * _ch1_c[idx]);
+    lux /= 50.0f; // Integration time in ms (50 ms default)
+    lux /= 100.0f;
+    lux /= 4.0f;     // GAIN OF 4
+    lux /= 10000.0f; // Scale conversion factor for lux
+
+    // Clamp negative lux readings to 0
+    if (lux < 0)
+        lux = 0;
+
+    _lux = lux;  // Update the stored lux value
+    return _lux; // Return the calculated lux value
+>>>>>>> parent of 13dac81 (test android kernel)
 }
 
 uint16_t LTR559::readRegisterInt16(uint8_t offset)
