@@ -26,15 +26,14 @@ LTR559::LTR559()
     usleep(100000);
 
     // setup soft reset :
-
-    writeRegister(LTR559_INTERRUPT, 0x03);
+    writeRegister(LTR559_ALS_CONTROL, 0x02);
     // wait for the bit to get back to 0
-    while (readRegister(LTR559_INTERRUPT) & 0x03)
+    while (readRegister(LTR559_ALS_CONTROL) & 0x02)
     {
         usleep(1000);
     }
     // setup interrupt :
-    writeRegister(LTR559_ALS_CONTROL, 0x03);
+    writeRegister(LTR559_INTERRUPT, 0x03);
     // PS LED SETUP :50mA / 1.0 duty cycle / 30kHz
 
     writeRegister(LTR559_PS_LED, (0 & 0x3) << 5 | (0b11 & 0x3) << 3 | (0b011 & 0x7));
@@ -51,7 +50,7 @@ LTR559::LTR559()
 
     // threshold :
     writeRegister(LTR559_ALS_THRESHOLD_UPPER, 0xFF);
-    writeRegister(LTR559_ALS_THRESHOLD_LOWER 0x00);
+    writeRegister(LTR559_ALS_THRESHOLD_LOWER, 0x00);
     // ps threshold :
     writeRegister(LTR559_PS_THRESHOLD_UPPER, 0xFF);
     writeRegister(LTR559_PS_THRESHOLD_LOWER, 0x00);
