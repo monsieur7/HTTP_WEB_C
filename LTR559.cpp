@@ -116,11 +116,36 @@ int32_t LTR559::getLux()
     {
         ratio = 101;
     }
+    int idx = 0;
+    if (ratio < 45)
+    {
+        idx = 0;
+    }
+    else if (ratio < 64)
+    {
+        idx = 1;
+    }
+    else if (ratio < 85)
+    {
+        idx = 2;
+    }
+    else
+    {
+        idx = 3;
+    }
 
     // calculate lux
-    uint32_t lux = 0;
+    _lux = (als0 * _ch0_c[idx] - als1 * _ch1_c[idx]) / 100.0f;
+    if (_lux < 0)
+    {
+        _lux = 0;
+        return _lux;
+    }
+    _lux = _lux / 50 / 100;
+    _lux = _lux / 1;     // gain
+    _lux = _lux / 10000; // integration time
 
-    return lux;
+    return _lux;
 }
 
 int16_t LTR559::readRegisterInt16(uint8_t offset)
