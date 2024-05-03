@@ -94,14 +94,33 @@ uint8_t LTR559::readRegister(uint8_t reg)
 
 int32_t LTR559::getLux()
 {
-    int16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
-    int16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
-    int16_t ps0 = readRegisterInt16(LTR559_PS_DATA);
-
-    int32_t als = (int32_t)(als1 << 8 | als0);
 
     // get status :
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
+    if (!(status & LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT) || !(status & LTR559_ALS_PS_STATUS_ALS_DATA_BIT))
+    {
+        std::cerr << "no data available" << std::endl;
+        return 0;
+    }
+
+    // there is an interrupt
+
+    int16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
+    int16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
+
+    int32_t als = (int32_t)(als1 << 8 | als0);
+    // See https://gitlab.com/pimoroni/ltr559-python/-/blob/master/library/ltr559/__init__.py?ref_type=heads
+
+    uint32_t ratio = als1 * 100 / (als1 + als0);
+    if (als0 + als1 == 0)
+    {
+        ratio = 101;
+    }
+
+    // calculate lux
+    uint32_t lux = 0;
+
+    return lux;
 }
 
 int16_t LTR559::readRegisterInt16(uint8_t offset)
