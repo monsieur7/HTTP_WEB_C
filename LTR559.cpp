@@ -4,7 +4,7 @@
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/i2c-dev.h>
-
+#include <bitset>
 #define LTR559_ADDRESS 0x23
 
 LTR559::LTR559()
