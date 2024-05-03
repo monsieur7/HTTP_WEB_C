@@ -102,10 +102,10 @@ float LTR559::getLux()
 
     // there is an interrupt
 
-    int16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
-    int16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
+    unt16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
+    unt16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
 
-    int32_t als = (int32_t)(als1 << 8 | als0);
+    unt32_t als = (unt32_t)(als1 << 8 | als0);
     std::cerr << "ALS : " << als << std::endl;
     // See https://gitlab.com/pimoroni/ltr559-python/-/blob/master/library/ltr559/__init__.py?ref_type=heads
     uint32_t ratio = 0;
