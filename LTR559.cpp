@@ -22,6 +22,8 @@ LTR559::LTR559() {
     }
     usleep(100000);
 
+    uint8_t partNumber = readRegister(LTR559_PART_ID);
+
     writeRegister(LTR559_ALS_CONTROL,0x03);
     usleep(10000);
     writeRegister(LTR559_PS_CONTROL,LTR559_PS_CONTROL_ACTIVE_MASK);
