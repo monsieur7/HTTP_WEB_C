@@ -58,7 +58,7 @@ LTR559::LTR559()
     // setup ALS and PS
     // PS SETUP : - start PS
     writeRegister(LTR559_PS_CONTROL, LTR559_PS_CONTROL_ACTIVE_MASK << 0);
-    // ALS SETUP : - start ALS
+    // ALS SETUP : - start ALS - gain 1
     writeRegister(LTR559_ALS_CONTROL, 1 << LTR559_ALS_CONTROL_MODE_BIT);
 }
 
@@ -152,10 +152,10 @@ float LTR559::getLux()
     return _lux;
 }
 
-int16_t LTR559::readRegisterInt16(uint8_t offset)
+unt16_t LTR559::readRegisterInt16(uint8_t offset)
 {
     uint8_t msb = readRegister(offset);
     uint8_t lsb = readRegister(offset + 1);
 
-    return (int16_t)((msb << 8) | lsb);
+    return (unt16_t)((msb << 8) | lsb);
 }

@@ -93,5 +93,5 @@ private:
     int _ch1_c[4] = {-11059, 19548, -1185, 0};
     void writeRegister(uint8_t reg, uint8_t data);
     uint8_t readRegister(uint8_t reg);
-    int16_t readRegisterInt16(uint8_t offset);
+    unt16_t readRegisterInt16(uint8_t offset);
 };
