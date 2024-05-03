@@ -138,7 +138,7 @@ float LTR559::getLux()
     }
 
     // calculate lux
-    _lux = (als0 * _ch0_c[idx] - als1 * _ch1_c[idx]) / 100.0f;
+    _lux = (als0 * _ch0_c[idx] - als1 * _ch1_c[idx]);
     std::cerr << "lux before div : " << _lux << std::endl;
     if (_lux < 0)
     {
