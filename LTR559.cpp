@@ -108,13 +108,17 @@ int32_t LTR559::getLux()
     int32_t als = (int32_t)(als1 << 8 | als0);
     std::cerr << "ALS : " << als << std::endl;
     // See https://gitlab.com/pimoroni/ltr559-python/-/blob/master/library/ltr559/__init__.py?ref_type=heads
-
-    uint32_t ratio = als1 * 100 / (als1 + als0);
-    std::cerr << "ratio : " << ratio << std::endl;
+    uint32_t ratio = 0;
     if (als0 + als1 == 0)
     {
         ratio = 101;
     }
+    else
+    {
+        ratio = (als1 * 100) / (als0 + als1);
+    }
+    std::cerr << "ratio : " << ratio << std::endl;
+
     int idx = 0;
     if (ratio < 45)
     {
