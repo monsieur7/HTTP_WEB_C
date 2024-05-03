@@ -105,34 +105,36 @@ float LTR559::getLux()
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
     uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
 
+    uint32_t als_ratio = 0;
     // Calculate ALS ratio
 <<<<<<< HEAD
+<<<<<<< HEAD
     float als_ratio = (als1 * 100) / (als0 + als1);
+=======
+    // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
+>>>>>>> parent of 931fa25 (test 3)
 
-    // Determine _lux value based on ALS ratio
-    if (als_ratio < 45.0f)
+    if (als0 + als1 == 0)
     {
-        _lux = (0.0304f * als0) - (0.062f * als0 * pow(als_ratio, 1.4f));
-    }
-    else if (als_ratio < 64.0f)
-    {
-        _lux = (0.0224f * als0) - (0.031f * als1);
-    }
-    else if (als_ratio < 85.0f)
-    {
-        _lux = (0.0128f * als0) - (0.0153f * als1);
+        als_ratio = 1000;
     }
     else
     {
-        _lux = (0.00146f * als0) - (0.00112f * als1);
+        als_ratio = (als1 * 1000) / (als0 + als1);
     }
 
-    // Clamp negative _lux values to 0
-    if (_lux < 0.0f)
-    {
-        _lux = 0.0f;
-    }
+    // Determine Lux Index based on ALS ratio
+    int idx = 0;
+    if (als_ratio < 450)
+        idx = 0;
+    else if (als_ratio < 640 && als_ratio >= 450)
+        idx = 1;
+    else if (als_ratio < 850 && als_ratio >= 640)
+        idx = 2;
+    else
+        idx = 3;
 
+<<<<<<< HEAD
     return _lux;
 =======
     if (als0 + als1 == 0)
@@ -160,6 +162,10 @@ float LTR559::getLux()
     lux /= 50.0f; // Integration time in ms (50 ms default)
     lux /= 100.0f;
     lux /= 4.0f;     // GAIN OF 4
+=======
+    // Apply calibration coefficients to calculate lux
+    float lux = (als0 * _ch0_c[idx]) - (als1 * _ch1_c[idx]);
+>>>>>>> parent of 931fa25 (test 3)
     lux /= 10000.0f; // Scale conversion factor for lux
 
     // Clamp negative lux readings to 0
@@ -168,7 +174,10 @@ float LTR559::getLux()
 
     _lux = lux;  // Update the stored lux value
     return _lux; // Return the calculated lux value
+<<<<<<< HEAD
 >>>>>>> parent of 13dac81 (test android kernel)
+=======
+>>>>>>> parent of 931fa25 (test 3)
 }
 
 uint16_t LTR559::readRegisterInt16(uint8_t offset)
