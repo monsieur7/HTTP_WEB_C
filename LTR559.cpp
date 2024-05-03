@@ -94,7 +94,7 @@ uint8_t LTR559::readRegister(uint8_t reg)
     return data;
 }
 
-float LTR559::get_lux()
+float LTR559::getLux()
 {
     // Get status from ALS_PS_STATUS register
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
