@@ -145,9 +145,9 @@ float LTR559::getLux()
         _lux = 0;
         return _lux;
     }
-    _lux = _lux / 50.0f / 100.0f;
-    _lux = _lux / 1.0f;     // gain
-    _lux = _lux / 10000.0f; // integration time
+    _lux = _lux / 50.0f / 100.0f; // integration time
+    _lux = _lux / 1.0f;           // gain
+    _lux = _lux / 10000.0f;       // integration time
 
     return _lux;
 }
