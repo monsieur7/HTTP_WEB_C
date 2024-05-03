@@ -106,31 +106,30 @@ float LTR559::getLux()
 
     uint32_t als_ratio = 0;
     // Calculate ALS ratio
+    // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
+
     if (als0 + als1 == 0)
     {
-        als_ratio = 101;
+        als_ratio = 1000;
     }
     else
     {
-        als_ratio = (als1 * 100) / (als0 + als1);
+        als_ratio = (als1 * 1000) / (als0 + als1);
     }
 
     // Determine Lux Index based on ALS ratio
     int idx = 0;
-    if (als_ratio < 45)
+    if (als_ratio < 450)
         idx = 0;
-    else if (als_ratio < 64)
+    else if (als_ratio < 640 && als_ratio >= 450)
         idx = 1;
-    else if (als_ratio < 85)
+    else if (als_ratio < 850 && als_ratio >= 640)
         idx = 2;
     else
         idx = 3;
 
     // Apply calibration coefficients to calculate lux
     float lux = (als0 * _ch0_c[idx]) - (als1 * _ch1_c[idx]);
-    lux /= 50.0f; // Integration time in ms (50 ms default)
-    lux /= 100.0f;
-    lux /= 4.0f;     // GAIN OF 4
     lux /= 10000.0f; // Scale conversion factor for lux
 
     // Clamp negative lux readings to 0
