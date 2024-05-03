@@ -59,7 +59,7 @@ LTR559::LTR559()
     // PS SETUP : - start PS
     writeRegister(LTR559_PS_CONTROL, LTR559_PS_CONTROL_ACTIVE_MASK << 0);
     // ALS SETUP : - start ALS - gain 1
-    writeRegister(LTR559_ALS_CONTROL, 1 << LTR559_ALS_CONTROL_MODE_BIT && 2 << LTR559_ALS_CONTROL_GAIN_SHIFT);
+    writeRegister(LTR559_ALS_CONTROL, (1 << LTR559_ALS_CONTROL_MODE_BIT) | (2 << LTR559_ALS_CONTROL_GAIN_SHIFT));
 }
 
 void LTR559::writeRegister(uint8_t reg, uint8_t data)
