@@ -78,11 +78,12 @@
 #define LTR559_VALID_PART_ID 0x09
 #define LTR559_VALID_REVISION_ID 0x02
 
-class LTR559 {
+class LTR559
+{
 public:
     LTR559();
 
-    int32_t getLux();
+    float getLux();
     uint8_t getProximity();
 
 private:

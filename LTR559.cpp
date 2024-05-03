@@ -88,14 +88,14 @@ uint8_t LTR559::readRegister(uint8_t reg)
     return data;
 }
 
-int32_t LTR559::getLux()
+float LTR559::getLux()
 {
 
     // get status :
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
     // print in binary the status
     std::cout << std::bitset<8>(status) << std::endl;
-    if (!(status >> LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT) && !(status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT))
+    if (!(status & (1 << LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT)) && !(status & (1 << LTR559_ALS_PS_STATUS_ALS_DATA_BIT)))
     {
         std::cerr << "no new data available" << std::endl;
     }
@@ -145,9 +145,9 @@ int32_t LTR559::getLux()
         _lux = 0;
         return _lux;
     }
-    _lux = _lux / 50 / 100;
-    _lux = _lux / 1;     // gain
-    _lux = _lux / 10000; // integration time
+    _lux = _lux / 50.0f / 100.0f;
+    _lux = _lux / 1.0f;     // gain
+    _lux = _lux / 10000.0f; // integration time
 
     return _lux;
 }
