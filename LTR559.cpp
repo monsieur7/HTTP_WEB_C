@@ -43,7 +43,7 @@ LTR559::LTR559()
     // MEAS RATE : PS : 100ms (default)
     writeRegister(LTR559_PS_MEAS_RATE, 0b0010);
     // ALS MEAS RATE : 50ms / 50ms
-    writeRegister(LTR559_ALS_MEAS_RATE, (0b001 & 0x7) << 3 | (0b000 & 0x7));
+    writeRegister(LTR559_ALS_MEAS_RATE, (0b001 & 0x7) << 3 | (0b011 & 0x7));
 
     // threshold :
     writeRegister(LTR559_ALS_THRESHOLD_UPPER, 0xFF);
