@@ -106,11 +106,12 @@ float LTR559::getLux()
         std::cerr << "ALS data not valid" << std::endl;
         return _lux;
     }
-    if (!(status >> LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT == 0))
+    /*if (!(status >> LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT == 0))
     {
         std::cerr << "ALS interrupt not set" << std::endl;
         return _lux;
     }
+    */
     if (!(status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT == 0))
     {
         std::cerr << "ALS data not set" << std::endl;
