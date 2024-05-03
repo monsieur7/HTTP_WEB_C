@@ -7,7 +7,7 @@
 #include "FileTypeDetector.hpp"
 #include "BME280.hpp"
 #include "LTR559.hpp"
-#include <bitset>
+
 // #include <format>
 #define PORT 8080
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
