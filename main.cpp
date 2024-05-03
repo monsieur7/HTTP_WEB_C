@@ -29,10 +29,12 @@ int main()
 {
     BME280 bme280;
     LTR559 ltr559;
-
-    int lux = ltr559.getLux();
-    std::cout << "Luminosité : " << lux << " lux" << std::endl;
-
+    for (int i = 0; i < 1000; i++)
+    {
+        usleep(100);
+        int lux = ltr559.getLux();
+        std::cout << "Luminosité : " << lux << " lux" << std::endl;
+    }
     // initializing BME280
     if (bme280.begin() != 0)
     {
