@@ -144,16 +144,16 @@ float LTR559::getLux()
     }
 
     // calculate lux
-    _lux = ((float)als0 * (float)_ch0_c[idx] - (float)als1 * (float)_ch1_c[idx]);
+    _lux = ((float)als0 * (float)_ch0_c[idx]) - ((float)als1 * (float)_ch1_c[idx]);
     std::cerr << "lux before div : " << _lux << std::endl;
     if (_lux < 0)
     {
         _lux = 0;
         return _lux;
     }
-    _lux = _lux / 50.0f / 100.0f; // integration time
-    _lux = _lux / 4.0f;           // gain
-    _lux = _lux / 10000.0f;       // integration time
+    _lux = _lux / (50.0f / 100.0f); // integration time
+    _lux = _lux / 4.0f;             // gain
+    _lux = _lux / 10000.0f;         // integration time
 
     return _lux;
 }
