@@ -45,9 +45,6 @@ LTR559::LTR559()
     // ALS MEAS RATE : 50ms / 50ms
     writeRegister(LTR559_ALS_MEAS_RATE, (0b001 & 0x7) << 3 | (0b000 & 0x7));
 
-    //  ALS CONTROL :
-    writeRegister(LTR559_ALS_CONTROL, 0);
-
     // threshold :
     writeRegister(LTR559_ALS_THRESHOLD_UPPER, 0xFF);
     writeRegister(LTR559_ALS_THRESHOLD_LOWER, 0x00);
@@ -59,10 +56,10 @@ LTR559::LTR559()
     writeRegister(LTR559_PS_OFFSET, 0x00);
 
     // setup ALS and PS
-    // PS SETUP :
-    writeRegister(LTR559_PS_CONTROL, LTR559_PS_CONTROL_ACTIVE_MASK);
-    // ALS SETUP :
-    writeRegister(LTR559_ALS_CONTROL, 1);
+    // PS SETUP : - start PS
+    writeRegister(LTR559_PS_CONTROL, LTR559_PS_CONTROL_ACTIVE_MASK << 0);
+    // ALS SETUP : - start ALS
+    writeRegister(LTR559_ALS_CONTROL, 1 << LTR559_ALS_CONTROL_MODE_BIT);
 }
 
 void LTR559::writeRegister(uint8_t reg, uint8_t data)

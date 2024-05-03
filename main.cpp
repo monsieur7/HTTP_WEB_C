@@ -45,7 +45,7 @@ int main()
     float altitude = bme280.readAltitude(1020.0f);
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
-    std::cout << "Pressure : " << pressure/100.0f << " hPa" << std::endl;
+    std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
     // OPENSSL INIT :
