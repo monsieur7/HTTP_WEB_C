@@ -99,14 +99,8 @@ float LTR559::getLux()
     // Get status from ALS_PS_STATUS register
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
 
-    // Check if ALS data is valid and ready
-    if (!(status & (1 << LTR559_ALS_PS_STATUS_ALS_DATA_VALID_BIT)))
-    {
-        std::cerr << "ALS data not valid" << std::endl;
-        return _lux; // Return previous lux value
-    }
-
-    // Read ALS data registers
+    // TODO : check if the data is valid and ready / interrupt
+    //  Read ALS data registers
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
     uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
 
