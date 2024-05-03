@@ -104,8 +104,16 @@ float LTR559::getLux()
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
     uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1);
 
+    uint32_t als_ratio = 0;
     // Calculate ALS ratio
-    uint32_t als_ratio = (als1 * 100) / (als0 + als1);
+    if (als0 + als1 == 0)
+    {
+        als_ratio = 101;
+    }
+    else
+    {
+        als_ratio = (als1 * 100) / (als0 + als1);
+    }
 
     // Determine Lux Index based on ALS ratio
     int idx = 0;
