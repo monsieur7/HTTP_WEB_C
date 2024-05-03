@@ -51,7 +51,7 @@ LTR559::LTR559()
 
     // threshold :
     writeRegister(LTR559_ALS_THRESHOLD_UPPER, 0xFF);
-    writeRegister(LTR559_ALS_THRESHOLD_LOWER 0x00);
+    writeRegister(LTR559_ALS_THRESHOLD_LOWER, 0x00);
     // ps threshold :
     writeRegister(LTR559_PS_THRESHOLD_UPPER, 0xFF);
     writeRegister(LTR559_PS_THRESHOLD_LOWER, 0x00);
