@@ -95,10 +95,9 @@ int32_t LTR559::getLux()
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
     // print in binary the status
     std::cout << std::bitset<8>(status) << std::endl;
-    if (!(status >> LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT) || !(status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT))
+    if (!(status >> LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT) && !(status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT))
     {
-        std::cerr << "no data available" << std::endl;
-        return 0;
+        std::cerr << "no new data available" << std::endl;
     }
 
     // there is an interrupt
