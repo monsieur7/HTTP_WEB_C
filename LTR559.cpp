@@ -106,9 +106,11 @@ int32_t LTR559::getLux()
     int16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
 
     int32_t als = (int32_t)(als1 << 8 | als0);
+    std::cerr << "ALS : " << als << std::endl;
     // See https://gitlab.com/pimoroni/ltr559-python/-/blob/master/library/ltr559/__init__.py?ref_type=heads
 
     uint32_t ratio = als1 * 100 / (als1 + als0);
+    std::cerr << "ratio : " << ratio << std::endl;
     if (als0 + als1 == 0)
     {
         ratio = 101;
@@ -133,6 +135,7 @@ int32_t LTR559::getLux()
 
     // calculate lux
     _lux = (als0 * _ch0_c[idx] - als1 * _ch1_c[idx]) / 100.0f;
+    std::cerr << "lux before div : " << _lux << std::endl;
     if (_lux < 0)
     {
         _lux = 0;
