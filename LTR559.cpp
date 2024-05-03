@@ -101,7 +101,7 @@ float LTR559::getLux()
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
     // print in binary the status
     std::cout << std::bitset<8>(status) << std::endl;
-    if (!(status >> LTR559_ALS_PS_STATUS_ALS_DATA_VALID_BIT == 0))
+    if ((status >> LTR559_ALS_PS_STATUS_ALS_DATA_VALID_BIT == 0))
     {
         std::cerr << "ALS data not valid" << std::endl;
         return _lux;
@@ -113,7 +113,7 @@ float LTR559::getLux()
     }
     */
     // TODO : fix that
-    if (!(status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT == 0))
+    if ((status >> LTR559_ALS_PS_STATUS_ALS_DATA_BIT == 0))
     {
         std::cerr << "ALS data not set" << std::endl;
         return _lux;
