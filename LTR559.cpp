@@ -59,6 +59,12 @@ LTR559::LTR559()
     // PS SETUP : - start PS
     writeRegister(LTR559_PS_CONTROL, LTR559_PS_CONTROL_ACTIVE_MASK << 0);
     // ALS SETUP : - start ALS - gain 1
+
+    // DEBUG : dump all registers
+    for (int i = 0; i < 0xFF; i++)
+    {
+        std::cerr << "Register " << i << " : " << std::bitset<8>(readRegister(i)) << std::endl;
+    }
     writeRegister(LTR559_ALS_CONTROL, (1 << LTR559_ALS_CONTROL_MODE_BIT) | (2 << LTR559_ALS_CONTROL_GAIN_SHIFT));
 }
 
