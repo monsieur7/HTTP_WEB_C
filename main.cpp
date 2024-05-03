@@ -26,23 +26,22 @@ std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_en
 int main()
 {
     BME280 bme280;
-    
-    // Initialise le capteur BME280
-    if (bme280.begin() != 0) {
-        std::cerr << "Erreur lors de l'initialisation du capteur BME280." << std::endl;
+
+    // initializing BME280
+    if (bme280.begin() != 0)
+    {
+        std::cerr << "Error while initializing BME280" << std::endl;
         return 1;
     }
-    
-    // Lecture des données de température, de pression, d'humidité et d'altitude
+    // reading data from BME280
     float temperature = bme280.readTemp();
     float pressure = bme280.readPressure();
     float humidity = bme280.readHumidity();
     float altitude = bme280.readAltitude();
-    
-    // Affichage des données lues
-    std::cout << "Température : " << temperature << " °C" << std::endl;
-    std::cout << "Pression : " << pressure << " hPa" << std::endl;
-    std::cout << "Humidité : " << humidity << " %" << std::endl;
+    // Display the data
+    std::cout << "Temperature : " << temperature << " °C" << std::endl;
+    std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
+    std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
     // OPENSSL INIT :
 

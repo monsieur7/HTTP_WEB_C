@@ -6,24 +6,23 @@
 #include <linux/i2c-dev.h>
 #include <math.h>
 
-#define BME280_ADDRESS 0x76 // Adresse I2C par défaut du BME280
+#define BME280_ADDRESS 0x76 // Default I2C address of the BME280
 
 BME280::BME280()
 {
-    
-    // Initialisation des paramètres par défaut
+    // Initialize default parameters
     address = BME280_ADDRESS;
-    mode = 0b11;             // Mode de mesure normale
-    standby = 0b00;          // Mode de veille désactivé
-    filter = 0b000;          // Pas de filtrage
-    temp_overSample = 0b101; // Oversampling x16
-    humi_overSample = 0b101; // Oversampling x16
-    pres_overSample = 0b101; // Oversampling x16
+    mode = 0b11;             // Normal mode of measurement
+    standby = 0b00;          // Standby mode disabled
+    filter = 0b000;          // No filtering
+    temp_overSample = 0b101; // Temperature oversampling x16
+    humi_overSample = 0b101; // Humidity oversampling x16
+    pres_overSample = 0b101; // Pressure oversampling x16
 }
 
 void BME280::settings(uint8_t _address, uint8_t _mode, uint8_t _standby, uint8_t _filter, uint8_t _temp_overSample, uint8_t _humi_overSample, uint8_t _pres_overSample)
 {
-    // Réglage des paramètres du capteur
+    // Set sensor parameters
     address = _address;
     mode = _mode;
     standby = _standby;
@@ -35,94 +34,135 @@ void BME280::settings(uint8_t _address, uint8_t _mode, uint8_t _standby, uint8_t
 
 uint8_t BME280::begin()
 {
-    calibration.dig_T1 = ((uint16_t)((readRegister(BME280_DIG_T1_MSB_REG) << 8) + readRegister(BME280_DIG_T1_LSB_REG)));
-	calibration.dig_T2 = ((int16_t)((readRegister(BME280_DIG_T2_MSB_REG) << 8) + readRegister(BME280_DIG_T2_LSB_REG)));
-	calibration.dig_T3 = ((int16_t)((readRegister(BME280_DIG_T3_MSB_REG) << 8) + readRegister(BME280_DIG_T3_LSB_REG)));
 
-	calibration.dig_P1 = ((uint16_t)((readRegister(BME280_DIG_P1_MSB_REG) << 8) + readRegister(BME280_DIG_P1_LSB_REG)));
-	calibration.dig_P2 = ((int16_t)((readRegister(BME280_DIG_P2_MSB_REG) << 8) + readRegister(BME280_DIG_P2_LSB_REG)));
-	calibration.dig_P3 = ((int16_t)((readRegister(BME280_DIG_P3_MSB_REG) << 8) + readRegister(BME280_DIG_P3_LSB_REG)));
-	calibration.dig_P4 = ((int16_t)((readRegister(BME280_DIG_P4_MSB_REG) << 8) + readRegister(BME280_DIG_P4_LSB_REG)));
-	calibration.dig_P5 = ((int16_t)((readRegister(BME280_DIG_P5_MSB_REG) << 8) + readRegister(BME280_DIG_P5_LSB_REG)));
-	calibration.dig_P6 = ((int16_t)((readRegister(BME280_DIG_P6_MSB_REG) << 8) + readRegister(BME280_DIG_P6_LSB_REG)));
-	calibration.dig_P7 = ((int16_t)((readRegister(BME280_DIG_P7_MSB_REG) << 8) + readRegister(BME280_DIG_P7_LSB_REG)));
-	calibration.dig_P8 = ((int16_t)((readRegister(BME280_DIG_P8_MSB_REG) << 8) + readRegister(BME280_DIG_P8_LSB_REG)));
-	calibration.dig_P9 = ((int16_t)((readRegister(BME280_DIG_P9_MSB_REG) << 8) + readRegister(BME280_DIG_P9_LSB_REG)));
-
-	calibration.dig_H1 = ((uint8_t)(readRegister(BME280_DIG_H1_REG)));
-	calibration.dig_H2 = ((int16_t)((readRegister(BME280_DIG_H2_MSB_REG) << 8) + readRegister(BME280_DIG_H2_LSB_REG)));
-	calibration.dig_H3 = ((uint8_t)(readRegister(BME280_DIG_H3_REG)));
-	calibration.dig_H4 = ((int16_t)((readRegister(BME280_DIG_H4_MSB_REG) << 4) + (readRegister(BME280_DIG_H4_LSB_REG) & 0x0F)));
-	calibration.dig_H5 = ((int16_t)((readRegister(BME280_DIG_H5_MSB_REG) << 4) + ((readRegister(BME280_DIG_H4_LSB_REG) >> 4) & 0x0F)));
-	calibration.dig_H6 = ((uint8_t)readRegister(BME280_DIG_H6_REG));
-
-    // Initialisation du capteur
+    // Initialize the sensor
     char filename[20];
-
     snprintf(filename, 19, "/dev/i2c-1");
     if ((_file = open(filename, O_RDWR)) < 0)
     {
-        std::cerr << "Impossible d'ouvrir le bus I2C" << std::endl;
+        std::cerr << "Failed to open I2C bus" << std::endl;
         return 1;
     }
     if (ioctl(_file, I2C_SLAVE, address) < 0)
     {
-        std::cerr << "Impossible de se connecter au BME280" << std::endl;
+        std::cerr << "Failed to connect to BME280" << std::endl;
         return 1;
     }
-    reset();
-    writeRegister(BME280_CTRL_HUMIDITY_REG, humi_overSample);
-    writeRegister(BME280_CTRL_MEAS_REG, (temp_overSample << 5) | (pres_overSample << 2) | mode);
-    writeRegister(BME280_CONFIG_REG, (standby << 5) | (filter << 2));
-    return 0;
-}
 
-void BME280::reset()
-{
-    // Réinitialisation du BME280
-    writeRegister(BME280_RST_REG, 0xB6);
-    usleep(2000); // Attente de 2 ms pour la réinitialisation
+    std::cerr << "Begin Calibration" << std::endl;
+    calibration.dig_T1 = ((uint16_t)((readRegister(BME280_DIG_T1_MSB_REG) << 8) + readRegister(BME280_DIG_T1_LSB_REG)));
+    calibration.dig_T2 = ((int16_t)((readRegister(BME280_DIG_T2_MSB_REG) << 8) + readRegister(BME280_DIG_T2_LSB_REG)));
+    calibration.dig_T3 = ((int16_t)((readRegister(BME280_DIG_T3_MSB_REG) << 8) + readRegister(BME280_DIG_T3_LSB_REG)));
+
+    calibration.dig_P1 = ((uint16_t)((readRegister(BME280_DIG_P1_MSB_REG) << 8) + readRegister(BME280_DIG_P1_LSB_REG)));
+    calibration.dig_P2 = ((int16_t)((readRegister(BME280_DIG_P2_MSB_REG) << 8) + readRegister(BME280_DIG_P2_LSB_REG)));
+    calibration.dig_P3 = ((int16_t)((readRegister(BME280_DIG_P3_MSB_REG) << 8) + readRegister(BME280_DIG_P3_LSB_REG)));
+    calibration.dig_P4 = ((int16_t)((readRegister(BME280_DIG_P4_MSB_REG) << 8) + readRegister(BME280_DIG_P4_LSB_REG)));
+    calibration.dig_P5 = ((int16_t)((readRegister(BME280_DIG_P5_MSB_REG) << 8) + readRegister(BME280_DIG_P5_LSB_REG)));
+    calibration.dig_P6 = ((int16_t)((readRegister(BME280_DIG_P6_MSB_REG) << 8) + readRegister(BME280_DIG_P6_LSB_REG)));
+    calibration.dig_P7 = ((int16_t)((readRegister(BME280_DIG_P7_MSB_REG) << 8) + readRegister(BME280_DIG_P7_LSB_REG)));
+    calibration.dig_P8 = ((int16_t)((readRegister(BME280_DIG_P8_MSB_REG) << 8) + readRegister(BME280_DIG_P8_LSB_REG)));
+    calibration.dig_P9 = ((int16_t)((readRegister(BME280_DIG_P9_MSB_REG) << 8) + readRegister(BME280_DIG_P9_LSB_REG)));
+
+    calibration.dig_H1 = ((uint8_t)(readRegister(BME280_DIG_H1_REG)));
+    calibration.dig_H2 = ((int16_t)((readRegister(BME280_DIG_H2_MSB_REG) << 8) + readRegister(BME280_DIG_H2_LSB_REG)));
+    calibration.dig_H3 = ((uint8_t)(readRegister(BME280_DIG_H3_REG)));
+    calibration.dig_H4 = ((int16_t)((readRegister(BME280_DIG_H4_MSB_REG) << 4) + (readRegister(BME280_DIG_H4_LSB_REG) & 0x0F)));
+    calibration.dig_H5 = ((int16_t)((readRegister(BME280_DIG_H5_MSB_REG) << 4) + ((readRegister(BME280_DIG_H4_LSB_REG) >> 4) & 0x0F)));
+    calibration.dig_H6 = ((uint8_t)readRegister(BME280_DIG_H6_REG));
+
+    std::cerr << "End of calibration" << std::endl;
+    std::cerr << "dig_T1 : " << (int)calibration.dig_T1 << std::endl;
+    std::cerr << "dig_T2 : " << (int)calibration.dig_T2 << std::endl;
+    std::cerr << "dig_T3 : " << (int)calibration.dig_T3 << std::endl;
+    std::cerr << "dig_P1 : " << (int)calibration.dig_P1 << std::endl;
+    std::cerr << "dig_P2 : " << (int)calibration.dig_P2 << std::endl;
+    std::cerr << "dig_P3 : " << (int)calibration.dig_P3 << std::endl;
+    std::cerr << "dig_P4 : " << (int)calibration.dig_P4 << std::endl;
+    std::cerr << "dig_P5 : " << (int)calibration.dig_P5 << std::endl;
+    std::cerr << "dig_P6 : " << (int)calibration.dig_P6 << std::endl;
+    std::cerr << "dig_P7 : " << (int)calibration.dig_P7 << std::endl;
+    std::cerr << "dig_P8 : " << (int)calibration.dig_P8 << std::endl;
+    std::cerr << "dig_P9 : " << (int)calibration.dig_P9 << std::endl;
+    std::cerr << "dig_H1 : " << (int)calibration.dig_H1 << std::endl;
+    std::cerr << "dig_H2 : " << (int)calibration.dig_H2 << std::endl;
+    std::cerr << "dig_H3 : " << (int)calibration.dig_H3 << std::endl;
+    std::cerr << "dig_H4 : " << (int)calibration.dig_H4 << std::endl;
+    std::cerr << "dig_H5 : " << (int)calibration.dig_H5 << std::endl;
+    std::cerr << "dig_H6 : " << (int)calibration.dig_H6 << std::endl;
+    // See https://github.com/SolderedElectronics/BME280-Arduino-Library/blob/master/BME280.cpp
+    uint8_t dataToWrite = 0;
+    // Set the oversampling control words.
+    // config will only be writeable in sleep mode, so first insure that.
+    writeRegister(BME280_CTRL_MEAS_REG, 0x00);
+
+    // Set the config word
+    dataToWrite = (standby << 0x5) & 0xE0;
+    dataToWrite |= (filter << 0x02) & 0x1C;
+    writeRegister(BME280_CONFIG_REG, dataToWrite);
+
+    // Set ctrl_hum first, then ctrl_meas to activate ctrl_hum
+    dataToWrite = humi_overSample & 0x07; // all other bits can be ignored
+    writeRegister(BME280_CTRL_HUMIDITY_REG, dataToWrite);
+
+    // set ctrl_meas
+    // First, set temp oversampling
+    dataToWrite = (temp_overSample << 0x5) & 0xE0;
+    // Next, pressure oversampling
+    dataToWrite |= (pres_overSample << 0x02) & 0x1C;
+    // Last, set mode
+    dataToWrite |= (mode) & 0x03;
+    // Load the byte
+    writeRegister(BME280_CTRL_MEAS_REG, dataToWrite);
+    usleep(20 * 1000); // 20ms delay
+    return 0;
+    if (readRegister(BME280_CHIP_ID_REG) != 0x60)
+    {
+        std::cerr << "Failed to find BME280" << std::endl;
+        return 1;
+    }
 }
 
 uint8_t BME280::readRegister(uint8_t offset)
 {
-    // Lecture d'un registre
-    uint8_t data;
-    if (write(_file, &offset, 1) != 1)
+    // Read a register
+    std::cerr << "Read Register - writing Address" << std::endl;
+    uint8_t data[1];
+    uint8_t address[1] = {offset};
+    if (write(_file, address, 1) != 1)
     {
-        std::cerr << "Échec de la lecture du registre du BME280" << std::endl;
+        std::cerr << "Failed to read BME280 register" << std::endl;
         return 0;
     }
-    // Lire les données du registre
-    if (read(_file, &data, 1) != 1) {
-        // Gérer l'erreur
+    std::cerr << "Read Register - Reading Data" << std::endl;
+    // Read register data
+    if (read(_file, data, 1) != 1)
+    {
+        std::cerr << "Failed to read BME280 register" << std::endl;
+        return 0;
     }
-    return data;
+    std::cerr << "Read Register - Data - Return: " << (int)0 [data] << std::endl;
+    return 0 [data];
 }
 
 void BME280::writeRegister(uint8_t offset, uint8_t data)
 {
-    // Écriture dans un registre
+    // Write to a register
 
     uint8_t buffer[2] = {offset, data};
     if (write(_file, buffer, 2) != 2)
     {
-        std::cerr << "Échec de l'écriture dans le registre du BME280" << std::endl;
+        std::cerr << "Failed to write to BME280 register" << std::endl;
         return;
     }
 }
 
 float BME280::readTemp()
 {
-    // Lecture de la température depuis le BME280
-    int32_t adc_T = readRegisterInt16(BME280_TEMPERATURE_MSB_REG);
-    adc_T <<= 8;
-    adc_T |= readRegister(BME280_TEMPERATURE_LSB_REG);
-    adc_T <<= 8;
-    adc_T |= readRegister(BME280_TEMPERATURE_XLSB_REG);
-    adc_T >>= 4;
+    // Read temperature from BME280
+    int32_t adc_T = ((uint32_t)readRegister(BME280_TEMPERATURE_MSB_REG) << 12) | ((uint32_t)readRegister(BME280_TEMPERATURE_LSB_REG) << 4) | ((readRegister(BME280_TEMPERATURE_XLSB_REG) >> 4) & 0x0F);
 
-    int32_t var1, var2;
+    int64_t var1, var2;
     var1 = ((((adc_T >> 3) - ((int32_t)calibration.dig_T1 << 1))) * ((int32_t)calibration.dig_T2)) >> 11;
     var2 = (((((adc_T >> 4) - ((int32_t)calibration.dig_T1)) * ((adc_T >> 4) - ((int32_t)calibration.dig_T1))) >> 12) * ((int32_t)calibration.dig_T3)) >> 14;
     t_fine = var1 + var2;
@@ -132,13 +172,8 @@ float BME280::readTemp()
 
 float BME280::readPressure()
 {
-    // Lecture de la pression depuis le BME280
-    int32_t adc_P = readRegisterInt16(BME280_PRESSURE_MSB_REG);
-    adc_P <<= 8;
-    adc_P |= readRegister(BME280_PRESSURE_LSB_REG);
-    adc_P <<= 8;
-    adc_P |= readRegister(BME280_PRESSURE_XLSB_REG);
-    adc_P >>= 4;
+    // Read pressure from BME280 (in Pa)
+    int32_t adc_P = ((uint32_t)readRegister(BME280_PRESSURE_MSB_REG) << 12) | ((uint32_t)readRegister(BME280_PRESSURE_LSB_REG) << 4) | ((readRegister(BME280_PRESSURE_XLSB_REG) >> 4) & 0x0F);
 
     int64_t var1, var2, p;
     var1 = ((int64_t)t_fine) - 128000;
@@ -149,7 +184,7 @@ float BME280::readPressure()
     var1 = (((((int64_t)1) << 47) + var1)) * ((int64_t)calibration.dig_P1) >> 33;
     if (var1 == 0)
     {
-        return 0; // Éviter la division par zéro
+        return 0; // Avoid division by zero
     }
     p = 1048576 - adc_P;
     p = (((p << 31) - var2) * 3125) / var1;
@@ -159,19 +194,20 @@ float BME280::readPressure()
     return (float)p / 256.0;
 }
 
-float BME280::readAltitude()
+float BME280::readAltitude(float QNH)
 {
-    // Calcul de l'altitude à partir de la pression atmosphérique
-    float P = readPressure() / 100.0;                // Convertir la pression en hPa
-    return 44330 * (1.0 - pow(P / 1013.25, 0.1903)); // Calcul de l'altitude en mètres
+    // QNH : 1020 hPa
+    // https://metar-taf.com/LPFR
+    //  Calculate altitude from atmospheric pressure
+    float P = readPressure() / 100.0f;               // Convert pressure to hPa
+    return 44330 * (1.0 - pow(P / QNH, 1 / 5.255f)); // Calculate altitude in meters
+    // see https://community.bosch-sensortec.com/t5/Question-and-answers/How-to-calculate-the-altitude-from-the-pressure-sensor-data/qaq-p/5702
 }
 
 float BME280::readHumidity()
 {
-    // Lecture de l'humidité depuis le BME280
-    int32_t adc_H = readRegisterInt16(BME280_HUMIDITY_MSB_REG);
-    adc_H <<= 8;
-    adc_H |= readRegister(BME280_HUMIDITY_LSB_REG);
+    // Read humidity from BME280
+    int32_t adc_H = ((uint32_t)readRegister(BME280_HUMIDITY_MSB_REG) << 8) | ((uint32_t)readRegister(BME280_HUMIDITY_LSB_REG));
 
     int32_t v_x1_u32r;
     v_x1_u32r = (t_fine - ((int32_t)76800));

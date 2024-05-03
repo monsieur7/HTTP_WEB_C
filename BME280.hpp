@@ -47,9 +47,7 @@
 #define BME280_TEMPERATURE_XLSB_REG 0xFC // Temperature XLSB
 #define BME280_HUMIDITY_MSB_REG 0xFD     // Humidity MSB
 #define BME280_HUMIDITY_LSB_REG 0xFE     // Humidity LSB
-#ifndef BME280_H
-#define BME280_H
-
+#pragma once
 struct SensorCalibration
 {
 public:
@@ -82,7 +80,7 @@ public:
 
   BME280(void);
   float readPressure(void);
-  float readAltitude(void);
+  float readAltitude(float QNH = 1013.25);
   float readHumidity(void);
   float readTemp(void);
 
@@ -98,18 +96,13 @@ public:
 
   uint8_t begin(void);
 
-  void reset(void);
-
 private:
   // Global variable for temp
   int32_t t_fine;
 
   // Private functions
   uint8_t readRegister(uint8_t);
-  int16_t readRegisterInt16(uint8_t );
+  int16_t readRegisterInt16(uint8_t);
   void writeRegister(uint8_t, uint8_t);
   int _file;
 };
-
-#endif // BME280_H
-
