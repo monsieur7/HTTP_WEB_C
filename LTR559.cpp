@@ -165,10 +165,10 @@ float LTR559::getLux()
         return _lux;
     }
     // TODO : move gain and integration time to a variable
-    _lux = _lux / (50.0f / 100.0f); // integration time
-    _lux = _lux / 4.0f;             // gain
-    _lux = _lux / 10000.0f;         // integration time
-
+    _lux = _lux / 50.0f; // integration time
+    _lux = _lux / 100.0f;
+    _lux = _lux / 4.0f; // gain
+    _lux = _lux / 10000.0f;
     return _lux;
 }
 
