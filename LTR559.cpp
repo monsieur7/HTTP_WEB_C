@@ -63,7 +63,7 @@ LTR559::LTR559()
     // DEBUG : dump all registers
     for (int i = 0; i < 0xFF; i++)
     {
-        std::cerr << "Register " << i << " : " << std::bitset<8>(readRegister(i)) << std::endl;
+        std::cerr << "Register " << std::hex << i << " : " << std::dec << std::bitset<8>(readRegister(i)) << std::endl;
     }
     writeRegister(LTR559_ALS_CONTROL, (1 << LTR559_ALS_CONTROL_MODE_BIT) | (2 << LTR559_ALS_CONTROL_GAIN_SHIFT));
 }
