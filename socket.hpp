@@ -28,7 +28,7 @@ protected:
 public:
     Socket(int port);
 
-    virtual ~Socket();
+    ~Socket();
     void createSocket();
     void bindSocket();
     void listenSocket();
