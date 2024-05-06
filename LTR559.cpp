@@ -111,7 +111,8 @@ float LTR559::getLux()
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
     std::cerr << "ALS0 : " << als0 << " ALS1 : " << als1 << std::endl;
     // Calculate ALS ratio
-    float als_ratio = (als1 * 100) / (als0 + als1);
+    float als_ratio = 0;
+    std::cerr << "ALS ratio : " << als_ratio << std::endl;
     // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
 
     if (als0 + als1 == 0)
