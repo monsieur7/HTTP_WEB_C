@@ -10,7 +10,7 @@
 #include "ADS1015.hpp"
 
 // #include <format>
-#define PORT 8080
+#define PORT 8080 // port to listen on
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
     if (file[0] != '/')
