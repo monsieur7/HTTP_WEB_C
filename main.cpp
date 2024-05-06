@@ -41,7 +41,8 @@ int main()
     config.BITS.DR = CONFIG_REGISTER_DR_1600SPS; // default
 
     int lux = ltr559.getLux();
-    float voltage = ads1015.readVoltage();
+    float voltage = ads1015.readADC();
+    std::cout << "config ADC " << std::bitset<16>(ads1015.getConfig()) << std::endl;
     std::cout << "Luminosité : " << lux << " lux" << std::endl;
 
     // initializing BME280
