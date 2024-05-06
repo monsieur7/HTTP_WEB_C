@@ -151,8 +151,8 @@ float LTR559::getLux()
 
 uint16_t LTR559::readRegisterInt16(uint8_t offset)
 {
-    uint8_t msb = readRegister(offset);
-    uint8_t lsb = readRegister(offset + 1);
+    uint8_t lsb = readRegister(offset);
+    uint8_t msb = readRegister(offset + 1);
 
     return (uint16_t)((msb << 8) | lsb);
 }
