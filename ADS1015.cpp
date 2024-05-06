@@ -71,7 +71,7 @@ uint16_t ADS1015::getConfig()
 }
 int16_t ADS1015::readADC()
 {
-    return readRegister(ADS1015_CONVERSION_REGISTER);
+    return (readRegister(ADS1015_CONVERSION_REGISTER)) >> 4;
 }
 float ADS1015::readVoltage()
 {
