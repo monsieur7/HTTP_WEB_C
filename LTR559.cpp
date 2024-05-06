@@ -154,5 +154,5 @@ uint16_t LTR559::readRegisterInt16(uint8_t offset)
     uint8_t msb = readRegister(offset);
     uint8_t lsb = readRegister(offset + 1);
 
-    return (uint16_t)((msb) | lsb << 8);
+    return (uint16_t)((msb << 8) | lsb);
 }
