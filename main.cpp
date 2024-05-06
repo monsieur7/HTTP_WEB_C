@@ -55,7 +55,6 @@ int main()
     float pressure = bme280.readPressure();
     float humidity = bme280.readHumidity();
     float altitude = bme280.readAltitude(1020.0f);
-    float lux = ltr559.getLux();
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
     std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
