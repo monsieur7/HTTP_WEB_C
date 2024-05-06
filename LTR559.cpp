@@ -101,15 +101,12 @@ float LTR559::getLux()
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
     if ((status & (1 << LTR559_ALS_PS_STATUS_ALS_DATA_BIT)) == 0)
     {
-        std::cerr << "No data ready" << std::endl;
         return _lux;
     }
-    std::cerr << "Data ready : " << std::bitset<8>(status) << std::endl;
     // TODO : check if the data is valid and ready / interrupt
     //  Read ALS data registers
     uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1); // see page 22 of doc
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
-    std::cerr << "ALS0 : " << als0 << " ALS1 : " << als1 << std::endl;
     // Calculate ALS ratio
     float als_ratio = 0;
     // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
@@ -122,7 +119,6 @@ float LTR559::getLux()
     {
         als_ratio = ((float)als1 * 100.0f) / ((float)als0 + (float)als1);
     }
-    std::cerr << "ALS ratio : " << als_ratio << std::endl;
 
     // Determine Lux Index based on ALS ratio
     int idx = 0;
@@ -136,7 +132,6 @@ float LTR559::getLux()
         idx = 3;
 
     _lux = (_ch0_c[idx] * (float)als0 - _ch1_c[idx] * (float)als1);
-    std::cerr << "lux before divide : " << _lux << std::endl;
     // CHECK IF LUX IS NEGATIVE OR ZERO
     if (_lux <= 0)
     {
@@ -153,8 +148,5 @@ uint16_t LTR559::readRegisterInt16(uint8_t offset)
 {
     uint8_t lsb = readRegister(offset);
     uint8_t msb = readRegister(offset + 1);
-    std::cerr << "LSB : " << std::bitset<8>(lsb) << " MSB : " << std::bitset<8>(msb) << std::endl;
-    std::cerr << "MSB : " << std::hex << (int)msb << " LSB : " << (int)lsb << std::endl;
-    std::cerr << std::dec;
     return (uint16_t)((msb << 8) | lsb);
 }

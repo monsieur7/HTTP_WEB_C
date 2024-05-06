@@ -29,12 +29,6 @@ int main()
 {
     BME280 bme280;
     LTR559 ltr559;
-    for (int i = 0; i < 1000; i++)
-    {
-        usleep(10000);
-        float lux = ltr559.getLux();
-        std::cout << "Luminosité : " << lux << " lux" << std::endl;
-    }
     // initializing BME280
     if (bme280.begin() != 0)
     {
@@ -46,11 +40,14 @@ int main()
     float pressure = bme280.readPressure();
     float humidity = bme280.readHumidity();
     float altitude = bme280.readAltitude(1020.0f);
+    float lux = ltr559.getLux();
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
     std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
+    std::cout << "Lux : " << lux << std::endl;
+
     // OPENSSL INIT :
 
     FileTypeDetector ftd;
