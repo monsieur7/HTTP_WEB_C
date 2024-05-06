@@ -75,5 +75,5 @@ int16_t ADS1015::readADC()
 }
 float ADS1015::readVoltage()
 {
-    return readADC() * ADS1015_VOLTAGE_PER_BIT;
+    return readADC() * (float)ADS1015_VOLTAGE_PER_BIT;
 }
