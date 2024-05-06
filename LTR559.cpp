@@ -114,13 +114,13 @@ float LTR559::getLux()
     float als_ratio = 0;
     // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
 
-    if (als0 + als1 == 0)
+    if (als0 + als1 <= 0)
     {
         als_ratio = 101;
     }
     else
     {
-        als_ratio = (als1 * 100) / (als0 + als1);
+        als_ratio = (als * 100.0f) / (float)(als0 + als1);
     }
     std::cerr << "ALS ratio : " << als_ratio << std::endl;
 
