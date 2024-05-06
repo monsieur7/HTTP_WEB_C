@@ -7,6 +7,7 @@
 #include "FileTypeDetector.hpp"
 #include "BME280.hpp"
 #include "LTR559.hpp"
+#include "ADS1015.hpp"
 // #include <format>
 #define PORT 8080
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
@@ -28,8 +29,17 @@ int main()
 {
     BME280 bme280;
     LTR559 ltr559;
+    ADS1015 ads1015;
+    // config :
+    CONFIG_REGISTER config;
+    config.BITS.MODE = CONFIG_REGISTER_MODE_SINGLE_SHOT;
+    config.BITS.OS = CONFIG_REGISTER_OS_ON;
+    config.BITS.MUX = CONFIG_REGISTER_MUX_AIN0_GND;
+    config.BITS.PGA = CONFIG_REGISTER_PGA_2048V; // default
+    config.BITS.DR = CONFIG_REGISTER_DR_1600SPS; // default
 
     int lux = ltr559.getLux();
+    float voltage = ads1015.readVoltage();
     std::cout << "Luminosité : " << lux << " lux" << std::endl;
 
     // initializing BME280
@@ -45,9 +55,10 @@ int main()
     float altitude = bme280.readAltitude(1020.0f);
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
-    std::cout << "Pressure : " << pressure/100.0f << " hPa" << std::endl;
+    std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
+    std::cout << "Voltage : " << voltage << " V" << std::endl;
     // OPENSSL INIT :
 
     FileTypeDetector ftd;
