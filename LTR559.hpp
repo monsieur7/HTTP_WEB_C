@@ -89,8 +89,8 @@ public:
 private:
     int file;
     float _lux;
-    float _ch0_c[4] = {17743, 42785, 5926, 0};
-    float _ch1_c[4] = {-11059, 19548, -1185, 0};
+    float _ch0_c[4] = {17743.0f, 42785.0f, 5926.0f, 0.0f};
+    float _ch1_c[4] = {-11059.0f, 19548.0f, -1185.0f, 0.0f};
     void writeRegister(uint8_t reg, uint8_t data);
     uint8_t readRegister(uint8_t reg);
     uint16_t readRegisterInt16(uint8_t offset);
