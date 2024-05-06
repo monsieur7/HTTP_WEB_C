@@ -135,10 +135,11 @@ float LTR559::getLux()
         idx = 3;
 
     _lux = (_ch0_c[idx] * als0 - _ch1_c[idx] * als1);
+    std::cerr << "lux before divide : " << _lux << std::endl;
     // CHECK IF LUX IS NEGATIVE OR ZERO
     if (_lux <= 0)
     {
-        return 0;
+        return _lux;
     }
 
     _lux = _lux / 50 / 100; // integration time
