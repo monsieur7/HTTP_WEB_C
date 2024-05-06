@@ -4,22 +4,22 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <ioctl.h>
+#include <sys/ioctl.h>
 
 #include <linux/i2c-dev.h>
-#include <i2c/smbus.h>
-ADS1015::ADS1015()
+ADS1015::ADS1015(uint8_t address)
 {
+
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
     snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
-    _file = open(filename, O_RD);
+    _file = open(filename, O_RDONLY);
     if (_file < 0)
     {
         std::cerr << "Failed to open the bus." << std::endl;
         // Throw an exception or handle the error appropriately
     }
-    if (ioctl(_file, I2C_SLAVE, ADS1015_ADDRESS) < 0)
+    if (ioctl(_file, I2C_SLAVE, address) < 0)
     {
         std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
         // Throw an exception or handle the error appropriately

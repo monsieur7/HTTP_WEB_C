@@ -1,4 +1,5 @@
 // registers definition
+#include <stdint.h>
 typedef union CONV_REGISTER
 {
     uint16_t reg;
@@ -24,7 +25,7 @@ typedef union CONFIG_REGISTER
         uint16_t MUX : 3;
         uint16_t OS : 1;
     } BITS;
-}
+};
 
 #define CONFIG_REGISTER_OS_OFFSET 15
 #define CONFIG_REGISTER_MUX_OFFSET 12
@@ -82,7 +83,7 @@ typedef union CONFIG_REGISTER
 class ADS1015
 {
 public:
-    ADS1015(uint8_t address = 0x48);
+    ADS1015(uint8_t address = ADS1015_ADDRESS);
     void setConfig(CONFIG_REGISTER config);
     void setConfig(uint16_t config);
     uint16_t getConfig();
