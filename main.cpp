@@ -31,7 +31,7 @@ int main()
     LTR559 ltr559;
     for (int i = 0; i < 1000; i++)
     {
-        usleep(1000);
+        usleep(10000);
         float lux = ltr559.getLux();
         std::cout << "Luminosité : " << lux << " lux" << std::endl;
     }
