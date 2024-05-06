@@ -48,6 +48,7 @@ int main()
     int lux = ltr559.getLux();
     float voltage = ads1015.readADC();
     std::cout << "config ADC " << std::bitset<16>(ads1015.getConfig()) << std::endl;
+    std::cout << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
     std::cout << "Luminosité : " << lux << " lux" << std::endl;
 
     // initializing BME280

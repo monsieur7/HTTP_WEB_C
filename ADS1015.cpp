@@ -43,7 +43,7 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
         // Throw an exception or handle the error appropriately
     }
     // write value :
-    uint8_t buf[2] = {value & 0xff, (value >> 8) & 0xff}; // little endian
+    uint8_t buf[2] = {static_cast<uint8_t>(value & 0xff), static_cast<uint8_t>((value >> 8) & 0xff)}; // little endian
     if (write(_file, buf, 2) != 2)
     {
         std::cerr << "Failed to write to the i2c bus." << std::endl;
