@@ -89,6 +89,8 @@ public:
 private:
     int file;
     float _lux;
+    int _integrationTime;
+    int _gain;
     float _ch0_c[4] = {17743.0f, 42785.0f, 5926.0f, 0.0f};
     float _ch1_c[4] = {-11059.0f, 19548.0f, -1185.0f, 0.0f};
     void writeRegister(uint8_t reg, uint8_t data);

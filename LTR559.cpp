@@ -10,6 +10,9 @@
 
 LTR559::LTR559()
 {
+    _integrationTime = 50;
+    _gain = 4;
+    _lux = 0;
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
     snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
@@ -150,9 +153,9 @@ float LTR559::getLux()
         return _lux;
     }
 
-    _lux = _lux / (50.0f / 100.0f); // integration time
-    _lux = _lux / 4.0f;             // gain
-    _lux = _lux / 10000.0f;
+    _lux = _lux / (_integrationTime / 100.0f); // integration time
+    _lux = _lux / _gain;                       // gain
+    _lux = _lux / 10000.0f;                    // see doc / python lib
     return _lux;
 }
 
