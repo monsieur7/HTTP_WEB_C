@@ -13,7 +13,7 @@ ADS1015::ADS1015(uint8_t address)
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
     snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
-    _file = open(filename, O_RDONLY);
+    _file = open(filename, O_RDWR);
     if (_file < 0)
     {
         std::cerr << "Failed to open the bus." << std::endl;
