@@ -48,10 +48,17 @@ LTR559::LTR559()
 
     // threshold :
     writeRegister(LTR559_ALS_THRESHOLD_UPPER, 0xFF);
+    writeRegister(LTR559_ALS_THRESHOLD_UPPER + 1, 0xFF);
+
     writeRegister(LTR559_ALS_THRESHOLD_LOWER, 0x00);
+    writeRegister(LTR559_ALS_THRESHOLD_LOWER + 1, 0x00);
+
     // ps threshold :
     writeRegister(LTR559_PS_THRESHOLD_UPPER, 0xFF);
+    writeRegister(LTR559_PS_THRESHOLD_UPPER + 1, 0x0F);
+
     writeRegister(LTR559_PS_THRESHOLD_LOWER, 0x00);
+    writeRegister(LTR559_PS_THRESHOLD_LOWER + 1, 0x00);
 
     // offset : 0
     writeRegister(LTR559_PS_OFFSET, 0x00);
@@ -102,6 +109,11 @@ float LTR559::getLux()
     if ((status & (1 << LTR559_ALS_PS_STATUS_ALS_DATA_BIT)) == 0)
     {
         return _lux;
+    }
+    // check for interrupt :
+    if ((status << LTR559_ALS_PS_STATUS_ALS_INTERRUPT_BIT) == 1)
+    {
+        std::cerr << "ALS interrupt" << std::endl;
     }
     // TODO : check if the data is valid and ready / interrupt
     //  Read ALS data registers
