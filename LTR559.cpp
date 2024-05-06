@@ -153,6 +153,7 @@ uint16_t LTR559::readRegisterInt16(uint8_t offset)
 {
     uint8_t lsb = readRegister(offset);
     uint8_t msb = readRegister(offset + 1);
-
+    std::cerr << "LSB : " << std::bitset<8>(lsb) << " MSB : " << std::bitset<8>(msb) << std::endl;
+    std::cerr << "MSB : " << std::hex << msb << " LSB : " << lsb << std::endl;
     return (uint16_t)((msb << 8) | lsb);
 }
