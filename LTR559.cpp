@@ -29,7 +29,7 @@ LTR559::LTR559()
     // setup soft reset :
     writeRegister(LTR559_ALS_CONTROL, 0x02);
     // wait for the bit to get back to 0
-    while (readRegister(LTR559_ALS_CONTROL) << 1)
+    while ((readRegister(LTR559_ALS_CONTROL) >> 1) == 1)
     {
         usleep(1000);
     }
