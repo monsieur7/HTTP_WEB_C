@@ -39,6 +39,11 @@ int main()
     config.BITS.MUX = CONFIG_REGISTER_MUX_AIN0_GND;
     config.BITS.PGA = CONFIG_REGISTER_PGA_2048V; // default
     config.BITS.DR = CONFIG_REGISTER_DR_1600SPS; // default
+    config.BITS.COMP_MODE = 0;
+    config.BITS.COMP_POL = 0;
+    config.BITS.COMP_LAT = 0;
+    config.BITS.COMP_QUE = 0;
+
     ads1015.setConfig(config);
     int lux = ltr559.getLux();
     float voltage = ads1015.readADC();

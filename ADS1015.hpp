@@ -92,6 +92,7 @@ public:
 
 private:
     int _file;
+    uint8_t _address;
     void writeRegister(uint8_t reg, uint16_t value);
     uint16_t readRegister(uint8_t reg);
 };

@@ -5,11 +5,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-
 #include <linux/i2c-dev.h>
+// TODO : set address before all the operations
 ADS1015::ADS1015(uint8_t address)
 {
 
+    _address = address;
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
     snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
@@ -28,6 +29,12 @@ ADS1015::ADS1015(uint8_t address)
 
 void ADS1015::writeRegister(uint8_t reg, uint16_t value)
 {
+
+    if (ioctl(_file, I2C_SLAVE, _address) < 0)
+    {
+        std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
+        // Throw an exception or handle the error appropriately
+    }
     // write address :
     uint8_t addr[] = {reg};
     if (write(_file, addr, 1) != 1)
@@ -45,6 +52,11 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
 }
 uint16_t ADS1015::readRegister(uint8_t reg)
 {
+    if (ioctl(_file, I2C_SLAVE, _address) < 0)
+    {
+        std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
+        // Throw an exception or handle the error appropriately
+    }
     // write address :
     uint8_t addr[] = {reg};
     if (write(_file, addr, 1) != 1)
