@@ -39,7 +39,7 @@ int main()
     config.BITS.MUX = CONFIG_REGISTER_MUX_AIN0_GND;
     config.BITS.PGA = CONFIG_REGISTER_PGA_2048V; // default
     config.BITS.DR = CONFIG_REGISTER_DR_1600SPS; // default
-
+    ads1015.setConfig(config);
     int lux = ltr559.getLux();
     float voltage = ads1015.readADC();
     std::cout << "config ADC " << std::bitset<16>(ads1015.getConfig()) << std::endl;
