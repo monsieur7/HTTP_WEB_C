@@ -107,8 +107,8 @@ float LTR559::getLux()
     std::cerr << "Data ready : " << std::bitset<8>(status) << std::endl;
     // TODO : check if the data is valid and ready / interrupt
     //  Read ALS data registers
-    uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1); // see page 22 of doc
-    uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
+    uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH1); // see page 22 of doc
+    uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH0);
     std::cerr << "ALS0 : " << als0 << " ALS1 : " << als1 << std::endl;
     // Calculate ALS ratio
     float als_ratio = 0;
