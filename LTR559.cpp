@@ -99,7 +99,7 @@ float LTR559::getLux()
 {
     // Get status from ALS_PS_STATUS register
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
-    if (!(status & (1 << LTR559_ALS_PS_STATUS_PS_DATA_BIT)) == 0)
+    if ((status & (1 << LTR559_ALS_PS_STATUS_PS_DATA_BIT)) == 0)
     {
         std::cerr << "No data ready" << std::endl;
         return _lux;
