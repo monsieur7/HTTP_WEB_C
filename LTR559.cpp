@@ -121,7 +121,7 @@ float LTR559::getLux()
     }
     else
     {
-        als_ratio = (als1 * 1000) / (als0 + als1);
+        als_ratio = (als1 * 100) / (als0 + als1);
     }
 
     // Determine Lux Index based on ALS ratio
