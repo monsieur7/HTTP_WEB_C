@@ -61,12 +61,12 @@ LTR559::LTR559()
     writeRegister(LTR559_PS_CONTROL, LTR559_PS_CONTROL_ACTIVE_MASK << 0);
     // ALS SETUP : - start ALS - gain 1
 
+    writeRegister(LTR559_ALS_CONTROL, (1 << LTR559_ALS_CONTROL_MODE_BIT) | (2 << LTR559_ALS_CONTROL_GAIN_SHIFT));
     // DEBUG : dump all registers
-    for (int i = 0; i < 0xFF; i++)
+    for (int i = 0x80; i < 0x9E; i++)
     {
         std::cerr << "Register " << std::hex << i << " : " << std::dec << std::bitset<8>(readRegister(i)) << std::endl;
     }
-    writeRegister(LTR559_ALS_CONTROL, (1 << LTR559_ALS_CONTROL_MODE_BIT) | (2 << LTR559_ALS_CONTROL_GAIN_SHIFT));
 }
 
 void LTR559::writeRegister(uint8_t reg, uint8_t data)
@@ -99,7 +99,7 @@ float LTR559::getLux()
 {
     // Get status from ALS_PS_STATUS register
     uint8_t status = readRegister(LTR559_ALS_PS_STATUS);
-    if ((status & (1 << LTR559_ALS_PS_STATUS_PS_DATA_BIT)) == 0)
+    if ((status & (1 << LTR559_ALS_PS_STATUS_ALS_DATA_BIT)) == 0)
     {
         std::cerr << "No data ready" << std::endl;
         return _lux;
