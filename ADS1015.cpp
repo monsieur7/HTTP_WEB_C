@@ -35,7 +35,9 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
         std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
         // Throw an exception or handle the error appropriately
     }
-    // write address :
+// write address :
+#include <bitset> // Include the <bitset> header file
+
     uint8_t addr[] = {reg};
     if (write(_file, addr, 1) != 1)
     {
