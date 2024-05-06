@@ -104,13 +104,14 @@ float LTR559::getLux()
     //  Read ALS data registers
     uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1); // see page 22 of doc
     uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
+    std::cerr << "ALS0 : " << als0 << " ALS1 : " << als1 << std::endl;
     // Calculate ALS ratio
     float als_ratio = (als1 * 100) / (als0 + als1);
     // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
 
     if (als0 + als1 == 0)
     {
-        als_ratio = 1000;
+        als_ratio = 101;
     }
     else
     {
@@ -127,7 +128,14 @@ float LTR559::getLux()
         idx = 2;
     else
         idx = 3;
+
     _lux = (_ch0_c[idx] * als0 - _ch1_c[idx] * als1);
+    // CHECK IF LUX IS NEGATIVE OR ZERO
+    if (_lux <= 0)
+    {
+        return 0;
+    }
+
     _lux = _lux / 50 / 100; // integration time
     _lux = _lux / 4.0f;     // gain
     _lux = _lux / 10000.0f;
