@@ -47,7 +47,6 @@ int main()
     float voltage = ads1015.readVoltage();
     // change channel :
     ads1015.changeChannel(CONFIG_REGISTER_MUX_AIN1_GND);
-    ads1015.setConfig(config);
     std::cerr << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
     float voltage2 = ads1015.readVoltage();
 
