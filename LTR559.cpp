@@ -144,7 +144,7 @@ float LTR559::getLux()
         idx = 3;
 
     _lux = (_ch0_c[idx] * (float)als0 - _ch1_c[idx] * (float)als1);
-
+    std::cerr << "ALS0 : " << als0 << " ALS1 : " << als1 << " ALS_RATIO : " << als_ratio << " LUX : " << _lux << std::endl;
     // CHECK IF LUX IS NEGATIVE OR ZERO
     if (_lux <= 0)
     {
