@@ -100,7 +100,7 @@ float ADS1015::readVoltage()
     int16_t adcValue = readADC();
     // get gain :
     uint16_t config = getConfig();
-    uint16_t gain = (config >> CONFIG_REGISTER_PGA_OFFSET);
+    uint16_t gain = (config >> CONFIG_REGISTER_PGA_OFFSET) & 0x07;
     float gainV = 0;
     float voltage = (float)adcValue;
     switch (gain)
