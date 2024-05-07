@@ -48,8 +48,6 @@ uint8_t BME280::begin()
         std::cerr << "Failed to connect to BME280" << std::endl;
         return 1;
     }
-
-    std::cerr << "Begin Calibration" << std::endl;
     calibration.dig_T1 = ((uint16_t)((readRegister(BME280_DIG_T1_MSB_REG) << 8) + readRegister(BME280_DIG_T1_LSB_REG)));
     calibration.dig_T2 = ((int16_t)((readRegister(BME280_DIG_T2_MSB_REG) << 8) + readRegister(BME280_DIG_T2_LSB_REG)));
     calibration.dig_T3 = ((int16_t)((readRegister(BME280_DIG_T3_MSB_REG) << 8) + readRegister(BME280_DIG_T3_LSB_REG)));
@@ -71,25 +69,6 @@ uint8_t BME280::begin()
     calibration.dig_H5 = ((int16_t)((readRegister(BME280_DIG_H5_MSB_REG) << 4) + ((readRegister(BME280_DIG_H4_LSB_REG) >> 4) & 0x0F)));
     calibration.dig_H6 = ((uint8_t)readRegister(BME280_DIG_H6_REG));
 
-    std::cerr << "End of calibration" << std::endl;
-    std::cerr << "dig_T1 : " << (int)calibration.dig_T1 << std::endl;
-    std::cerr << "dig_T2 : " << (int)calibration.dig_T2 << std::endl;
-    std::cerr << "dig_T3 : " << (int)calibration.dig_T3 << std::endl;
-    std::cerr << "dig_P1 : " << (int)calibration.dig_P1 << std::endl;
-    std::cerr << "dig_P2 : " << (int)calibration.dig_P2 << std::endl;
-    std::cerr << "dig_P3 : " << (int)calibration.dig_P3 << std::endl;
-    std::cerr << "dig_P4 : " << (int)calibration.dig_P4 << std::endl;
-    std::cerr << "dig_P5 : " << (int)calibration.dig_P5 << std::endl;
-    std::cerr << "dig_P6 : " << (int)calibration.dig_P6 << std::endl;
-    std::cerr << "dig_P7 : " << (int)calibration.dig_P7 << std::endl;
-    std::cerr << "dig_P8 : " << (int)calibration.dig_P8 << std::endl;
-    std::cerr << "dig_P9 : " << (int)calibration.dig_P9 << std::endl;
-    std::cerr << "dig_H1 : " << (int)calibration.dig_H1 << std::endl;
-    std::cerr << "dig_H2 : " << (int)calibration.dig_H2 << std::endl;
-    std::cerr << "dig_H3 : " << (int)calibration.dig_H3 << std::endl;
-    std::cerr << "dig_H4 : " << (int)calibration.dig_H4 << std::endl;
-    std::cerr << "dig_H5 : " << (int)calibration.dig_H5 << std::endl;
-    std::cerr << "dig_H6 : " << (int)calibration.dig_H6 << std::endl;
     // See https://github.com/SolderedElectronics/BME280-Arduino-Library/blob/master/BME280.cpp
     uint8_t dataToWrite = 0;
     // Set the oversampling control words.
@@ -125,8 +104,13 @@ uint8_t BME280::begin()
 
 uint8_t BME280::readRegister(uint8_t offset)
 {
+    // set I2C address
+    if (ioctl(_file, I2C_SLAVE, address) < 0)
+    {
+        std::cerr << "BME280 : Failed to acquire bus access and/or talk to slave." << std::endl;
+        return 0;
+    }
     // Read a register
-    std::cerr << "Read Register - writing Address" << std::endl;
     uint8_t data[1];
     uint8_t address[1] = {offset};
     if (write(_file, address, 1) != 1)
@@ -134,19 +118,23 @@ uint8_t BME280::readRegister(uint8_t offset)
         std::cerr << "Failed to read BME280 register" << std::endl;
         return 0;
     }
-    std::cerr << "Read Register - Reading Data" << std::endl;
     // Read register data
     if (read(_file, data, 1) != 1)
     {
         std::cerr << "Failed to read BME280 register" << std::endl;
         return 0;
     }
-    std::cerr << "Read Register - Data - Return: " << (int)0 [data] << std::endl;
     return 0 [data];
 }
 
 void BME280::writeRegister(uint8_t offset, uint8_t data)
 {
+    // set I2C address
+    if (ioctl(_file, I2C_SLAVE, address) < 0)
+    {
+        std::cerr << "BME280 : Failed to acquire bus access and/or talk to slave." << std::endl;
+        return;
+    }
     // Write to a register
 
     uint8_t buffer[2] = {offset, data};

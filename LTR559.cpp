@@ -13,6 +13,7 @@ LTR559::LTR559()
     _integrationTime = 50;
     _gain = 4;
     _lux = 0;
+  
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
     snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
@@ -80,7 +81,14 @@ LTR559::LTR559()
 }
 
 void LTR559::writeRegister(uint8_t reg, uint8_t data)
+
 {
+    // set I2C address :
+    if (ioctl(file, I2C_SLAVE, LTR559_ADDRESS) < 0)
+    {
+        std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
+        // Throw an exception or handle the error appropriately
+    }
     uint8_t buffer[2] = {reg, data};
     if (write(file, buffer, 2) != 2)
     {
@@ -91,6 +99,12 @@ void LTR559::writeRegister(uint8_t reg, uint8_t data)
 
 uint8_t LTR559::readRegister(uint8_t reg)
 {
+    // set I2C address :
+    if (ioctl(file, I2C_SLAVE, LTR559_ADDRESS) < 0)
+    {
+        std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
+        // Throw an exception or handle the error appropriately
+    }
     if (write(file, &reg, 1) != 1)
     {
         std::cerr << "Error writing to i2c slave" << std::endl;
@@ -120,8 +134,8 @@ float LTR559::getLux()
     }
     // TODO : check if the data is valid and ready / interrupt
     //  Read ALS data registers
-    uint16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1); // see page 22 of doc
-    uint16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
+    int16_t als1 = readRegisterInt16(LTR559_ALS_DATA_CH1); // see page 22 of doc
+    int16_t als0 = readRegisterInt16(LTR559_ALS_DATA_CH0);
     // Calculate ALS ratio
     float als_ratio = 0;
     // SEE https://android.googlesource.com/kernel/msm/+/android-msm-seed-3.10-lollipop-mr1/drivers/input/misc/ltr559.c
@@ -147,10 +161,11 @@ float LTR559::getLux()
         idx = 3;
 
     _lux = (_ch0_c[idx] * (float)als0 - _ch1_c[idx] * (float)als1);
+    std::cerr << "ALS0 : " << als0 << " ALS1 : " << als1 << " ALS_RATIO : " << als_ratio << " LUX : " << _lux << std::endl;
     // CHECK IF LUX IS NEGATIVE OR ZERO
     if (_lux <= 0)
     {
-        return _lux;
+        _lux = abs(_lux); // abs value because it makes no sense otherwise
     }
 
     _lux = _lux / (_integrationTime / 100.0f); // integration time
@@ -164,4 +179,11 @@ uint16_t LTR559::readRegisterInt16(uint8_t offset)
     uint8_t lsb = readRegister(offset);
     uint8_t msb = readRegister(offset + 1);
     return (uint16_t)((msb << 8) | lsb);
+}
+
+uint16_t LTR559::getProximity()
+{
+    uint8_t ps0 = readRegister(LTR559_PS_DATA);
+    uint8_t ps1 = readRegister(LTR559_PS_DATA + 1);
+    return (ps1 << 8) | (ps0 & 0x7);
 }

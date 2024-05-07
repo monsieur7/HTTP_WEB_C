@@ -9,9 +9,10 @@
 #include "FileTypeDetector.hpp"
 #include "BME280.hpp"
 #include "LTR559.hpp"
+#include "ADS1015.hpp"
 
 // #include <format>
-#define PORT 8080
+#define PORT 8080 // port to listen on
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
     if (file[0] != '/')
@@ -31,6 +32,26 @@ int main()
 {
     BME280 bme280;
     LTR559 ltr559;
+
+    ADS1015 ads1015;
+    // config :
+    CONFIG_REGISTER config = {0};
+    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
+                 CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
+                 CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
+                 CONFIG_REGISTER_COMP_QUE_DISABLE;
+    ads1015.setConfig(config);
+
+    std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
+
+    float lux = ltr559.getLux();
+    float voltage = ads1015.readVoltage();
+    // change channel :
+    config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
+    ads1015.setConfig(config);
+    // read voltage :
+    float voltage2 = ads1015.readVoltage();
+
     // initializing BME280
     if (bme280.begin() != 0)
     {
@@ -43,14 +64,16 @@ int main()
     float humidity = bme280.readHumidity();
 
     float altitude = bme280.readAltitude(1020.0f);
-    float lux = ltr559.getLux();
+    lux = ltr559.getLux();
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
     std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
     std::cout << "Lux : " << lux << std::endl;
-
+    std::cout << "Voltage : " << voltage << " V" << std::endl;
+    std::cout << "Voltage 2 : " << voltage2 << " V" << std::endl;
+    std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
     // OPENSSL INIT :
 
     FileTypeDetector ftd;
@@ -100,7 +123,7 @@ int main()
     {
         s.listenSocket();
         std::vector<int> clients = s.pollClients(1000);
-        for (auto i = 0; i < clients.size(); i++)
+        for (std::size_t i = 0; i < clients.size(); i++)
         {
             std::cout << s.printClientInfo(clients[i]) << std::endl;
             std::string received = s.receiveSocket(clients[i]);

@@ -84,7 +84,7 @@ public:
     LTR559();
 
     float getLux();
-    uint8_t getProximity();
+    uint16_t getProximity();
 
 private:
     int file;
