@@ -131,5 +131,5 @@ float ADS1015::readVoltage()
         break;
     }
     std::cerr << "ADC gain : " << gainV << std::endl;
-    return voltage * gainV;
+    return (voltage * gainV) / 2048.0f;
 }
