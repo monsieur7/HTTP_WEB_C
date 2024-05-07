@@ -33,7 +33,7 @@ int main()
 
     ADS1015 ads1015;
     // config :
-    CONFIG_REGISTER config;
+    CONFIG_REGISTER config = {0};
     config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
                  CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
                  CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
