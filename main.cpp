@@ -34,15 +34,7 @@ int main()
     ADS1015 ads1015;
     // config :
     CONFIG_REGISTER config;
-    config.BITS.MODE = CONFIG_REGISTER_MODE_CONTINUOUS;
-    config.BITS.OS = CONFIG_REGISTER_OS_ON;
-    config.BITS.MUX = CONFIG_REGISTER_MUX_AIN0_GND;
-    config.BITS.PGA = CONFIG_REGISTER_PGA_2048V; // default
-    config.BITS.DR = CONFIG_REGISTER_DR_1600SPS; // default
-    config.BITS.COMP_MODE = 0;
-    config.BITS.COMP_POL = 0;
-    config.BITS.COMP_LAT = 0;
-    config.BITS.COMP_QUE = 0;
+    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS | CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND | CONFIG_REGISTER_PGA_2048V | CONFIG_REGISTER_DR_1600SPS | CONFIG_REGISTER_COMP_QUE_DISABLE;
 
     ads1015.setConfig(config);
     int lux = ltr559.getLux();
