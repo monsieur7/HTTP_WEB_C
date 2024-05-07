@@ -36,7 +36,7 @@ int main()
     CONFIG_REGISTER config;
     config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
                  CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
-                 CONFIG_REGISTER_PGA_2048V | CONFIG_REGISTER_DR_1600SPS |
+                 CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
                  CONFIG_REGISTER_COMP_QUE_DISABLE;
     ads1015.setConfig(config);
 
@@ -47,9 +47,10 @@ int main()
     float voltage = ads1015.readVoltage();
     config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
                  CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN1_GND |
-                 CONFIG_REGISTER_PGA_2048V | CONFIG_REGISTER_DR_1600SPS |
+                 CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
                  CONFIG_REGISTER_COMP_QUE_DISABLE;
     ads1015.setConfig(config);
+    std::cerr << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
     float voltage2 = ads1015.readVoltage();
 
     // initializing BME280
