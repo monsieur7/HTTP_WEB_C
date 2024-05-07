@@ -104,6 +104,12 @@ uint8_t BME280::begin()
 
 uint8_t BME280::readRegister(uint8_t offset)
 {
+    // set I2C address
+    if (ioctl(_file, I2C_SLAVE, address) < 0)
+    {
+        std::cerr << "BME280 : Failed to acquire bus access and/or talk to slave." << std::endl;
+        return 0;
+    }
     // Read a register
     uint8_t data[1];
     uint8_t address[1] = {offset};
@@ -123,6 +129,12 @@ uint8_t BME280::readRegister(uint8_t offset)
 
 void BME280::writeRegister(uint8_t offset, uint8_t data)
 {
+    // set I2C address
+    if (ioctl(_file, I2C_SLAVE, address) < 0)
+    {
+        std::cerr << "BME280 : Failed to acquire bus access and/or talk to slave." << std::endl;
+        return 0;
+    }
     // Write to a register
 
     uint8_t buffer[2] = {offset, data};
