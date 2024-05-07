@@ -65,6 +65,7 @@ int main()
     std::cout << "Altitude : " << altitude << " m" << std::endl;
     std::cout << "Lux : " << lux << std::endl;
     std::cout << "Voltage : " << voltage << " V" << std::endl;
+    std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
     // OPENSSL INIT :
 
     FileTypeDetector ftd;
