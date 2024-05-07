@@ -77,8 +77,6 @@ uint16_t ADS1015::readRegister(uint8_t reg)
 
         // Throw an exception or handle the error appropriately
     }
-    std::cerr << std::endl
-              << "Read register : " << std::bitset<8>((buf[0])) << " " << std::bitset<8>((buf[1])) << std::endl;
     return (buf[0] << 8 | buf[1]); // little endian
 }
 void ADS1015::setConfig(CONFIG_REGISTER config)
