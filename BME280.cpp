@@ -133,7 +133,7 @@ void BME280::writeRegister(uint8_t offset, uint8_t data)
     if (ioctl(_file, I2C_SLAVE, address) < 0)
     {
         std::cerr << "BME280 : Failed to acquire bus access and/or talk to slave." << std::endl;
-        return 0;
+        return;
     }
     // Write to a register
 
