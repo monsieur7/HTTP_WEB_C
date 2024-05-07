@@ -38,7 +38,6 @@ int main()
                  CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
                  CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
                  CONFIG_REGISTER_COMP_QUE_DISABLE;
-    config.reg = 0xFF;
     ads1015.setConfig(config);
 
     std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
