@@ -45,10 +45,8 @@ int main()
 
     float lux = ltr559.getLux();
     float voltage = ads1015.readVoltage();
-    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
-                 CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN1_GND |
-                 CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
-                 CONFIG_REGISTER_COMP_QUE_DISABLE;
+    // change channel :
+    config.reg = config.reg & ~CONFIG_REGISTER_MUX_MASK | CONFIG_REGISTER_MUX_AIN1_GND;
     ads1015.setConfig(config);
     std::cerr << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
     float voltage2 = ads1015.readVoltage();
