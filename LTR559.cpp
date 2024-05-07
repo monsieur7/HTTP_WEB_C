@@ -165,3 +165,10 @@ uint16_t LTR559::readRegisterInt16(uint8_t offset)
     uint8_t msb = readRegister(offset + 1);
     return (uint16_t)((msb << 8) | lsb);
 }
+
+uint16_t LTR559::getProximity()
+{
+    uint8_t ps0 = readRegister(LTR559_PS_DATA);
+    uint8_t ps1 = readRegister(LTR559_PS_DATA + 1);
+    return (ps1 << 8) | ps0 & 0x7;
+}
