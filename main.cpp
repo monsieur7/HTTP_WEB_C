@@ -44,7 +44,7 @@ int main()
     std::cout << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 
     float lux = ltr559.getLux();
-    float voltage = ads1015.readADC();
+    float voltage = ads1015.readVoltage();
 
     // initializing BME280
     if (bme280.begin() != 0)
@@ -57,6 +57,7 @@ int main()
     float pressure = bme280.readPressure();
     float humidity = bme280.readHumidity();
     float altitude = bme280.readAltitude(1020.0f);
+    lux = ltr559.getLux();
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
     std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
