@@ -46,7 +46,7 @@ int main()
     float lux = ltr559.getLux();
     float voltage = ads1015.readVoltage();
     // change channel :
-    config.reg = config.reg & ~CONFIG_REGISTER_MUX_MASK | CONFIG_REGISTER_MUX_AIN1_GND;
+    config.reg =() config.reg & ~CONFIG_REGISTER_MUX_MASK )| CONFIG_REGISTER_MUX_AIN1_GND;
     ads1015.setConfig(config);
     std::cerr << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
     float voltage2 = ads1015.readVoltage();
@@ -121,7 +121,7 @@ int main()
     {
         s.listenSocket();
         std::vector<int> clients = s.pollClients(1000);
-        for (auto i = 0; i < clients.size(); i++)
+        for (std::size_t i = 0; i < clients.size(); i++)
         {
             std::cout << s.printClientInfo(clients[i]) << std::endl;
             std::string received = s.receiveSocket(clients[i]);
