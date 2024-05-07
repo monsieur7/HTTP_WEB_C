@@ -34,14 +34,17 @@ int main()
     ADS1015 ads1015;
     // config :
     CONFIG_REGISTER config;
-    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS | CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND | CONFIG_REGISTER_PGA_2048V | CONFIG_REGISTER_DR_1600SPS | CONFIG_REGISTER_COMP_QUE_DISABLE;
-
+    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
+                 CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
+                 CONFIG_REGISTER_PGA_2048V | CONFIG_REGISTER_DR_1600SPS |
+                 CONFIG_REGISTER_COMP_QUE_DISABLE;
     ads1015.setConfig(config);
+
+    std::cout << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
+    std::cout << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
+
     int lux = ltr559.getLux();
     float voltage = ads1015.readADC();
-    std::cout << "config ADC " << std::bitset<16>(ads1015.getConfig()) << std::endl;
-    std::cout << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
-    std::cout << "Luminosité : " << lux << " lux" << std::endl;
 
     // initializing BME280
     if (bme280.begin() != 0)
