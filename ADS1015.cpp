@@ -45,7 +45,7 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
         // Throw an exception or handle the error appropriately
     }
     // write value :
-    uint8_t buf[2] = {value & 0xFF, value >> 8};
+    uint8_t buf[2] = {value >> 8, value & 0xFF}; // MSB FIRST
     if (write(_file, buf, 2) != 2)
     {
         std::cerr << "Failed to write to the i2c bus." << std::endl;
