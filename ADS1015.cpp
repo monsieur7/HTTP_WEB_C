@@ -95,12 +95,10 @@ int16_t ADS1015::readADC()
 }
 float ADS1015::readVoltage()
 {
-    // wait for conversion
+    // dont wait for conversion
+    // we are in continuous mode (expected)
     std::cerr << "config register : " << std::bitset<16>(readRegister(ADS1015_CONFIG_REGISTER)) << std::endl;
-    do
-    {
-        usleep(1000);
-    } while ((readRegister(ADS1015_CONFIG_REGISTER) & CONFIG_REGISTER_OS_MASK) == 0);
+
     int16_t adcValue = readADC();
     // get gain :
     uint16_t config = getConfig();
