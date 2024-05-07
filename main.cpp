@@ -45,8 +45,10 @@ int main()
 
     float lux = ltr559.getLux();
     float voltage = ads1015.readVoltage();
-    config.reg &= ~CONFIG_REGISTER_MUX_MASK;
-    config.reg |= CONFIG_REGISTER_MUX_AIN1_GND;
+    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
+                 CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN1_GND |
+                 CONFIG_REGISTER_PGA_2048V | CONFIG_REGISTER_DR_1600SPS |
+                 CONFIG_REGISTER_COMP_QUE_DISABLE;
     ads1015.setConfig(config);
     float voltage2 = ads1015.readVoltage();
 

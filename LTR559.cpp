@@ -79,7 +79,14 @@ LTR559::LTR559()
 }
 
 void LTR559::writeRegister(uint8_t reg, uint8_t data)
+
 {
+    // set I2C address :
+    if (ioctl(file, I2C_SLAVE, LTR559_ADDRESS) < 0)
+    {
+        std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
+        // Throw an exception or handle the error appropriately
+    }
     uint8_t buffer[2] = {reg, data};
     if (write(file, buffer, 2) != 2)
     {
@@ -90,6 +97,12 @@ void LTR559::writeRegister(uint8_t reg, uint8_t data)
 
 uint8_t LTR559::readRegister(uint8_t reg)
 {
+    // set I2C address :
+    if (ioctl(file, I2C_SLAVE, LTR559_ADDRESS) < 0)
+    {
+        std::cerr << "Failed to acquire bus access and/or talk to slave." << std::endl;
+        // Throw an exception or handle the error appropriately
+    }
     if (write(file, &reg, 1) != 1)
     {
         std::cerr << "Error writing to i2c slave" << std::endl;
