@@ -10,6 +10,8 @@
 
 LTR559::LTR559()
 {
+    this->_lux = 0;
+
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
     snprintf(filename, 19, "/dev/i2c-%d", adapter_nr);
