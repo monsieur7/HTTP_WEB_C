@@ -170,5 +170,5 @@ uint16_t LTR559::getProximity()
 {
     uint8_t ps0 = readRegister(LTR559_PS_DATA);
     uint8_t ps1 = readRegister(LTR559_PS_DATA + 1);
-    return (ps1 << 8) | ps0 & 0x7;
+    return (ps1 << 8) | (ps0 & 0x7);
 }
