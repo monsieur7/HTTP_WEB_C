@@ -19,11 +19,15 @@ ADS1015::ADS1015(uint8_t address)
     if (_file < 0)
     {
         std::cerr << "ADC Failed to open the bus." << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+
         // Throw an exception or handle the error appropriately
     }
     if (ioctl(_file, I2C_SLAVE, address) < 0)
     {
         std::cerr << "ADC Failed to acquire bus access and/or talk to slave." << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+
         // Throw an exception or handle the error appropriately
     }
 }
@@ -34,6 +38,8 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
     if (ioctl(_file, I2C_SLAVE, _address) < 0)
     {
         std::cerr << "ADC Failed to acquire bus access and/or talk to slave." << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+
         // Throw an exception or handle the error appropriately
     }
     // write address and data:
@@ -42,6 +48,7 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
     if (write(_file, data, sizeof(data) / sizeof(data[0])) != 1)
     {
         std::cerr << "ADC Failed to write to the i2c bus." << std::endl;
+        std::cerr << strerror(errno) << std::endl;
         // Throw an exception or handle the error appropriately
     }
 }
@@ -57,6 +64,8 @@ uint16_t ADS1015::readRegister(uint8_t reg)
     if (write(_file, addr, 1) != 1)
     {
         std::cerr << "ADC Failed to write to the i2c bus." << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+
         // Throw an exception or handle the error appropriately
     }
     // read value :
@@ -64,6 +73,8 @@ uint16_t ADS1015::readRegister(uint8_t reg)
     if (read(_file, buf, 2) != 2)
     {
         std::cerr << "ADC Failed to read from the i2c bus." << std::endl;
+        std::cerr << strerror(errno) << std::endl;
+
         // Throw an exception or handle the error appropriately
     }
     return (buf[1] << 8) | buf[0]; // little endian
