@@ -100,7 +100,7 @@ float ADS1015::readVoltage()
     {
         usleep(1000);
     } while ((readRegister(ADS1015_CONFIG_REGISTER) & CONFIG_REGISTER_OS_MASK) == 0);
-    uint16_t adcValue = readADC();
+    int16_t adcValue = readADC();
     // get gain :
     uint16_t config = getConfig();
     uint16_t gain = (config >> CONFIG_REGISTER_PGA_OFFSET);
