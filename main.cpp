@@ -40,7 +40,7 @@ int main()
                  CONFIG_REGISTER_COMP_QUE_DISABLE;
     ads1015.setConfig(config);
 
-    std::cout << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
+    std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 
     float lux = ltr559.getLux();
     float voltage = ads1015.readVoltage();
