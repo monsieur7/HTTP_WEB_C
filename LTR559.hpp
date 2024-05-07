@@ -78,18 +78,22 @@
 #define LTR559_VALID_PART_ID 0x09
 #define LTR559_VALID_REVISION_ID 0x02
 
-class LTR559 {
+class LTR559
+{
 public:
     LTR559();
 
-    int32_t getLux();
+    float getLux();
     uint8_t getProximity();
 
 private:
     int file;
     float _lux;
-
+    int _integrationTime;
+    int _gain;
+    float _ch0_c[4] = {17743.0f, 42785.0f, 5926.0f, 0.0f};
+    float _ch1_c[4] = {-11059.0f, 19548.0f, -1185.0f, 0.0f};
     void writeRegister(uint8_t reg, uint8_t data);
     uint8_t readRegister(uint8_t reg);
-    int16_t readRegisterInt16(uint8_t offset);
+    uint16_t readRegisterInt16(uint8_t offset);
 };

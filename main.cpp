@@ -8,6 +8,7 @@
 #include "parseString.hpp"
 #include "FileTypeDetector.hpp"
 #include "BME280.hpp"
+#include "LTR559.hpp"
 
 // #include <format>
 #define PORT 8080
@@ -29,8 +30,7 @@ std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_en
 int main()
 {
     BME280 bme280;
-
-
+    LTR559 ltr559;
     // initializing BME280
     if (bme280.begin() != 0)
     {
@@ -43,11 +43,14 @@ int main()
     float humidity = bme280.readHumidity();
 
     float altitude = bme280.readAltitude(1020.0f);
+    float lux = ltr559.getLux();
     // Display the data
     std::cout << "Temperature : " << temperature << " °C" << std::endl;
     std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
+    std::cout << "Lux : " << lux << std::endl;
+
     // OPENSSL INIT :
 
     FileTypeDetector ftd;
