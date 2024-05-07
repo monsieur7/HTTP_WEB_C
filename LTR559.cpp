@@ -144,10 +144,11 @@ float LTR559::getLux()
         idx = 3;
 
     _lux = (_ch0_c[idx] * (float)als0 - _ch1_c[idx] * (float)als1);
+
     // CHECK IF LUX IS NEGATIVE OR ZERO
     if (_lux <= 0)
     {
-        return _lux;
+        _lux = abs(_lux); // abs value because it makes no sense otherwise
     }
 
     _lux = _lux / (50.0f / 100.0f); // integration time
