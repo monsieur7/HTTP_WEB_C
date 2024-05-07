@@ -100,7 +100,7 @@ float ADS1015::readVoltage(bool continuous) // in continuous mode !
     {
         do
         {
-            usleep(10)
+            usleep(10);
         } while ((readRegister(ADS1015_CONFIG_REGISTER) & CONFIG_REGISTER_OS_MASK) == 0);
     }
 
