@@ -94,5 +94,42 @@ int16_t ADS1015::readADC()
 }
 float ADS1015::readVoltage()
 {
-    return readADC() * (float)ADS1015_VOLTAGE_PER_BIT;
+    // wait for conversion
+    std::cerr << "config register : " << std::bitset<16>(readRegister(ADS1015_CONFIG_REGISTER)) << std::endl;
+    do
+    {
+        usleep(1000);
+    } while ((readRegister(ADS1015_CONFIG_REGISTER) & CONFIG_REGISTER_OS_MASK) == 0);
+    uint16_t adcValue = readADC();
+    // get gain :
+    uint16_t config = getConfig();
+    uint16_t gain = (config >> CONFIG_REGISTER_PGA_OFFSET);
+    float gainV = 0;
+    float voltage = (float)adcValue * ADS1015_VOLTAGE_PER_BIT;
+    switch (gain)
+    {
+    case 0:
+        gainV = 6.144;
+        break;
+    case 1:
+        gainV = 4.096;
+        break;
+    case 2:
+        gainV = 2.048;
+        break;
+    case 3:
+        gainV = 1.024;
+        break;
+    case 4:
+        gainV = 0.512;
+        break;
+    case 5:
+        gainV = 0.256;
+        break;
+    default:
+        gainV = 2.048;
+        break;
+    }
+    std::cerr << "ADC gain : " << gainV << std::endl;
+    return voltage * gainV;
 }
