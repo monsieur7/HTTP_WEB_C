@@ -75,7 +75,7 @@ public:
     uint16_t getConfig();
     int16_t readADC();
     float readVoltage();
-    void changeChannel(uint8_t channel);
+    void changeChannel(uint16_t channel);
 
 private:
     int _file;

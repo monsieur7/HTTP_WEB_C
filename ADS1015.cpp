@@ -96,7 +96,7 @@ float ADS1015::readVoltage()
 {
     return readADC() * (float)ADS1015_VOLTAGE_PER_BIT;
 }
-void ADS1015::changeChannel(uint8_t channel)
+void ADS1015::changeChannel(uint16_t channel)
 {
     CONFIG_REGISTER config;
     config.reg = getConfig();
