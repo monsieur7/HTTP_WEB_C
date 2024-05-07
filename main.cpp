@@ -40,7 +40,6 @@ int main()
                  CONFIG_REGISTER_COMP_QUE_DISABLE;
     ads1015.setConfig(config);
 
-    std::cout << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
     std::cout << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 
     float lux = ltr559.getLux();
@@ -48,7 +47,6 @@ int main()
     // change channel :
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
     ads1015.setConfig(config);
-    std::cerr << "config ADC in CHIP" << std::bitset<16>(ads1015.getConfig()) << std::endl;
     // read voltage :
     float voltage2 = ads1015.readVoltage();
 
