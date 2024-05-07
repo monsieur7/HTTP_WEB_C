@@ -44,9 +44,8 @@ void ADS1015::writeRegister(uint8_t reg, uint16_t value)
         // Throw an exception or handle the error appropriately
     }
     // write address and data:
-
     uint8_t data[] = {reg, (uint8_t)(value >> 8), (uint8_t)(value & 0xFF)};
-    if (write(_file, data, sizeof(data) / sizeof(data[0])) != sizeof(data) / sizeof(data[0]))
+    if (write(_file, data, 3) != 3)
     {
         std::cerr << "ADC Failed to write to the i2c bus." << std::endl;
         std::cerr << strerror(errno) << std::endl;
