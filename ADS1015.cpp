@@ -7,7 +7,7 @@
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
 #include <bitset>
-#include <string>
+#include <cstring>
 // TODO : set address before all the operations
 ADS1015::ADS1015(uint8_t address)
 {
