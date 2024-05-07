@@ -10,7 +10,7 @@ typedef struct CONFIG_REGISTER
 {
     uint16_t reg;
 } CONFIG_REGISTER;
-
+// NOLI SE TANGERE !
 #define CONFIG_REGISTER_OS_OFFSET 15
 #define CONFIG_REGISTER_MUX_OFFSET 12
 #define CONFIG_REGISTER_PGA_OFFSET 9
@@ -78,7 +78,7 @@ public:
     void setConfig(uint16_t config);
     uint16_t getConfig();
     int16_t readADC();
-    float readVoltage();
+    float readVoltage(bool continuous = true);
 
 private:
     int _file;

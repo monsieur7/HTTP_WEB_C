@@ -91,10 +91,19 @@ int16_t ADS1015::readADC()
 {
     return (readRegister(ADS1015_CONVERSION_REGISTER)) >> 4;
 }
-float ADS1015::readVoltage()
+float ADS1015::readVoltage(bool continuous) // in continuous mode !
 {
     // dont wait for conversion
     // we are in continuous mode (expected)
+    // DONT TOUCH
+    if (!continuous) // if we are in single mode, wait for end of conversion
+    {
+        do
+        {
+            usleep(10)
+        } while ((readRegister(ADS1015_CONFIG_REGISTER) & CONFIG_REGISTER_OS_MASK) == 0);
+    }
+
     std::cerr << "config register : " << std::bitset<16>(readRegister(ADS1015_CONFIG_REGISTER)) << std::endl;
 
     int16_t adcValue = readADC();
