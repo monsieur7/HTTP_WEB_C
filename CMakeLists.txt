@@ -7,21 +7,19 @@ set(SOURCES main.cpp socket.cpp socket.hpp
     socketSecure.cpp socketSecure.hpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
     ADS1015.hpp ADS1015.cpp MICS6814.hpp MICS6814.cpp)
 
-
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
-
-# link against boost :
-find_package(Boost 1.58.0 COMPONENTS system REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
 
 # link against openssl :
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})
+
+# link against libgpiod :
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GPIOD REQUIRED IMPORTED_TARGET libgpiod)
+target_link_libraries(${PROJECT_NAME} PkgConfig::GPIOD)
 
 # CMAKE google TEST :
 include(FetchContent)
