@@ -43,7 +43,7 @@
 				led-gpios = <&gpio 12 0>;
                 cs-gpio = <&gpio 7 0>;
 				debug = <0>;
-=			};
+			};
 		};
 	};
 
