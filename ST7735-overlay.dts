@@ -3,8 +3,14 @@
 
 / {
     compatible = "brcm,bcm2835";
-
     fragment@0 {
+		target = <&spidev0>;
+		__overlay__ {
+			status = "disabled";
+		};
+	};
+
+    fragment@1 {
         target = <&spi0>;
         __overlay__ {
             #address-cells = <1>;
