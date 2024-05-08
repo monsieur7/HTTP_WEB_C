@@ -36,8 +36,9 @@
 				reset-gpios;
 				dc-gpios = <&gpio 9 0>;
 				led-gpios = <&gpio 12 0>;
+                                cs-gpio = <&gpio 7 0>
+
 				debug = <0>;
-                cs-gpio = <&gpio 7 0>
 			};
 		};
 	};
@@ -52,5 +53,6 @@
 		dc_pin    = <&af18>,"dc-gpios:4";
 		reset_pin = <&af18>,"reset-gpios:4";
 		led_pin   = <&af18>,"led-gpios:4";
+        cs_pin    = <&af18>,"cs-gpio:4";
 	};
 };
