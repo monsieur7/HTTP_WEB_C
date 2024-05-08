@@ -147,3 +147,5 @@ float ADS1015::readVoltage(bool continuous) // in continuous mode !
     std::cerr << "ADC gain : " << gainV << std::endl;
     return (voltage * gainV) / 2048.0f;
 }
+
+

@@ -10,6 +10,7 @@
 #include "BME280.hpp"
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
+#include "MICS6814.hpp"
 
 // #include <format>
 #define PORT 8080 // port to listen on
@@ -32,6 +33,11 @@ int main()
 {
     BME280 bme280;
     LTR559 ltr559;
+    MICS6814 mics6814;
+
+    float oxydising = mics6814.readOxydising();
+    float nh3 = mics6814.readNH3();
+    float reducing = mics6814.readReducing();
 
     float lux = ltr559.getLux();
 
@@ -53,6 +59,9 @@ int main()
     std::cout << "Pressure : " << pressure / 100.0f << " hPa" << std::endl;
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
+    std::cout << "Oxydising : " << oxydising << " Ohms" << std::endl;
+    std::cout << "Reducing : " << reducing << " Ohms" << std::endl;
+    std::cout << "NH3 : " << nh3 << " Ohms" << std::endl;
     std::cout << "Lux : " << lux << std::endl;
     std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
     // OPENSSL INIT :
