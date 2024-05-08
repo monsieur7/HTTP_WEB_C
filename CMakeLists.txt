@@ -5,7 +5,7 @@ set(SOURCES main.cpp socket.cpp socket.hpp
     parseString.cpp parseString.hpp generateHeaders.cpp
     generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp
     socketSecure.cpp socketSecure.hpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
-    ADS1015.hpp ADS1015.cpp)
+    ADS1015.hpp ADS1015.cpp MICS6814.hpp MICS6814.cpp)
 
 
 # set MIN C++ version
