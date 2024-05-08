@@ -1,6 +1,7 @@
 #include "MICS6814.hpp"
 #include "ADS1015.hpp"
 #include <iostream>
+#include <bitset>
 
 MICS6814::MICS6814()
 {
@@ -16,7 +17,7 @@ MICS6814::MICS6814()
     std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 }
 
-float readOxydising(){
+float MICS6814::readOxydising(){
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN0_GND;
     float oxydising = ads1015.readVoltage();
     try
@@ -31,7 +32,7 @@ float readOxydising(){
     return oxydising;  
 }
 
-float readReducing(){
+float MICS6814::readReducing(){
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
     ads1015.setConfig(config);
     float reducing = ads1015.readVoltage();
@@ -47,7 +48,7 @@ float readReducing(){
     return reducing;  
 }
 
-float readNH3(){
+float MICS6814::readNH3(){
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN2_GND;
     ads1015.setConfig(config);
     float nh3 = ads1015.readVoltage();

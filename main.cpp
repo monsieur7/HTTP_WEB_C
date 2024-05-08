@@ -34,18 +34,12 @@ int main()
     LTR559 ltr559;
 
     ADS1015 ads1015;
-    // config :
-    CONFIG_REGISTER config = {0};
-    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
-                 CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
-                 CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
-                 CONFIG_REGISTER_COMP_QUE_DISABLE;
-    ads1015.setConfig(config);
+    ads1015.init();
 
     std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 
     float lux = ltr559.getLux();
-    float voltage = ads1015.readVoltage();
+    float voltage = ads1015.readNH3();
     // change channel :
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
     ads1015.setConfig(config);

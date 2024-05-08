@@ -74,15 +74,20 @@ class ADS1015
 {
 public:
     ADS1015(uint8_t address = ADS1015_ADDRESS);
+    void init();
     void setConfig(CONFIG_REGISTER config);
     void setConfig(uint16_t config);
     uint16_t getConfig();
     int16_t readADC();
     float readVoltage(bool continuous = true);
+    float readNH3();
+    float readOxydising();
+    float readReducing();
 
 private:
     int _file;
     uint8_t _address;
     void writeRegister(uint8_t reg, uint16_t value);
     uint16_t readRegister(uint8_t reg);
+    CONFIG_REGISTER _config;
 };
