@@ -8,7 +8,8 @@ public:
     float readOxydising();
     float readNH3();
     float readReducing();
-    
-private:
 
+private:
+    ADS1015 _ads1015;
+    CONFIG_REGISTER _config;
 };

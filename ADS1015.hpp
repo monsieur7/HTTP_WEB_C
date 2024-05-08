@@ -1,5 +1,6 @@
 // registers definition
 #include <stdint.h>
+#pragma once
 typedef struct CONV_REGISTER
 {
     uint16_t reg;
@@ -80,9 +81,6 @@ public:
     uint16_t getConfig();
     int16_t readADC();
     float readVoltage(bool continuous = true);
-    float readNH3();
-    float readOxydising();
-    float readReducing();
 
 private:
     int _file;

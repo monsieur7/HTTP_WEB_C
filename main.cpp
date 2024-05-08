@@ -33,18 +33,7 @@ int main()
     BME280 bme280;
     LTR559 ltr559;
 
-    ADS1015 ads1015;
-    ads1015.init();
-
-    std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
-
     float lux = ltr559.getLux();
-    float voltage = ads1015.readNH3();
-    // change channel :
-    config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
-    ads1015.setConfig(config);
-    // read voltage :
-    float voltage2 = ads1015.readVoltage();
 
     // initializing BME280
     if (bme280.begin() != 0)
@@ -65,8 +54,6 @@ int main()
     std::cout << "Humitidy : " << humidity << " %" << std::endl;
     std::cout << "Altitude : " << altitude << " m" << std::endl;
     std::cout << "Lux : " << lux << std::endl;
-    std::cout << "Voltage : " << voltage << " V" << std::endl;
-    std::cout << "Voltage 2 : " << voltage2 << " V" << std::endl;
     std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
     // OPENSSL INIT :
 
