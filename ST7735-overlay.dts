@@ -42,7 +42,7 @@
 	};
 
 	__overrides__ {
-		green = <&af18>, "compatible=fbtft,adafruit18_green";
+		green = <&af18>, "compatible=fbtft,adafruit18";
 		speed     = <&af18>,"spi-max-frequency:0";
 		rotate    = <&af18>,"rotate:0";
 		fps       = <&af18>,"fps:0";
