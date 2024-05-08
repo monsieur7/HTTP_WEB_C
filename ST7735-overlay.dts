@@ -1,0 +1,32 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+    fragment@0 {
+        target = <&spi0>;
+        __overlay__ {
+            #address-cells = <1>;
+            #size-cells = <0>;
+            status = "okay";
+
+            spidev@0 {
+                compatible = "spidev";
+                reg = <0>;
+                spi-max-frequency = <8000000>;
+            };
+
+            st7735@0 {
+                compatible = "st,st7735";
+                reg = <0>;
+                spi-max-frequency = <8000000>;
+                reset-gpios;
+                dc-gpios = <&gpio 9 GPIO_ACTIVE_HIGH>;
+                rotate = <0>;
+                bgr = <&gpio 12 GPIO_ACTIVE_HIGH>
+                fps = <60>;
+                width = <160>;
+                height = <128>;
+            };
+        };
+    };
+};
