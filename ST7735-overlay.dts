@@ -15,8 +15,8 @@
                 compatible = "st7735r";
                 spi-max-frequency = <32000000>; // Adjusted SPI frequency for your LCD
                 reg = <0>;
-                width = <128>;
-                height = <160>;
+                width = <160>;
+                height = <80>;
                 rotation = <270>; // Adjust rotation as needed
                 dc-gpios = <&gpio 9 1>; // GPIO pin for D/C (data/command)
                 backlight-gpios = <&gpio 12 1>; // GPIO pin for backlight control
