@@ -7,7 +7,6 @@ set(SOURCES main.cpp socket.cpp socket.hpp
     socketSecure.cpp socketSecure.hpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
     ADS1015.hpp ADS1015.cpp MICS6814.hpp MICS6814.cpp)
 
-
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
@@ -16,12 +15,24 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 find_package(Boost 1.58.0 COMPONENTS system REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a -O2")
 
 # link against openssl :
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
+endif()
 
 # CMAKE google TEST :
 include(FetchContent)
