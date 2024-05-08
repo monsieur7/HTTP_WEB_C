@@ -147,20 +147,3 @@ float ADS1015::readVoltage(bool continuous) // in continuous mode !
     std::cerr << "ADC gain : " << gainV << std::endl;
     return (voltage * gainV) / 2048.0f;
 }
-
-float ADS1015::readOxydising()
-{
-    _config.reg = (_config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN0_GND;
-    setConfig(_config);
-    float oxydising = readVoltage();
-    try
-    {
-        oxydising = (oxydising * 56000) / (3.3 - oxydising);
-    }
-    catch (const std::exception &e)
-    {
-        oxydising = 0;
-    }
-
-    return oxydising;
-}
