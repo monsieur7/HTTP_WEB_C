@@ -1,10 +1,10 @@
 #include "MICS6814.hpp"
-#include "ADS1015.hpp"
 #include <iostream>
+#include <bitset>
 
 MICS6814::MICS6814()
 {
-   ADS1015 ads1015;
+    ADS1015 ads1015;
     // config :
     CONFIG_REGISTER config = {0};
     config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
@@ -16,49 +16,52 @@ MICS6814::MICS6814()
     std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 }
 
-float readOxydising(){
+float readOxydising()
+{
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN0_GND;
     float oxydising = ads1015.readVoltage();
     try
     {
-        oxydising = (oxydising * 56000)/(3.3-oxydising);
+        oxydising = (oxydising * 56000) / (3.3 - oxydising);
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         oxydising = 0;
     }
 
-    return oxydising;  
+    return oxydising;
 }
 
-float readReducing(){
+float readReducing()
+{
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
     ads1015.setConfig(config);
     float reducing = ads1015.readVoltage();
     try
     {
-        reducing = (reducing * 56000)/(3.3-reducing);
+        reducing = (reducing * 56000) / (3.3 - reducing);
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         reducing = 0;
     }
 
-    return reducing;  
+    return reducing;
 }
 
-float readNH3(){
+float readNH3()
+{
     config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN2_GND;
     ads1015.setConfig(config);
     float nh3 = ads1015.readVoltage();
     try
     {
-        nh3 = (nh3 * 56000)/(3.3-nh3);
+        nh3 = (nh3 * 56000) / (3.3 - nh3);
     }
-    catch(const std::exception& e)
+    catch (const std::exception &e)
     {
         nh3 = 0;
     }
 
-    return nh3;  
+    return nh3;
 }

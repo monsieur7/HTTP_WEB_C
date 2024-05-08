@@ -1,5 +1,6 @@
 // registers definition
 #include <stdint.h>
+#pragma once
 typedef struct CONV_REGISTER
 {
     uint16_t reg;

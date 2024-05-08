@@ -4,6 +4,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/spi/spidev.h>
+#include <sys/ioctl.h>
 // libgpiod :
 #include <gpiod.h>
 // Defines
@@ -77,5 +78,30 @@
 
 class ST7735
 {
+private:
+    int _spi_fd;
+    gpiod_line *_dc_line;
+    gpiod_line *_rst_line;
+    gpiod_line *_bl_line;
+    gpiod_chip *_chip;
+    uint8_t _spi_mode;
+    uint8_t _spi_bits_per_word;
+    uint32_t _spi_speed;
+    int _width;
+    int _height;
+    int _offset_x;
+    int _offset_y;
+
+public:
+    ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_word, uint32_t spi_speed, uint32_t dc_line, uint32_t rst_line, uint32_t bl_line, int width, int height);
+    ~ST7735();
+    void writeCommand(uint8_t command);
+    void writeData(uint8_t data);
+    void init();
+    void setWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
+    void fillScreen(uint16_t colour);
+    void drawPixel(uint8_t x, uint8_t y, uint16_t colour);
+    void drawFullScreen(uint16_t *buffer);
+};
 
 #endif // ST7735_HPP
