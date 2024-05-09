@@ -57,6 +57,7 @@ int main()
 
     lcd.init();
     lcd.fillScreen(ST7735_WHITE);
+
     // initializing BME280
     if (bme280.begin() != 0)
     {

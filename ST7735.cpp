@@ -69,8 +69,8 @@ ST7735::ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_wo
 
     this->_width = width;
     this->_height = height;
-    this->_offset_x = (ST7735_COLS - width) / 2;
-    this->_offset_y = (ST7735_ROWS - height) / 2;
+    this->_offset_x = (ST7735_COLS - width) / 2;  // OFFSET LEFT
+    this->_offset_y = (ST7735_ROWS - height) / 2; // OFFSET TOP
 
     init();
 }
@@ -138,13 +138,11 @@ void ST7735::init()
     writeData(0x01);
     writeData(0x2C);
     writeData(0x2D);
-    usleep(10 * 1000); // Delay 10 ms
 
     writeCommand(ST7735_FRMCTR2); // Frame rate control - idle mode
     writeData(0x01);
     writeData(0x2C);
     writeData(0x2D);
-    usleep(10 * 1000); // Delay 10 ms
 
     writeCommand(ST7735_FRMCTR3); // Frame rate control - partial mode
     writeData(0x01);
@@ -153,7 +151,6 @@ void ST7735::init()
     writeData(0x01);
     writeData(0x2C);
     writeData(0x2D);
-    usleep(10 * 1000); // Delay 10 ms
 
     writeCommand(ST7735_INVCTR); // Display inversion control
     writeData(0x07);             // No inversion
@@ -191,11 +188,13 @@ void ST7735::init()
     writeData(this->_offset_x);
     writeData(0x00);
     writeData(this->_width + this->_offset_x - 1);
+
     writeCommand(ST7735_RASET); // Row address set
     writeData(0x00);
     writeData(this->_offset_y);
     writeData(0x00);
-    writeData(this->_height - 1 + this->_offset_y);
+    writeData(this->_height + this->_offset_y - 1);
+
     writeCommand(ST7735_GMCTRP1); // Set Gamma
     writeData(0x02);
     writeData(0x1c);

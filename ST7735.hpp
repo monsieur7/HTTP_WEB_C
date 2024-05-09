@@ -95,8 +95,8 @@ private:
     uint32_t _spi_speed;
     int _width;
     int _height;
-    int _offset_x;
-    int _offset_y;
+    int _offset_x; // OFFSET LEFT
+    int _offset_y; // OFFSET TOP
 
 public:
     ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_word, uint32_t spi_speed, uint32_t dc_line, uint32_t rst_line, uint32_t bl_line, int width, int height);
