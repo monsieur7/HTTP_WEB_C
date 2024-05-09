@@ -10,6 +10,7 @@
 #include "BME280.hpp"
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
+#include "MICS6814.hpp"
 
 // #include <format>
 #define PORT 8080 // port to listen on
