@@ -167,7 +167,15 @@ std::vector<int> Socket::pollClients(int timeout)
     }
     if (fds[fds.size() - 1].revents & POLLIN)
     {
-        acceptSocket();
+        try
+        {
+            acceptSocket();
+        }
+        catch (const std::runtime_error &e)
+        {
+            std::cerr << e.what() << '\n';
+            throw; // rethrow the exception
+        }
     }
     return ready_clients;
 }

@@ -75,11 +75,30 @@ int main()
     while (true)
     {
         s.listenSocket();
-        std::vector<int> clients = s.pollClients(1000);
+        std::vector<int> clients;
+        try
+        {
+            clients = s.pollClients(1000);
+        }
+        catch (const std::runtime_error &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
         for (std::size_t i = 0; i < clients.size(); i++)
         {
             std::cout << s.printClientInfo(clients[i]) << std::endl;
-            std::string received = s.receiveSocket(clients[i]);
+            std::string received;
+            try
+            {
+                received = s.receiveSocket(clients[i]);
+            }
+            catch (const std::runtime_error &e)
+            {
+                std::cerr << e.what() << '\n';
+                s.closeSocket(clients[i]);
+                continue;
+            }
+
             p.setData(received);
             std::map<std::string, std::string> headers = p.parseRequest();
             for (auto const &x : headers)

@@ -62,14 +62,18 @@ void SocketSecure::acceptSocket()
             // A fatal error occurred, you should handle it and probably close the connection
             ERR_print_errors_fp(stderr);
             // TODO : close connection
-            this->~SocketSecure();
+            std::cerr << "Fatal error occurred" << std::endl;
+            // close the offending socket :
+            Socket::closeSocket(this->_clients.back());
+            throw std::runtime_error("Fatal error occurred");
         }
     }
     // set non blocking:
     if (!BIO_socket_nbio(this->_clients.back(), 1))
     {
+
         perror("Error setting non blocking");
-        this->~SocketSecure();
+        throw std::runtime_error("Error setting non blocking");
     }
     _ssl_clients[this->_clients.back()] = ssl;
 }
@@ -161,6 +165,7 @@ std::string SocketSecure::receiveSocket(int client_fd)
             if (SSL_get_error(_ssl_clients[client_fd], bytes_read) != SSL_ERROR_WANT_READ)
             {
                 ERR_print_errors_fp(stderr);
+                throw std::runtime_error("SSL read failed");
             }
         }
         else

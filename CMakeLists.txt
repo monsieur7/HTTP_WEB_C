@@ -66,4 +66,4 @@ gtest_discover_tests(unit_tests)
 # compile main_testing :
 add_executable(main_testing main_testing.cpp socketSecure.cpp socketSecure.hpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp)
 target_link_libraries(main_testing ${OPENSSL_LIBRARIES})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
