@@ -64,6 +64,9 @@ ST7735::ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_wo
     {
         throw std::runtime_error("Error requesting GPIO line");
     }
+    // set backlight on :
+    gpiod_line_set_value(this->_bl_line, 1);
+
     this->_width = width;
     this->_height = height;
     this->_offset_x = (ST7735_COLS - width) / 2;
