@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.0)
 
+# if cmake is 3.24 or newer :
+if(CMAKE_VERSION GREATER 3.24)
+    cmake_policy(SET DOWNLOAD_EXTRACT_TIMESTAMP NEW)
+endif()
+
 project(HTTP_WEB_C)
 set(SOURCES main.cpp socket.cpp socket.hpp
     parseString.cpp parseString.hpp generateHeaders.cpp
