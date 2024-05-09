@@ -10,7 +10,7 @@
 #include "BME280.hpp"
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
-#include "MICS6814.hpp"
+// #include "MICS6814.hpp"
 #include "ST7735.hpp"
 // #include <format>
 #define PORT 8080 // port to listen on
@@ -35,7 +35,7 @@ int main()
     LTR559 ltr559;
 
     ADS1015 ads1015;
-    // config :
+    //  config :
     CONFIG_REGISTER config = {0};
     config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
                  CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
