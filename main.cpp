@@ -65,6 +65,7 @@ int main()
             {
                 lcd.fillScreen(lcd.color565(r, g, b));
                 usleep(1000);
+                std::cerr << "Color : " << r << " " << g << " " << b << std::endl;
             }
         }
     }
