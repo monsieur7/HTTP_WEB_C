@@ -113,9 +113,10 @@ int main()
             if (file.path().filename() != "")
             {
                 int file_size = file.file_size();
-                std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Keep-Alive\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n";
+                std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Close\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n";
                 s.sendSocket(response.c_str(), response.size(), clients[i]);
                 s.sendFile(file, clients[i]);
+                s.closeSocket(clients[i]); // close the connection
             }
             // search in files if there is a file with this name and send it
             // if not send 404
