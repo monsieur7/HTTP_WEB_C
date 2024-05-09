@@ -188,7 +188,7 @@ void ST7735::init()
     writeCommand(ST7735_VMCTR1); // Power control
     writeData(0x0E);
 
-    writeCommand(ST7735_INVOFF); // Don't invert display
+    writeCommand(ST7735_INVON); // Don't invert display
 
     writeCommand(ST7735_MADCTL); // Memory access control (directions)
     writeData(0xC8);             // Row address/col address, bottom to top refresh (BGR MODE) ! check if that is the right mode
