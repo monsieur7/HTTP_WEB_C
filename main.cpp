@@ -57,6 +57,9 @@ int main()
 
     lcd.init();
     lcd.fillScreen(ST7735_WHITE);
+    // pause
+    sleep(5);
+    std::cerr << "LCD INITIALIZED" << std::endl;
 
     // initializing BME280
     if (bme280.begin() != 0)
