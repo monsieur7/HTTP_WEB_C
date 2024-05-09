@@ -85,7 +85,6 @@ ST7735::~ST7735()
 }
 void ST7735::writeCommand(uint8_t command)
 {
-    gpiod_line_set_value(this->_dc_line, 0);
     uint8_t tx[1] = {command};
     uint8_t rx[1] = {0};
     struct spi_ioc_transfer tr = {
@@ -106,7 +105,6 @@ void ST7735::writeCommand(uint8_t command)
 }
 void ST7735::writeData(uint8_t data)
 {
-    gpiod_line_set_value(this->_dc_line, 1);
     uint8_t tx[1] = {data};
     uint8_t rx[1] = {0};
     struct spi_ioc_transfer tr = {
