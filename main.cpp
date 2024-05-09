@@ -53,7 +53,7 @@ int main()
     // read voltage :
     float voltage2 = ads1015.readVoltage();
     // LCD SCREEN :
-    ST7735 lcd = ST7735("/dev/spidev0.0", "gpiochip0", 8, 500000, 9, -1, 12, 160, 80);
+    ST7735 lcd = ST7735("/dev/spidev0.1", "gpiochip0", 8, 500000, 9, -1, 12, 160, 80);
 
     lcd.init();
     lcd.fillScreen(ST7735_WHITE);
