@@ -57,11 +57,11 @@ int main()
 
     lcd.init();
     // color test :
-    for (int r = 0; r < 255; r++)
+    for (int r = 0; r < 255; r += 10)
     {
-        for (int g = 0; g < 255; g++)
+        for (int g = 0; g < 255; g += 10)
         {
-            for (int b = 0; b < 255; b++)
+            for (int b = 0; b < 255; b += 10)
             {
                 lcd.fillScreen(lcd.color565(r, g, b));
                 usleep(1000);
