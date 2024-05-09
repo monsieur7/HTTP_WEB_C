@@ -11,7 +11,7 @@
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
 #include "MICS6814.hpp"
-
+#include "ST7735.hpp"
 // #include <format>
 #define PORT 8080 // port to listen on
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
@@ -52,7 +52,11 @@ int main()
     ads1015.setConfig(config);
     // read voltage :
     float voltage2 = ads1015.readVoltage();
+    // LCD SCREEN :
+    ST7735 lcd = ST7735("/dev/spidev0.0", "gpiochip512", 8, 500000, 9, -1, 12, 160, 80);
 
+    lcd.init();
+    lcd.fillScreen(ST7735_BLUE);
     // initializing BME280
     if (bme280.begin() != 0)
     {
