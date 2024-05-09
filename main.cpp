@@ -63,7 +63,7 @@ int main()
         {
             for (int b = 0; b < 255; b++)
             {
-                lcd.fillScreen(ST7735_Color565(r, g, b));
+                lcd.fillScreen(lcd.color565(r, g, b));
                 usleep(1000);
             }
         }
