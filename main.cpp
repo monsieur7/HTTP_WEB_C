@@ -11,7 +11,7 @@
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
 #include "MICS6814.hpp"
-
+#include "ST7735.hpp"
 // #include <format>
 #define PORT 8080 // port to listen on
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
