@@ -181,18 +181,56 @@ void ST7735::init()
     writeCommand(ST7735_INVOFF); // Don't invert display
 
     writeCommand(ST7735_MADCTL); // Memory access control (directions)
-    writeData(0xC8);             // Row address/col address, bottom to top refresh
+    writeData(0xC8);             // Row address/col address, bottom to top refresh (BGR MODE) ! check if that is the right mode
 
     writeCommand(ST7735_COLMOD); // Set color mode
     writeData(0x05);             // 16-bit color
 
-    writeCommand(ST7735_CASET);  // Column address set
-    writeData(0x00);             // XSTART = 0
-    writeData(this->_width - 1); // XEND = _width - 1
+    writeCommand(ST7735_CASET); // Column address set
+    writeData(0x00);
+    writeData(this->_offset_x);
+    writeData(0x00);
+    writeData(this->_width + this->_offset_x - 1);
+    writeCommand(ST7735_RASET); // Row address set
+    writeData(0x00);
+    writeData(this->_offset_y);
+    writeData(0x00);
+    writeData(this->_height - 1 + this->_offset_y);
+    writeCommand(ST7735_GMCTRP1); // Set Gamma
+    writeData(0x02);
+    writeData(0x1c);
+    writeData(0x07);
+    writeData(0x12);
+    writeData(0x37);
+    writeData(0x32);
+    writeData(0x29);
+    writeData(0x2d);
+    writeData(0x29);
+    writeData(0x25);
+    writeData(0x2B);
+    writeData(0x39);
+    writeData(0x00);
+    writeData(0x01);
+    writeData(0x03);
+    writeData(0x10);
 
-    writeCommand(ST7735_RASET);   // Row address set
-    writeData(0x00);              // YSTART = 0
-    writeData(this->_height - 1); // YEND = _height - 1
+    writeCommand(ST7735_GMCTRN1); // Set Gamma
+    writeData(0x03);
+    writeData(0x1d);
+    writeData(0x07);
+    writeData(0x06);
+    writeData(0x2E);
+    writeData(0x2C);
+    writeData(0x29);
+    writeData(0x2D);
+    writeData(0x2E);
+    writeData(0x2E);
+    writeData(0x37);
+    writeData(0x3F);
+    writeData(0x00);
+    writeData(0x00);
+    writeData(0x02);
+    writeData(0x10);
 
     writeCommand(ST7735_NORON); // Normal display on
     usleep(10 * 1000);          // Delay 10 ms
@@ -203,18 +241,21 @@ void ST7735::init()
 
 void ST7735::setWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 {
+    uint16_t x_start = x0 + this->_offset_x;
+    uint16_t x_end = x1 + this->_offset_x;
+    uint16_t y_start = y0 + this->_offset_y;
+    uint16_t y_end = y1 + this->_offset_y;
     writeCommand(ST7735_CASET); // Column addr set
-    writeData(0x00);
-    writeData(x0 + this->_offset_x); // XSTART
-    writeData(0x00);
-    writeData(x1 + this->_offset_x); // XEND
+    writeData(x_start >> 8);
+    writeData(x_start & 0xFF); // XSTART
+    writeData(x_end >> 8);
+    writeData(x_end & 0xFF); // XEND
 
     writeCommand(ST7735_RASET); // Row addr set
-    writeData(0x00);
-    writeData(y0 + this->_offset_y); // YSTART
-    writeData(0x00);
-    writeData(y1 + this->_offset_y); // YEND
-
+    writeData(y_start >> 8);
+    writeData(y_start & 0xFF); // YSTART
+    writeData(y_end >> 8);
+    writeData(y_end & 0xFF);    // YEND
     writeCommand(ST7735_RAMWR); // write to RAM
 }
 void ST7735::fillScreen(u_int16_t color)
