@@ -1,10 +1,16 @@
 #ifndef ST7735_HPP
 #define ST7735_HPP
+// libc includes :
+#include <string>
+#include <stdint.h>
+#include <stdexcept>
+// linux includes
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <linux/spi/spidev.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 // libgpiod :
 #include <gpiod.h>
 // Defines
