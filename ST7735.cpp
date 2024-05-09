@@ -13,6 +13,17 @@ ST7735::ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_wo
     {
         throw std::runtime_error("Error setting SPI mode");
     }
+    // set lsb first to false
+    uint8_t lsb_first = 0;
+    if (ioctl(this->_spi_fd, SPI_IOC_WR_LSB_FIRST, &lsb_first) < 0)
+    {
+        throw std::runtime_error("Error setting SPI lsb first");
+    }
+    // same to read
+    if (ioctl(this->_spi_fd, SPI_IOC_RD_LSB_FIRST, &lsb_first) < 0)
+    {
+        throw std::runtime_error("Error setting SPI lsb first");
+    }
     // bits per word
     this->_spi_bits_per_word = spi_bits_per_word;
     if (ioctl(this->_spi_fd, SPI_IOC_WR_BITS_PER_WORD, &this->_spi_bits_per_word) < 0)
