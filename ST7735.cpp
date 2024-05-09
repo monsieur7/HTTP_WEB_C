@@ -80,8 +80,10 @@ ST7735::ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_wo
 
     this->_width = width;
     this->_height = height;
-    this->_offset_x = (ST7735_COLS - width) / 2;  // OFFSET LEFT
-    this->_offset_y = (ST7735_ROWS - height) / 2; // OFFSET TOP
+    // this->_offset_x = (ST7735_COLS - width) / 2;  // OFFSET LEFT
+    // this->_offset_y = (ST7735_ROWS - height) / 2; // OFFSET TOP
+    this->_offset_x = 0;
+    this->_offset_y = 0;
 
     init();
 }
@@ -125,7 +127,6 @@ void ST7735::writeData(uint8_t data)
         .len = 1,
         .speed_hz = this->_spi_speed,
         .delay_usecs = 0,
-
         .bits_per_word = this->_spi_bits_per_word,
     };
     // set DC pin high for data :
