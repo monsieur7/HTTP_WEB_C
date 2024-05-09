@@ -56,7 +56,7 @@ int main()
     ST7735 lcd = ST7735("/dev/spidev0.0", "gpiochip0", 8, 500000, 9, -1, 12, 160, 80);
 
     lcd.init();
-    lcd.fillScreen(ST7735_BLUE);
+    lcd.fillScreen(ST7735_WHITE);
     // initializing BME280
     if (bme280.begin() != 0)
     {
