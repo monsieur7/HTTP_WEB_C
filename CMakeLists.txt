@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.0)
 
-# if cmake is 3.24 or newer :
-if(CMAKE_VERSION GREATER 3.24)
-    cmake_policy(SET DOWNLOAD_EXTRACT_TIMESTAMP NEW)
+# Set the policy regarding DOWNLOAD_EXTRACT_TIMESTAMP
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
 endif()
 
 project(HTTP_WEB_C)
