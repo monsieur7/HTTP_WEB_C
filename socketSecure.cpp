@@ -119,10 +119,10 @@ void SocketSecure::sendFile(std::filesystem::directory_entry file, int client_fd
         perror("File not found");
         return;
     }
-    char buf[1024];
-    while (file_stream.read(buf, 1024))
+    char buf[4096];
+    while (file_stream.read(buf, 4096))
     {
-        if (SSL_write(_ssl_clients[client_fd], buf, 1024) <= 0)
+        if (SSL_write(_ssl_clients[client_fd], buf, 4096) <= 0)
         {
             ERR_print_errors_fp(stderr);
         }
