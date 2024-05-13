@@ -83,7 +83,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                     // see https://stackoverflow.com/questions/21117174/opengl-freetype-text-y-offset-to-the-topmost-border-of-character
                     // TODO : fix this fing offset !
                     int pixel_x = x + cr.g->bitmap_left + i;
-                    int pixel_y = y - cr.g->bitmap_top + cr.height + j; // Adjust the y position based on glyph metrics
+                    int pixel_y = y - cr.g->bitmap_top + cr.height - j; // Adjust the y position based on glyph metrics
 
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.pitch + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
