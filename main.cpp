@@ -74,12 +74,12 @@ int main()
     if (error == FT_Err_Unknown_File_Format)
     {
         std::cerr << "Error while loading font file" << std::endl;
-        return 1;
+        goto free; // as per kernel coding style !
     }
     else if (error)
     {
         std::cerr << "Error while loading font file" << std::endl;
-        return 1;
+        goto free; // as per kernel coding style !
     }
     FT_Set_Pixel_Sizes(face, 0, 12);
     // load caracter A
