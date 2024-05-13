@@ -87,7 +87,6 @@ int main()
     {
         std::cerr << "Error while loading character" << std::endl;
         goto free; // as per kernel coding style !
-        return 1;
     }
     // render bitmap on screen :
     for (unsigned int y = 0; y < face->glyph->bitmap.rows; y++)
