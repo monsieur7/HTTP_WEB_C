@@ -305,7 +305,7 @@ uint16_t ST7735::color565(uint8_t grayscale)
 void ST7735::drawPixel(uint8_t x, uint8_t y, uint16_t color)
 {
     // rotate by 90° :
-    setWindow(x, y, y, x);
+    setWindow(y, x, y, x);
     writeData(color >> 8);
     writeData(color & 0xFF);
 }
