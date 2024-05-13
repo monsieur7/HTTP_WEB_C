@@ -1,6 +1,6 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_GLYPH_H
+#include FT_BBOX_H
 #include <codecvt>
 
 #include <map>
