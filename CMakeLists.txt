@@ -9,6 +9,7 @@ project(HTTP_WEB_C)
 set(SOURCES main.cpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
     ADS1015.hpp ADS1015.cpp ST7735.hpp ST7735.cpp
     MICS6814.hpp MICS6814.cpp
+    textLCD.hpp textLCD.cpp
 )
 
 # set MIN C++ version

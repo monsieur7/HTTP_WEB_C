@@ -310,3 +310,13 @@ void ST7735::drawPixel(uint8_t x, uint8_t y, uint16_t color)
     writeData(color >> 8);
     writeData(color & 0xFF);
 }
+uint32_t ST7735::alpha_blending(uint32_t color, uint8_t alpha)
+{
+    uint8_t r = (color >> 16) & 0xFF;
+    uint8_t g = (color >> 8) & 0xFF;
+    uint8_t b = color & 0xFF;
+    r = (r * alpha) / 255;
+    g = (g * alpha) / 255;
+    b = (b * alpha) / 255;
+    return (r << 16) | (g << 8) | b;
+}

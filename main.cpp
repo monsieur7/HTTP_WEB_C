@@ -12,9 +12,7 @@
 
 #include "MICS6814.hpp"
 
-#include <ft2build.h>
-#include <codecvt>
-#include FT_FREETYPE_H
+#include "textLCD.hpp"
 int main()
 {
     BME280 bme280;
@@ -59,73 +57,7 @@ int main()
     std::cout << "NH3 : " << nh3 << " Ohms" << std::endl;
     std::cout << "Lux : " << lux << std::endl;
     std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
-
-    // freetype init
-    FT_Library library;
-
-    FT_Face face;
-    FT_Error error;
-    error = FT_Init_FreeType(&library);
-    if (error)
-    {
-        std::cerr << "Error while initializing FreeType" << std::endl;
-        std::cerr << FT_Error_String(error) << std::endl;
-
-        FT_Done_FreeType(library);
-        return 1;
-    }
-    error = FT_New_Face(library, "../arial.ttf", 0, &face);
-    if (error == FT_Err_Unknown_File_Format)
-    {
-        std::cerr << "Error while loading font file" << std::endl;
-        std::cerr << FT_Error_String(error) << std::endl;
-
-        FT_Done_Face(face);
-        FT_Done_FreeType(library);
-        return 1;
-    }
-    else if (error)
-    {
-        std::cerr << "Error while loading font file" << std::endl;
-        std::cerr << FT_Error_String(error) << std::endl;
-
-        FT_Done_Face(face);
-        FT_Done_FreeType(library);
-        return 1;
-    }
-
-    FT_Set_Pixel_Sizes(face, 0, 12);
-    // load caracter A
-    wchar_t character = L'A';
-    FT_UInt glyph_index = FT_Get_Char_Index(face, character);
-    if (glyph_index == 0)
-    {
-        std::cerr << "Error while loading character - glyph not found" << std::endl;
-        std::cerr << FT_Error_String(error) << std::endl;
-        FT_Done_Face(face);
-        FT_Done_FreeType(library);
-        return 1;
-    }
-    if ((error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)))
-    {
-        std::cerr << "Error while loading character" << std::endl;
-        // print error string :
-        std::cerr << FT_Error_String(error) << std::endl;
-        FT_Done_Face(face);
-        FT_Done_FreeType(library);
-        return 1;
-    }
-    // no need to render because we used FT_LOAD_RENDER
-    //  render bitmap on screen :
-    for (unsigned int y = 0; y < face->glyph->bitmap.rows; y++)
-    {
-        for (unsigned int x = 0; x < face->glyph->bitmap.width; x++)
-        {
-            lcd.drawPixel(x, y, lcd.color565(face->glyph->bitmap.buffer[y * face->glyph->bitmap.width + x]));
-        }
-    }
-    std::cerr << "cleaning up" << std::endl;
-    // free memory
-    FT_Done_Face(face);
-    FT_Done_FreeType(library);
+    // text printing with freeType
+    textLCD textlcd = textLCD("../arial.ttf", 24, &lcd);
+    textlcd.drawText(L"Temperature : " + std::to_wstring(temperature) + L" °C", 0, 0, 24, ST7735_WHITE);
 }
