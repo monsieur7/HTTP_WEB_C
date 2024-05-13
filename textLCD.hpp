@@ -33,4 +33,5 @@ struct charRepresentation
     unsigned int advance_x;
     unsigned int advance_y;
     unsigned int pitch;
+    FT_GlyphSlot g;
 };
