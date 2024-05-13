@@ -19,7 +19,6 @@ int main()
     BME280 bme280;
     LTR559 ltr559;
     MICS6814 mics6814;
-    std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
 
     float lux = ltr559.getLux();
 
@@ -111,7 +110,6 @@ int main()
         }
     }
     // free memory
-
     FT_Done_Face(face);
     FT_Done_FreeType(library);
 }
