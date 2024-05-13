@@ -75,7 +75,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
         addCharacter(c);
     }
     int offset = 0;
-    int current_x = 0, current_y = 0;
+    int current_x = x, current_y = y;
     for (auto c : text)
     {
         if (_characters.find(c) == _characters.end())
