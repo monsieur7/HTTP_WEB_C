@@ -88,7 +88,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
             addCharacter(c);
         }
         charRepresentation cr = _characters[c];
-        std::cerr << "char " << c << " bitmap left : " << cr.bitmat_left << " bitmap top : " << cr.bitmap_top << std::endl;
+        std::wcerr << "char " << c << " bitmap left : " << cr.bitmat_left << " bitmap top : " << cr.bitmap_top << std::endl;
         for (unsigned int i = 0; i < cr.width; i++)
         {
             for (unsigned int j = 0; j < cr.height; j++)
