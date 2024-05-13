@@ -69,6 +69,7 @@ int main()
     if (error)
     {
         std::cerr << "Error while initializing FreeType" << std::endl;
+        FT_Done_FreeType(library);
         return 1;
     }
     error = FT_New_Face(library, "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0, &face);
