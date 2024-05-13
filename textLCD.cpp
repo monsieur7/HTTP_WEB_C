@@ -49,6 +49,7 @@ void textLCD::addCharacter(wchar_t c)
         cr.x_offset = (advance - (g->metrics.width >> 6)) / 2;
         cr.y_offset = (cr.bbox.yMax - (g->metrics.horiBearingY >> 6));
         cr.bitmap = new unsigned char[cr.width * cr.height];
+        cr.pitch = g->bitmap.pitch;
         for (unsigned int i = 0; i < cr.width * cr.height; i++)
         {
             cr.bitmap[i] = g->bitmap.buffer[i];
@@ -84,7 +85,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                     // Calculate pixel position within the LCD screen
                     int pixel_x = x + i + cr.x_offset;
                     int pixel_y = y + j + cr.y_offset;
-                    uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.width + i]);
+                    uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.pitch + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
                 }
             }

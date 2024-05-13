@@ -33,4 +33,5 @@ struct charRepresentation
     unsigned int advance_y;
     unsigned int x_offset;
     unsigned int y_offset;
+    unsigned int pitch;
 };
