@@ -69,6 +69,8 @@ int main()
     if (error)
     {
         std::cerr << "Error while initializing FreeType" << std::endl;
+        std::cerr << FT_Error_String(error) << std::endl;
+
         FT_Done_FreeType(library);
         return 1;
     }
@@ -76,6 +78,8 @@ int main()
     if (error == FT_Err_Unknown_File_Format)
     {
         std::cerr << "Error while loading font file" << std::endl;
+        std::cerr << FT_Error_String(error) << std::endl;
+
         FT_Done_Face(face);
         FT_Done_FreeType(library);
         return 1;
@@ -83,6 +87,8 @@ int main()
     else if (error)
     {
         std::cerr << "Error while loading font file" << std::endl;
+        std::cerr << FT_Error_String(error) << std::endl;
+
         FT_Done_Face(face);
         FT_Done_FreeType(library);
         return 1;
@@ -95,6 +101,8 @@ int main()
     if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER))
     {
         std::cerr << "Error while loading character" << std::endl;
+        // print error string :
+        std::cerr << FT_Error_String(error) << std::endl;
         FT_Done_Face(face);
         FT_Done_FreeType(library);
         return 1;
