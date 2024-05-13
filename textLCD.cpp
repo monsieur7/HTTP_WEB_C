@@ -91,6 +91,6 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
             }
         }
         x += (cr.advance_x);
-        x += (cr.advance_y);
+        y += (cr.advance_y);
     }
 }
