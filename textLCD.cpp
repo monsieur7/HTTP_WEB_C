@@ -95,6 +95,6 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 }
             }
         }
-        offset += (cr.advance >> 6); // because cr.advance is in 1/64th of a pixel
+        offset += (cr.advance);
     }
 }
