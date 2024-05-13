@@ -83,7 +83,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                     // see https://freetype.org/freetype2/docs/glyphs/glyphs-3.html
                     // TODO : fix this fing offset !
                     int pixel_x = x + cr.g->bitmap_left + i;
-                    int pixel_y = y + cr.g->bitmap_top - (cr.g->metrics.vertBearingY >> 6) + j; // Adjust the y position based on glyph metrics
+                    int pixel_y = y + cr.g->bitmap_top - (cr.bbox.yMin) + j; // Adjust the y position based on glyph metrics
 
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.pitch + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
