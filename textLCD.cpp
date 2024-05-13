@@ -71,7 +71,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
             addCharacter(c);
         }
         charRepresentation cr = _characters[c];
-        std::wcerr << "Drawing character " << c << " at " << x << ", " << y << " metrics : " << cr.width << "x" << cr.height << " advance : " << cr.advance_x << "x" << cr.advance_y << std::endl;
+        std::wcerr << "Drawing character " << c << " at " << x << ", " << y << " metrics : " << cr.width << "x" << cr.height << "y advance : " << cr.advance_x << "x" << cr.advance_y << "y offset" << cr.y_offset << std::endl;
 
         // Calculate the position based on glyph metrics and pen position
         // Draw the glyph
@@ -84,7 +84,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 {
                     // Calculate pixel position within the LCD screen
                     int pixel_x = x + i + cr.x_offset;
-                    int pixel_y = y + j - cr.y_offset;
+                    int pixel_y = y + j + cr.y_offset;
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.pitch + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
                 }
