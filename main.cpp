@@ -83,7 +83,7 @@ int main()
     }
     FT_Set_Pixel_Sizes(face, 0, 12);
     // load caracter A
-    if (FT_Load_Char(face, 'A', FT_LOAD_RENDER))
+    if (FT_Load_Char(face, 'a', FT_LOAD_RENDER))
     {
         std::cerr << "Error while loading character" << std::endl;
         goto free; // as per kernel coding style !
