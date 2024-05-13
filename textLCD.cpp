@@ -80,7 +80,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 if (cr.bitmap[j * cr.width + i] > 0)
                 {
                     // Calculate pixel position within the LCD screen
-                    // see https://stackoverflow.com/questions/21117174/opengl-freetype-text-y-offset-to-the-topmost-border-of-character
+                    // see https://freetype.org/freetype2/docs/glyphs/glyphs-3.html
                     // TODO : fix this fing offset !
                     int pixel_x = x + cr.g->bitmap_left + i;
                     int pixel_y = y + cr.g->bitmap_top - (cr.g->metrics.vertBearingY >> 6) + j; // Adjust the y position based on glyph metrics
