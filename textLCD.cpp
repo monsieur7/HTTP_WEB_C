@@ -84,7 +84,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 {
                     // Calculate pixel position within the LCD screen
                     int pixel_x = x + i + cr.x_offset;
-                    int pixel_y = y + j + cr.y_offset * 0;
+                    int pixel_y = y + j - cr.y_offset;
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.pitch + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
                 }
