@@ -86,7 +86,7 @@ int main()
     if (FT_Load_Char(face, 'A', FT_LOAD_RENDER))
     {
         std::cerr << "Error while loading character" << std::endl;
-        goto free;
+        goto free; // as per kernel coding style !
         return 1;
     }
     // render bitmap on screen :
