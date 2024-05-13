@@ -81,7 +81,7 @@ int main()
         std::cerr << "Error while loading font file" << std::endl;
         return 1;
     }
-    FT_Set_Pixel_Sizes(face, 12, 12);
+    FT_Set_Pixel_Sizes(face, 0, 12);
     // load caracter A
     if (FT_Load_Char(face, 'A', FT_LOAD_RENDER))
     {
