@@ -1,15 +1,22 @@
 cmake_minimum_required(VERSION 3.0)
 
+# Set the policy regarding DOWNLOAD_EXTRACT_TIMESTAMP
+if(POLICY CMP0135)
+    cmake_policy(SET CMP0135 NEW)
+endif()
+
 project(HTTP_WEB_C)
 set(SOURCES main.cpp socket.cpp socket.hpp
     parseString.cpp parseString.hpp generateHeaders.cpp
     generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp
     socketSecure.cpp socketSecure.hpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
-    ADS1015.hpp ADS1015.cpp MICS6814.hpp MICS6814.cpp)
+    ADS1015.hpp ADS1015.cpp ST7735.hpp ST7735.cpp)
+
 
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
+
 
 # link against boost :
 find_package(Boost 1.58.0 COMPONENTS system REQUIRED)
@@ -21,6 +28,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 target_link_libraries(${PROJECT_NAME} ${OPENSSL_LIBRARIES})
+
+# link against libgpiod :
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GPIOD REQUIRED IMPORTED_TARGET libgpiod)
+target_link_libraries(${PROJECT_NAME} PkgConfig::GPIOD)
 
 # link against freetype :
 find_package(Freetype REQUIRED)

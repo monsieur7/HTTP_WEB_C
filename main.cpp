@@ -8,6 +8,9 @@
 #include "BME280.hpp"
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
+// #include "MICS6814.hpp"
+#include "ST7735.hpp"
+
 #include "MICS6814.hpp"
 
 #include <ft2build.h>
@@ -17,6 +20,46 @@ int main()
     BME280 bme280;
     LTR559 ltr559;
     MICS6814 mics6814;
+
+    ADS1015 ads1015;
+    //  config :
+    CONFIG_REGISTER config = {0};
+    config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
+                 CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
+                 CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
+                 CONFIG_REGISTER_COMP_QUE_DISABLE;
+    ads1015.setConfig(config);
+
+    std::cerr << "Written config ADC " << std::bitset<16>(config.reg) << std::endl;
+
+    float lux = ltr559.getLux();
+    float voltage = ads1015.readVoltage();
+    // change channel :
+    config.reg = (config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN1_GND;
+    ads1015.setConfig(config);
+    // read voltage :
+    float voltage2 = ads1015.readVoltage();
+    // LCD SCREEN :
+    ST7735 lcd = ST7735("/dev/spidev0.1", "gpiochip0", 8, 10000000, 9, -1, 12, 80, 160); // 80x160 (because its rotated !)
+
+    lcd.init();
+    // color test :
+    for (int r = 0; r < 255; r += 10)
+    {
+        for (int g = 0; g < 255; g += 10)
+        {
+            for (int b = 0; b < 255; b += 10)
+            {
+                lcd.fillScreen(lcd.color565(r, g, b));
+                usleep(100);
+                std::cerr << "Color : " << r << " " << g << " " << b << std::endl;
+            }
+        }
+    }
+
+    lcd.fillScreen(ST7735_RED);
+    // pause
+    std::cerr << "LCD INITIALIZED" << std::endl;
 
     float oxydising = mics6814.readOxydising();
     float nh3 = mics6814.readNH3();
