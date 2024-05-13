@@ -25,8 +25,6 @@ struct charRepresentation
 {
     unsigned int width;
     unsigned int height;
-    unsigned int bearing_x;
-    unsigned int bearing_y;
     unsigned int advance_x;
     unsigned int advance_y;
     unsigned char *bitmap;
