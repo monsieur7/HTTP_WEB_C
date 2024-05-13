@@ -98,7 +98,7 @@ int main()
     // load caracter A
     wchar_t character = L'A';
     FT_UInt glyph_index = FT_Get_Char_Index(face, character);
-    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER))
+    if ((error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)))
     {
         std::cerr << "Error while loading character" << std::endl;
         // print error string :
