@@ -3,6 +3,7 @@
 #include FT_FREETYPE_H
 #include <map>
 #include "ST7735.hpp"
+#include <iostream>
 #pragma once
 
 class textLCD
