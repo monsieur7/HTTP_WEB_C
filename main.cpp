@@ -98,6 +98,14 @@ int main()
     // load caracter A
     wchar_t character = L'A';
     FT_UInt glyph_index = FT_Get_Char_Index(face, character);
+    if (glyph_index == 0)
+    {
+        std::cerr << "Error while loading character - glyph not found" << std::endl;
+        std::cerr << FT_Error_String(error) << std::endl;
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
+        return 1;
+    }
     if ((error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER)))
     {
         std::cerr << "Error while loading character" << std::endl;
