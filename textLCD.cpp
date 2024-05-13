@@ -45,7 +45,6 @@ void textLCD::addCharacter(wchar_t c)
         // metrics :
         cr.advance_x = g->advance.x >> 6;
         cr.advance_y = g->advance.y >> 6;
-        int advance = g->metrics.horiAdvance >> 6;
         cr.bitmap = new unsigned char[cr.width * cr.height];
         cr.pitch = g->bitmap.pitch;
         for (unsigned int i = 0; i < cr.width * cr.height; i++)
@@ -69,7 +68,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
             addCharacter(c);
         }
         charRepresentation cr = _characters[c];
-        std::wcerr << "Drawing character " << c << " at " << x << ", " << y << " metrics : " << cr.width << "x" << cr.height << "y advance : " << cr.advance_x << "x" << cr.advance_y << "y offset" << cr.y_offset << std::endl;
+        std::wcerr << "Drawing character " << c << " at " << x << ", " << y << " metrics : " << cr.width << "x" << cr.height << "y advance : " << cr.advance_x << "x" << cr.advance_y << "y offset" << std::endl;
 
         // Calculate the position based on glyph metrics and pen position
         // Draw the glyph
