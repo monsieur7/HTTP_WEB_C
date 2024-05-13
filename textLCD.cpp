@@ -95,8 +95,8 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
             {
                 if (cr.bitmap[j * cr.width + i] > 0)
                 {
-                    current_x = x + offset_x + i + cr.bearing_x + cr.bitmat_left;
-                    current_y = y + offset_y + j + cr.bearing_y - cr.bitmap_top; // see https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
+                    current_x = x + offset_x + i + cr.bitmat_left;
+                    current_y = y + offset_y + j - cr.bitmap_top; // see https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.width + i]);
                     _lcd->drawPixel(current_x, current_y, _lcd->color565(color_alpha));
                 }
