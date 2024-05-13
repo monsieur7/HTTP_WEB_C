@@ -80,8 +80,8 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 {
                     // Calculate pixel position within the LCD screen
                     // see https://stackoverflow.com/questions/21117174/opengl-freetype-text-y-offset-to-the-topmost-border-of-character
-                    int pixel_x = x + i + cr.bbox.xMin;
-                    int pixel_y = y + j + cr.bbox.yMin;
+                    int pixel_x = x + i + cr.bbox.xMin >> 6;
+                    int pixel_y = y + j + cr.bbox.yMin >> 6;
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.pitch + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
                 }
