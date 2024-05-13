@@ -89,7 +89,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 if (cr.bitmap[j * cr.width + i] > 0)
                 {
                     current_x = x + offset + i + cr.bearing_x;
-                    current_y = y - j - cr.bearing_y;
+                    current_y = y + j - (cr.height - cr.bearing_y); // see https://learnopengl.com/In-Practice/Text-Rendering
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.width + i]);
                     _lcd->drawPixel(current_x, current_y, _lcd->color565(color_alpha));
                 }
