@@ -86,6 +86,7 @@ int main()
     if (FT_Load_Char(face, 'A', FT_LOAD_RENDER))
     {
         std::cerr << "Error while loading character" << std::endl;
+        goto free;
         return 1;
     }
     // render bitmap on screen :
@@ -96,6 +97,7 @@ int main()
             lcd.drawPixel(x, y, face->glyph->bitmap.buffer[y * face->glyph->bitmap.width + x]);
         }
     }
+free:
     // free memory
     FT_Done_Face(face);
     FT_Done_FreeType(library);
