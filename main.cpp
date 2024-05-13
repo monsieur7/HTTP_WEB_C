@@ -99,12 +99,21 @@ int main()
         FT_Done_FreeType(library);
         return 1;
     }
+    // render glyph :
+    if (FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL))
+    {
+        std::cerr << "Error while rendering glyph" << std::endl;
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
+        return 1;
+    }
+
     // render bitmap on screen :
     for (unsigned int y = 0; y < face->glyph->bitmap.rows; y++)
     {
         for (unsigned int x = 0; x < face->glyph->bitmap.width; x++)
         {
-            lcd.drawPixel(x, y, face->glyph->bitmap.buffer[y * face->glyph->bitmap.width + x]);
+            lcd.drawPixel(x, y, lcd.color565(face->glyph->bitmap.buffer[y * face->glyph->bitmap.width + x]));
         }
     }
     std::cerr << "cleaning up" << std::endl;

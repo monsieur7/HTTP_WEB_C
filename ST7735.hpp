@@ -109,6 +109,7 @@ public:
     void drawPixel(uint8_t x, uint8_t y, uint16_t colour);
     void drawFullScreen(uint16_t *buffer);
     uint16_t color565(uint8_t r, uint8_t g, uint8_t b);
+    uint16_t color565(uint8_t grayscale);
 };
 
 #endif // ST7735_HPP
