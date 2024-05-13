@@ -36,12 +36,10 @@ void textLCD::addCharacter(wchar_t c)
             throw std::runtime_error("Error loading character");
         }
         FT_GlyphSlot g = _face->glyph;
-        FT_Glyph glyph;
-        FT_Get_Glyph(g, &glyph);
         charRepresentation cr;
         cr.width = g->bitmap.width;
         cr.height = g->bitmap.rows;
-        FT_Glyph_Get_BBox(glyph, FT_GLYPH_BBOX_TRUNCATE, &cr.bbox); // Get bounding box
+        FT_Outline_Get_BBox(&g->outline, &cr.bbox); // Get bounding box
         // metrics :
         cr.advance_x = g->advance.x >> 6;
         cr.advance_y = g->advance.y >> 6;
@@ -53,6 +51,7 @@ void textLCD::addCharacter(wchar_t c)
         }
         _characters[c] = cr;
     }
+    // TODO : https://stackoverflow.com/questions/53267905/calculating-position-for-freetype-glyph-rendering
 }
 
 void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
