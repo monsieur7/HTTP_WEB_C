@@ -1,0 +1,45 @@
+This is ApacheBench, Version 2.3 <$Revision: 1879490 $>
+Copyright 1996 Adam Twiss, Zeus Technology Ltd, http://www.zeustech.net/
+Licensed to The Apache Software Foundation, http://www.apache.org/
+
+Benchmarking raspberrypi-fr.local (be patient)
+
+
+Server Software:        
+Server Hostname:        raspberrypi-fr.local
+Server Port:            8081
+SSL/TLS Protocol:       TLSv1.2,ECDHE-RSA-AES128-GCM-SHA256,2048,128
+Server Temp Key:        X25519 253 bits
+TLS Server Name:        raspberrypi-fr.local
+
+Document Path:          /
+Document Length:        686 bytes
+
+Concurrency Level:      5
+Time taken for tests:   98.243 seconds
+Complete requests:      1000
+Failed requests:        0
+Total transferred:      786000 bytes
+HTML transferred:       686000 bytes
+Requests per second:    10.18 [#/sec] (mean)
+Time per request:       491.214 [ms] (mean)
+Time per request:       98.243 [ms] (mean, across all concurrent requests)
+Transfer rate:          7.81 [Kbytes/sec] received
+
+Connection Times (ms)
+              min  mean[+/-sd] median   max
+Connect:      111  289 101.8    274    1280
+Processing:    13  199 106.4    196     660
+Waiting:       11  175 101.3    173     653
+Total:        149  488 119.0    466    1556
+
+Percentage of the requests served within a certain time (ms)
+  50%    466
+  66%    491
+  75%    528
+  80%    557
+  90%    639
+  95%    700
+  98%    778
+  99%    831
+ 100%   1556 (longest request)

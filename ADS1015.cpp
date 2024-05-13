@@ -11,7 +11,6 @@
 // TODO : set address before all the operations
 ADS1015::ADS1015(uint8_t address)
 {
-
     _address = address;
     char filename[20];
     int adapter_nr = 1; // I2C bus 1
@@ -31,6 +30,15 @@ ADS1015::ADS1015(uint8_t address)
 
         // Throw an exception or handle the error appropriately
     }
+}
+
+void ADS1015::init()
+{
+    _config.reg = CONFIG_REGISTER_MODE_CONTINUOUS |
+                  CONFIG_REGISTER_OS_ON | CONFIG_REGISTER_MUX_AIN0_GND |
+                  CONFIG_REGISTER_PGA_6144V | CONFIG_REGISTER_DR_1600SPS |
+                  CONFIG_REGISTER_COMP_QUE_DISABLE;
+    setConfig(_config);
 }
 
 void ADS1015::writeRegister(uint8_t reg, uint16_t value)
@@ -139,3 +147,5 @@ float ADS1015::readVoltage(bool continuous) // in continuous mode !
     std::cerr << "ADC gain : " << gainV << std::endl;
     return (voltage * gainV) / 2048.0f;
 }
+
+
