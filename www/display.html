@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>LCD Display Control</title>
+</head>
+<body>
+    <h1>LCD Display Control</h1>
+    <select id="sensorSelect" onchange="handleSensorSelect()">
+        <option value="message">Message</option>
+        <option value="temperature">Temperature</option>
+        <option value="humidity">Humidity</option>
+        <option value="pressure">Pressure</option>
+        <option value="light">Light</option>
+        <option value="proximity">Proximity</option>
+    </select>
+    <input type="text" id="messageInput" placeholder="Enter message...">
+    <div class="input-container">
+        <label for="scale">Size:</label><br>
+        <input type="number" id="scale" name="scale" value="24"><br>
+    </div>
+    <label for="color">Color (RGB):</label><br>
+    <input type="color" id="color" name="color" value="#ffffff"><br>
+    <label for="speed">Speed:</label><br>
+    <input type="number" id="speed" name="speed" value="1"><br>
+    <button onclick="sendMessage()">Display Message</button>
+    
+
+    <button id="back-button">Retour</button>
+
+    <script>
+        function hexToRgb(hex){
+            hex = hex.replace("#","");
+
+            var r = parseInt(hex.substring(0,2), 16);
+            var g = parseInt(hex.substring(2,4), 16);
+            var b = parseInt(hex.substring(4,6), 16);
+
+            return [r,g,b];
+        }
+        function handleSensorSelect() {
+            var sensorSelect = document.getElementById("sensorSelect");
+            var messageInput = document.getElementById("messageInput");
+    
+            if (sensorSelect.value === "message") {
+                messageInput.style.display = "block";
+            } else {
+                messageInput.style.display = "none";
+            }
+        }
+        function fetchSensor(sensor) {
+            return fetch("https://raspberrypi-fr.local:8050/"+sensor)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    var value = data.value;
+                    var unit = data.unit;
+                    value = value + unit;
+                    return value;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    throw error; 
+                });
+        }
+        
+
+        function sendMessage() {
+            var sensor = document.getElementById("sensorSelect").value;
+            var scale = parseInt(document.getElementById("scale").value);
+            var speed = parseInt(document.getElementById("speed").value);
+            var color = document.getElementById("color").value;
+        
+            var message = "";
+            if(sensor === "message") {
+                message = document.getElementById("messageInput").value;
+                sendDataToDisplay(message, scale, color, speed);
+            }
+            else  {
+                fetchSensor(sensor)
+                    .then(value => {
+                        message = sensor+": "+ value;
+                        sendDataToDisplay(message, scale, color, speed);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+            }
+        }
+        
+        // Function to send data to the display
+        function sendDataToDisplay(message, scale, color, speed) {
+            // Convert color from hex to RGB
+            var colorArray = hexToRgb(color);
+            
+            // Create an object containing the message data
+            var data = {
+                "message": message,
+                "scale": scale,
+                "color": colorArray,
+                "speed": speed
+            };
+        
+            // Send a POST request to the server with the JSON data
+            fetch("https://raspberrypi-fr.local:8050/display", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                // Handle success response here if needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error here if needed
+            });
+        }
+        document.getElementById('back-button').addEventListener('click', function() {
+            // Redirection vers la page précédente
+            history.back();
+        });
+        
+    </script>
+    
+</body>
+</html>

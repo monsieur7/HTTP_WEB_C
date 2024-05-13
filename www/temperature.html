@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Temperature Sensor Details</title>
+</head>
+<body>
+    <h1>Temperature Sensor Details</h1>
+    
+    <!-- Conteneur pour les détails du capteur de température -->
+    <div id="temperature-details">
+        <h2>Temperature</h2>
+        <p id="temperature-value">Loading...</p>
+        <p id="temperature-date">Loading...</p>
+        <p id="temperature-frequency">Loading...</p>
+    </div>
+    <button id="back-button">Retour</button>
+
+    <script>
+        let frequency=10;
+        // Fonction pour récupérer les données du capteur de température via une requête AJAX
+        function getTemperatureData() {
+            fetch('https://raspberrypi-fr.local:8050/temperature')
+                .then(response => response.json())
+                .then(data => {
+                    // Affichage des données dans la page HTML
+                    document.getElementById('temperature-value').textContent = `Value: ${data.value}°C`;
+                    document.getElementById('temperature-date').textContent = `Date: ${data.timestamp}`;
+                    document.getElementById('temperature-frequency').textContent = `Frequency: ${data.frequency} Hz`;
+                    frequency = parseInt(data.frequency)
+                })
+                .catch(error => console.error('Error fetching temperature data:', error));
+
+        }
+
+        // Appel initial de la fonction pour obtenir les données dès que la page est chargée
+        getTemperatureData();
+
+        // Récupération des données du capteur de température toutes les secondes
+        setInterval(getTemperatureData, 1000/frequency);
+
+        // Ajout d'un écouteur d'événements pour le bouton de retour
+        document.getElementById('back-button').addEventListener('click', function() {
+            // Redirection vers la page précédente
+            history.back();
+        });
+    </script>
+</body>
+</html>

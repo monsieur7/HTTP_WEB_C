@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro Details</title>
+    <link rel="stylesheet" href="style/style.css">
+</head>
+<body>
+    <h1>Micro Details</h1>
+
+    <h2>Microphone Control</h2>
+    <p>Click the button below to start recording:</p>
+    
+    <button onclick="record()">Start Recording</button>
+    <button id="back-button">Retour</button>
+    
+    <audio controls id="audio-display">
+        <source src="" type="audio/wav" id="audio-display-source">
+    </audio>
+
+    <script>
+        document.getElementById('back-button').addEventListener('click', function() {
+            history.back();
+        });
+        function record() {
+            fetch('https://raspberrypi-fr.local:8050/mic/record', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                checkJobStatus(data.job_id, data.filename);
+            }).catch(error => {
+                console.error(error);
+            });
+
+    }
+    function checkJobStatus(jobId, filename) {
+        fetch('https://raspberrypi-fr.local:8050/job/'+jobId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+            if (data.status === 'finished') {
+                document.getElementById('audio-display-source').src = 'https://raspberrypi-fr.local:8050/'+filename
+                document.getElementById('audio-display').load();
+            } else {
+                setTimeout(() => {
+                    checkJobStatus(jobId, filename);
+                }, 1000);
+            }
+        }).catch(error => {
+            console.error(error);
+        });
+    }
+    </script>
+</body>
+</html>

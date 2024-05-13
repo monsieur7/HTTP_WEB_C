@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang ="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style/style.css">
+    </head>
+    <title>Pressure Sensor Details</title>
+</head>
+<body>
+    <h1>Pressure Sensor Details</h1>
+    
+    <!-- Conteneur pour les détails du capteur de température -->
+    <div id="pressure-details">
+        <h2>Pressure</h2>
+        <p id="pressure-value">Loading...</p>
+        <p id="pressure-date">Loading...</p>
+        <p id="pressure-frequency">Loading...</p>
+    </div>
+    <button id="back-button">Retour</button>
+
+    <script>
+        let frequency=10;
+        // Fonction pour récupérer les données du capteur de température via une requête AJAX
+        function getPressureData() {
+            fetch('https://raspberrypi-fr.local:8050/pressure')
+                .then(response => response.json())
+                .then(data => {
+                    // Affichage des données dans la page HTML
+                    document.getElementById('pressure-value').textContent = `Value: ${data.value} mbar`;
+                    document.getElementById('pressure-date').textContent = `Date: ${data.timestamp}`;
+                    document.getElementById('pressure-frequency').textContent = `Frequency: ${data.frequency} Hz`;
+                    frequency = parseInt(data.frequency)
+                })
+                .catch(error => console.error('Error fetching humidity data:', error));
+
+        }
+
+        // Appel initial de la fonction pour obtenir les données dès que la page est chargée
+        getPressureData();
+
+        // Récupération des données du capteur de température toutes les secondes
+        setInterval(getPressureData, 1000/frequency);
+
+        // Ajout d'un écouteur d'événements pour le bouton de retour
+        document.getElementById('back-button').addEventListener('click', function() {
+            // Redirection vers la page précédente
+            history.back();
+        });
+    </script>
+</body>
+</html>

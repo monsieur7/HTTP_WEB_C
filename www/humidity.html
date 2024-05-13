@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang ="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style/style.css">
+    </head>
+    <title>Humidity Sensor Details</title>
+</head>
+<body>
+    <h1>Humidity Sensor Details</h1>
+    
+    <div id="humidity-details">
+        <h2>Humidity</h2>
+        <p id="humidity-value">Loading...</p>
+        <p id="humidity-date">Loading...</p>
+        <p id="humidity-frequency">Loading...</p>
+    </div>
+    <button id="back-button">Retour</button>
+
+    <script>
+        let frequency=10;
+        function getHumidityData() {
+            fetch('https://raspberrypi-fr.local:8050/humidity')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('humidity-value').textContent = `Value: ${data.value}%`;
+                    document.getElementById('humidity-date').textContent = `Date: ${data.timestamp}`;
+                    document.getElementById('humidity-frequency').textContent = `Frequency: ${data.frequency} Hz`;
+                    frequency = parseInt(data.frequency)
+                })
+                .catch(error => console.error('Error fetching humidity data:', error));
+
+        }
+
+        getHumidityData();
+
+        setInterval(getHumidityData, 1000/frequency);
+
+        document.getElementById('back-button').addEventListener('click', function() {
+            history.back();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Light Sensor Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Light Details</h1>
+        
+        <!-- Conteneur pour les détails du capteur de lumière -->
+        <div id="light-details">
+            <h2>Light</h2>
+            <p id="light-value">Loading...</p>
+            <p id="light-date">Loading...</p>
+            <p id="light-frequency">Loading...</p>
+        </div>
+        <div id="proxi-details">
+            <h2>Proximity</h2>
+            <p id="proxi-value">Loading...</p>
+            <p id="proxi-date">Loading...</p>
+            <p id="proxi-frequency">Loading...</p>
+        </div>
+
+        <!-- Bouton Retour -->
+        <button id="back-button">Retour</button>
+    </div>
+
+    <script>
+        let frequency=20;
+        // Récupération des données du capteur de lumière
+        function getLightData() {
+            fetch('https://raspberrypi-fr.local:8050/light', {headers: {'Accept': 'application/json'}})
+                .then(response => response.json())
+                .then(data => {
+                    // Affichage des données dans la page
+                    document.getElementById('light-value').textContent = `Value: ${data.value} Lux`;
+                    document.getElementById('light-date').textContent = `Date: ${data.timestamp}`;
+                    document.getElementById('light-frequency').textContent = `Frequency: ${data.frequency} Hz`;
+                    frequency = parseInt(data.frequency)
+                })
+                .catch(error => console.error('Error fetching temperature data:', error));
+                
+        }
+        function getProxiData(){
+            fetch('https://raspberrypi-fr.local:8050/proximity', {headers: {'Accept': 'application/json'}})
+                .then(response => response.json())
+                .then(data => {
+                    // Affichage des données dans la page
+                    document.getElementById('proxi-value').textContent = `Value: ${data.value}`;
+                    document.getElementById('proxi-date').textContent = `Date: ${data.timestamp}`;
+                    document.getElementById('proxi-frequency').textContent = `Frequency: ${data.frequency} Hz`;
+                    frequency = parseInt(data.frequency)
+                })
+                .catch(error => console.error('Error fetching temperature data:', error));
+        }
+        getLightData();
+        setInterval(getLightData,1000/frequency);
+        getProxiData();
+        setInterval(getProxiData,1000/frequency);
+
+        // Ajout d'un gestionnaire d'événements pour le bouton Retour
+        document.getElementById('back-button').addEventListener('click', function() {
+            // Redirection vers la page précédente
+            history.back();
+        });
+    </script>
+</body>
+</html>
