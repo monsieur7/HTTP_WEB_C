@@ -69,7 +69,6 @@ void textLCD::addCharacter(wchar_t c)
 
 void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
 {
-    FT_Set_Pixel_Sizes(_face, 0, size); // set the size of the font
     for (auto c : text)
     {
         addCharacter(c);
