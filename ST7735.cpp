@@ -65,6 +65,10 @@ ST7735::ST7735(std::string spidev, std::string chipname, uint8_t spi_bits_per_wo
             throw std::runtime_error("Error requesting GPIO line");
         }
     }
+    else
+    {
+        this->_rst_line = NULL;
+    }
     // bl
     this->_bl_line = gpiod_chip_get_line(this->_chip, bl_line);
     if (!this->_bl_line)
@@ -90,7 +94,10 @@ ST7735::~ST7735()
 {
     close(this->_spi_fd);
     gpiod_line_release(this->_dc_line);
-    gpiod_line_release(this->_rst_line);
+    if (this->_rst_line != NULL)
+    {
+        gpiod_line_release(this->_rst_line);
+    }
     gpiod_line_release(this->_bl_line);
     gpiod_chip_close(this->_chip);
 }
