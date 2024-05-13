@@ -13,26 +13,7 @@ textLCD::textLCD(std::string font_path, int pixel_size, ST7735 *lcd) : _lcd(lcd)
     FT_Set_Pixel_Sizes(_face, 0, pixel_size);
     for (wchar_t c = 0; c < 128; c++)
     {
-        if (FT_Load_Char(_face, c, FT_LOAD_RENDER))
-        {
-            throw std::runtime_error("Error loading character");
-        }
-        FT_GlyphSlot g = _face->glyph;
-        charRepresentation cr;
-        cr.width = g->bitmap.width;
-        cr.height = g->bitmap.rows;
-        cr.bearing_x = g->bitmap_left;
-        cr.bearing_y = g->bitmap_top;
-        cr.advance_x = g->advance.x >> 6; // because it is in 1/64th of a pixel
-        cr.advance_y = g->advance.y >> 6;
-        cr.bitmap_top = g->bitmap_top;
-        cr.bitmat_left = g->bitmap_left;
-        cr.bitmap = new unsigned char[cr.width * cr.height];
-        for (unsigned int i = 0; i < cr.width * cr.height; i++)
-        {
-            cr.bitmap[i] = g->bitmap.buffer[i];
-        }
-        _characters[c] = cr;
+        addCharacter(c);
     }
 }
 
@@ -60,8 +41,6 @@ void textLCD::addCharacter(wchar_t c)
         cr.height = g->bitmap.rows;
         cr.bitmat_left = g->bitmap_left;
         cr.bitmap_top = g->bitmap_top;
-        cr.bearing_x = g->bitmap_left;
-        cr.bearing_y = g->bitmap_top;
         cr.advance_x = g->advance.x >> 6; // because it is in 1/64th of a pixel
         cr.advance_y = g->advance.y >> 6;
         cr.bitmap = new unsigned char[cr.width * cr.height];
@@ -96,7 +75,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
                 if (cr.bitmap[j * cr.width + i] > 0)
                 {
                     current_x = x + offset_x + i + cr.bitmat_left;
-                    current_y = y + offset_y + j - cr.bitmap_top; // see https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
+                    current_y = y + offset_y + j + cr.bitmap_top; // see https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.width + i]);
                     _lcd->drawPixel(current_x, current_y, _lcd->color565(color_alpha));
                 }
