@@ -36,12 +36,13 @@ void textLCD::addCharacter(wchar_t c)
             throw std::runtime_error("Error loading character");
         }
         FT_GlyphSlot g = _face->glyph;
+        FT_Glyph glyph;
+        FT_Get_Glyph(g, &glyph);
         charRepresentation cr;
         cr.width = g->bitmap.width;
         cr.height = g->bitmap.rows;
-        cr.bitmat_left = g->bitmap_left;
-        cr.bitmap_top = g->bitmap_top;
-        cr.advance_x = g->advance.x >> 6; // because it is in 1/64th of a pixel
+        FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_TRUNCATE, &cr.bbox); // Get bounding box
+        cr.advance_x = g->advance.x >> 6;
         cr.advance_y = g->advance.y >> 6;
         cr.bitmap = new unsigned char[cr.width * cr.height];
         for (unsigned int i = 0; i < cr.width * cr.height; i++)
@@ -58,8 +59,6 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
     {
         addCharacter(c);
     }
-    int offset_x = 0, offset_y = 0;
-    int current_x = x, current_y = y;
     for (auto c : text)
     {
         if (_characters.find(c) == _characters.end())
@@ -67,21 +66,28 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
             addCharacter(c);
         }
         charRepresentation cr = _characters[c];
-        std::wcerr << "char " << c << " bitmap left : " << cr.bitmat_left << " bitmap top : " << cr.bitmap_top << std::endl;
+        std::wcerr << "Drawing character " << c << " at " << x << ", " << y << " metrics : " << cr.width << "x" << cr.height << " advance : " << cr.advance_x << "x" << cr.advance_y << std::endl;
+
+        // Calculate the position based on glyph metrics and pen position
+        int glyph_x = x + cr.bbox.xMin;
+        int glyph_y = y + cr.bbox.yMax - cr.height; // Adjust for baseline
+        // Draw the glyph
         for (unsigned int i = 0; i < cr.width; i++)
         {
             for (unsigned int j = 0; j < cr.height; j++)
             {
                 if (cr.bitmap[j * cr.width + i] > 0)
                 {
-                    current_x = x + offset_x + i + cr.bitmat_left;
-                    current_y = y + offset_y + j + cr.bitmap_top; // see https://www.freetype.org/freetype2/docs/glyphs/glyphs-3.html
+
+                    // Calculate pixel position within the LCD screen
+                    int pixel_x = glyph_x + i;
+                    int pixel_y = glyph_y + j;
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.width + i]);
-                    _lcd->drawPixel(current_x, current_y, _lcd->color565(color_alpha));
+                    _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
                 }
             }
         }
-        offset_x += (cr.advance_x);
-        offset_y += (cr.advance_y);
+        x += (cr.advance_x);
+        x += (cr.advance_y);
     }
 }

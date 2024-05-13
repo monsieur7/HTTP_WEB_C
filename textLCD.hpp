@@ -1,6 +1,8 @@
 #include <ft2build.h>
-#include <codecvt>
 #include FT_FREETYPE_H
+#include FT_GLYPH_H
+#include <codecvt>
+
 #include <map>
 #include "ST7735.hpp"
 #include <iostream>
@@ -25,9 +27,8 @@ struct charRepresentation
 {
     unsigned int width;
     unsigned int height;
+    unsigned char *bitmap;
+    FT_BBox bbox;
     unsigned int advance_x;
     unsigned int advance_y;
-    unsigned char *bitmap;
-    unsigned int bitmat_left;
-    unsigned int bitmap_top;
 };
