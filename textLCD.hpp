@@ -29,4 +29,6 @@ struct charRepresentation
     unsigned int advance_x;
     unsigned int advance_y;
     unsigned char *bitmap;
+    unsigned int bitmat_left;
+    unsigned int bitmap_top;
 };

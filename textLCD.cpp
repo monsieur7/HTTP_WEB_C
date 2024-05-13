@@ -23,7 +23,10 @@ textLCD::textLCD(std::string font_path, int pixel_size, ST7735 *lcd) : _lcd(lcd)
         cr.height = g->bitmap.rows;
         cr.bearing_x = g->bitmap_left;
         cr.bearing_y = g->bitmap_top;
-        cr.advance = g->advance.x >> 6;
+        cr.advance_x = g->advance.x >> 6; // because it is in 1/64th of a pixel
+        cr.advance_y = g->advance.y >> 6;
+        cr.bitmap_top = g->bitmap_top;
+        cr.bitmat_left = g->bitmap_left;
         cr.bitmap = new unsigned char[cr.width * cr.height];
         for (unsigned int i = 0; i < cr.width * cr.height; i++)
         {
@@ -55,6 +58,8 @@ void textLCD::addCharacter(wchar_t c)
         charRepresentation cr;
         cr.width = g->bitmap.width;
         cr.height = g->bitmap.rows;
+        cr.bitmat_left = g->bitmap_left;
+        cr.bitmap_top = g->bitmap_top;
         cr.bearing_x = g->bitmap_left;
         cr.bearing_y = g->bitmap_top;
         cr.advance_x = g->advance.x >> 6; // because it is in 1/64th of a pixel
