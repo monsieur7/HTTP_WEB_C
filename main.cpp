@@ -96,6 +96,7 @@ int main()
             lcd.drawPixel(x, y, face->glyph->bitmap.buffer[y * face->glyph->bitmap.width + x]);
         }
     }
+    std::cerr << "cleaning up" << std::endl;
 free:
     // free memory
     FT_Done_Face(face);
