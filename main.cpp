@@ -26,19 +26,6 @@ int main()
     ST7735 lcd = ST7735("/dev/spidev0.1", "gpiochip0", 8, 10000000, 9, -1, 12, 80, 160); // 80x160 (because its rotated !)
 
     lcd.init();
-    // color test :
-    for (int r = 0; r < 255; r += 10)
-    {
-        for (int g = 0; g < 255; g += 10)
-        {
-            for (int b = 0; b < 255; b += 10)
-            {
-                lcd.fillScreen(lcd.color565(r, g, b));
-                usleep(1);
-                std::cerr << "Color : " << r << " " << g << " " << b << std::endl;
-            }
-        }
-    }
 
     lcd.fillScreen(ST7735_RED);
     // pause
