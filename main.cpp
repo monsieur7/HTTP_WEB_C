@@ -13,6 +13,7 @@
 #include "MICS6814.hpp"
 
 #include <ft2build.h>
+#include <codecvt>
 #include FT_FREETYPE_H
 int main()
 {
@@ -74,19 +75,28 @@ int main()
     if (error == FT_Err_Unknown_File_Format)
     {
         std::cerr << "Error while loading font file" << std::endl;
-        goto free; // as per kernel coding style !
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
+        return 1;
     }
     else if (error)
     {
         std::cerr << "Error while loading font file" << std::endl;
-        goto free; // as per kernel coding style !
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
+        return 1;
     }
+
     FT_Set_Pixel_Sizes(face, 0, 12);
     // load caracter A
-    if (FT_Load_Char(face, 'a', FT_LOAD_RENDER))
+    wchar_t character = L'A';
+    FT_UInt glyph_index = FT_Get_Char_Index(face, character);
+    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER))
     {
         std::cerr << "Error while loading character" << std::endl;
-        goto free; // as per kernel coding style !
+        FT_Done_Face(face);
+        FT_Done_FreeType(library);
+        return 1;
     }
     // render bitmap on screen :
     for (unsigned int y = 0; y < face->glyph->bitmap.rows; y++)
@@ -97,7 +107,6 @@ int main()
         }
     }
     std::cerr << "cleaning up" << std::endl;
-free:
     // free memory
     FT_Done_Face(face);
     FT_Done_FreeType(library);
