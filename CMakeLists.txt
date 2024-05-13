@@ -15,12 +15,6 @@ set(SOURCES main.cpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
 set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-# link against boost :
-find_package(Boost 1.58.0 COMPONENTS system REQUIRED)
-include_directories(${Boost_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a -O2")
-
 # link against openssl :
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
