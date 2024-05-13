@@ -74,7 +74,7 @@ int main()
         FT_Done_FreeType(library);
         return 1;
     }
-    error = FT_New_Face(library, "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 0, &face);
+    error = FT_New_Face(library, "../arial.ttf", 0, &face);
     if (error == FT_Err_Unknown_File_Format)
     {
         std::cerr << "Error while loading font file" << std::endl;
