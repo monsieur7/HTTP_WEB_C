@@ -42,8 +42,12 @@ void textLCD::addCharacter(wchar_t c)
         cr.width = g->bitmap.width;
         cr.height = g->bitmap.rows;
         FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_TRUNCATE, &cr.bbox); // Get bounding box
+        // metrics :
         cr.advance_x = g->advance.x >> 6;
         cr.advance_y = g->advance.y >> 6;
+        int advance = g->metrics.horiAdvance >> 6;
+        cr.x_offset = (advance - (g->metrics.width >> 6)) / 2;
+        cr.y_offset = (cr.bbox.yMax - (g->metrics.horiBearingY >> 6));
         cr.bitmap = new unsigned char[cr.width * cr.height];
         for (unsigned int i = 0; i < cr.width * cr.height; i++)
         {
@@ -69,19 +73,17 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
         std::wcerr << "Drawing character " << c << " at " << x << ", " << y << " metrics : " << cr.width << "x" << cr.height << " advance : " << cr.advance_x << "x" << cr.advance_y << std::endl;
 
         // Calculate the position based on glyph metrics and pen position
-        int glyph_x = x + cr.bbox.xMin;
-        int glyph_y = y + cr.bbox.yMax - cr.height; // Adjust for baseline
         // Draw the glyph
+        // see https://kevinboone.me/fbtextdemo.html
         for (unsigned int i = 0; i < cr.width; i++)
         {
             for (unsigned int j = 0; j < cr.height; j++)
             {
                 if (cr.bitmap[j * cr.width + i] > 0)
                 {
-
                     // Calculate pixel position within the LCD screen
-                    int pixel_x = glyph_x + i;
-                    int pixel_y = glyph_y + j;
+                    int pixel_x = x + i + cr.x_offset;
+                    int pixel_y = y + j + cr.y_offset;
                     uint32_t color_alpha = _lcd->alpha_blending(color, cr.bitmap[j * cr.width + i]);
                     _lcd->drawPixel(pixel_x, pixel_y, _lcd->color565(color_alpha));
                 }
