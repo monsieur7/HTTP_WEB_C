@@ -10,13 +10,13 @@ set(SOURCES main.cpp socket.cpp socket.hpp
     parseString.cpp parseString.hpp generateHeaders.cpp
     generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp
     socketSecure.cpp socketSecure.hpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
-    ADS1015.hpp ADS1015.cpp ST7735.hpp ST7735.cpp)
-
+    ADS1015.hpp ADS1015.cpp ST7735.hpp ST7735.cpp
+    MICS6814.hpp MICS6814.cpp
+)
 
 # set MIN C++ version
 set(CMAKE_CXX_STANDARD 20)
 add_executable(${PROJECT_NAME} ${SOURCES})
-
 
 # link against boost :
 find_package(Boost 1.58.0 COMPONENTS system REQUIRED)

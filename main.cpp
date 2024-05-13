@@ -3,12 +3,12 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
+#include <bitset>
 // local include
 
 #include "BME280.hpp"
 #include "LTR559.hpp"
 #include "ADS1015.hpp"
-// #include "MICS6814.hpp"
 #include "ST7735.hpp"
 
 #include "MICS6814.hpp"
@@ -64,8 +64,6 @@ int main()
     float oxydising = mics6814.readOxydising();
     float nh3 = mics6814.readNH3();
     float reducing = mics6814.readReducing();
-
-    float lux = ltr559.getLux();
 
     // initializing BME280
     if (bme280.begin() != 0)

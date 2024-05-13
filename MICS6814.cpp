@@ -16,7 +16,7 @@ MICS6814::MICS6814()
 
     std::cerr << "Written config ADC " << std::bitset<16>(_config.reg) << std::endl;
 }
-
+float MICS6814::readOxydising()
 {
     _config.reg = (_config.reg & ~CONFIG_REGISTER_MUX_MASK) | CONFIG_REGISTER_MUX_AIN0_GND;
     _ads1015.setConfig(_config);
@@ -32,7 +32,6 @@ MICS6814::MICS6814()
 
     return oxydising;
 }
-
 
 float MICS6814::readReducing()
 {
