@@ -1,0 +1,144 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#temperature-details,#humidity-details,#pressure-details, #light-details,#proxi-details, #gas-details {
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#temperature-details h2,#humidity-details h2,#pressure-details h2,#gas-details h2, #proxi-details h2,#light-details h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#temperature-details p,#humidity-details p,#pressure-details p,#gas-details p, #light-details p, #proxi-details p {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+#temperature-details p:last-child,#humidity-details p:last-child,#pressure-details p:last-child,#gas-details p:last-child, #light-details p:last-child,#proxi-details p:last-child {
+    margin-bottom: 0;
+}
+
+#temperature-value,#humidity-value,#pressure-value,#gas-value, #light-value,#proxi-value, #oxidising, #reducing, #nh3 {
+    font-weight: bold;
+}
+
+#temperature-date,#humidity-date,#pressure-date,#gas-date, #light-date,#proxi-date {
+    font-style: italic;
+}
+
+#temperature-frequency, #humidity-frequency,#pressure-frequency,#gas-frequency,#light-frequency,#proxi-frequency {
+    font-style: italic;
+    color: #999;
+}
+
+
+input[type="text"],
+input[type="number"],
+input[type="color"],
+button {
+    display: block;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+input[type="color"] {
+    padding: 0;
+}
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .input-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px; /* Ajoute un espace en dessous du select */
+  }
+  
+  #sensorSelect {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    outline: none; /* Supprime la bordure bleue lors du focus */
+    margin-bottom: 10px; /* Ajoute un espace en dessous du select */
+  }
+  
+  #sensorSelect:hover {
+    background-color: #e0e0e0;
+  }
+  
+  #sensorSelect:focus {
+    border-color: #007bff; /* Couleur de la bordure lorsqu'il est sélectionné */
+  }
+  
+  /* Stylisation des options du select */
+  #sensorSelect option {
+    padding: 8px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  #sensorSelect option:hover {
+    background-color: #ccc;
+  }
+  
+  
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button,
+#back-button {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#back-button {
+    display: block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #ccc;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#back-button:hover {
+    background-color: #bbb;
+}

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>Gas Sensor Details</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Gas Details</h1>
+        
+        <!-- Conteneur pour les détails du capteur de lumière -->
+        <div id="gas-details">
+            <h2>Gas</h2>
+            <p id="oxidising">Loading...</p>
+            <p id="reducing">Loading...</p>
+            <p id="nh3">Loading...</p>
+            <p id="gas-date">Loading...</p>
+        </div>
+
+        <!-- Bouton Retour -->
+        <button id="back-button">Retour</button>
+    </div>
+
+    <script>
+        // Récupération des données du capteur de lumière
+        function getGas() {
+            fetch('https://raspberrypi-fr.local:8050/gas', {headers: {'Accept': 'application/json'}})
+                .then(response => response.json())
+                .then(data => {
+                    // Affichage des données dans la page
+                    document.getElementById('oxidising').textContent = `Oxidising: ${data.oxidising} Ohms`;
+                    document.getElementById('reducing').textContent = `Reducing: ${data.reducing} Ohms`;
+                    document.getElementById('nh3').textContent = `NH3: ${data.nh3} Ohms`;
+                    document.getElementById('gas-date').textContent = `Date: ${data.timestamp}`;
+                })
+                .catch(error => console.error('Error fetching temperature data:', error));
+                
+        }
+
+            getGas();
+            setInterval(getGas,100);
+
+        // Ajout d'un gestionnaire d'événements pour le bouton Retour
+        document.getElementById('back-button').addEventListener('click', function() {
+            // Redirection vers la page précédente
+            history.back();
+        });
+    </script>
+</body>
+</html>

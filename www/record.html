@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/style/style.css">
+    <title>Record Microphone</title>
+</head>
+<body>
+    <h1>Record Microphone</h1>
+    <button id="recordButton">Start Recording</button>
+    <audio controls id="audioPlayer" style="display: none;"></audio>
+    <button id="back-button">Retour</button>
+
+    <script>
+        document.getElementById('recordButton').addEventListener('click', function() {
+            fetch('https://raspberrypi-fr.local:8050/mic/record')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to start recording');
+                    }
+                    // Stream audio data to audio element
+                    return response.blob();
+                })
+                .then(blob => {
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    const audioURL = URL.createObjectURL(blob);
+                    audioPlayer.src = audioURL;
+                    audioPlayer.style.display = 'block';
+                    audioPlayer.play();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to start recording');
+                });
+        });
+
+        document.getElementById('back-button').addEventListener('click', function() {
+            history.back();
+        });
+    </script>
+</body>
+</html>
