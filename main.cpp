@@ -34,7 +34,7 @@ int main()
             for (int b = 0; b < 255; b += 10)
             {
                 lcd.fillScreen(lcd.color565(r, g, b));
-                usleep(100);
+                usleep(1);
                 std::cerr << "Color : " << r << " " << g << " " << b << std::endl;
             }
         }
