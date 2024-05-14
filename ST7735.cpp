@@ -320,3 +320,21 @@ uint32_t ST7735::alpha_blending(uint32_t color, uint8_t alpha)
     b = (b * alpha) / 255;
     return (r << 16) | (g << 8) | b;
 }
+// TODO optimize this function
+void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, size_t height, size_t width)
+{
+    for (int i = 0; i < height; i++)
+    {
+        for (int j = 0; j < width; j++)
+        {
+            if (buffer[i * width + j] == 0)
+            {
+                drawPixel(j, i, bg_color);
+            }
+            else
+            {
+                drawPixel(j, i, color);
+            }
+        }
+    }
+}
