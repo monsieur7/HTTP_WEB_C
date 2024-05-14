@@ -9,7 +9,11 @@ textLCD::textLCD(std::string font_path, int pixel_size, ST7735 *lcd) : _lcd(lcd)
     {
         throw std::runtime_error("Error loading font");
     }
-    FT_Set_Pixel_Sizes(_face, 0, pixel_size);
+    FT_Set_Char_Size(_face, 0, pixel_size * 64, 300, 300); // * 64 to convert to 26.6 fixed point
+    if (FT_Select_Charmap(_face, FT_ENCODING_UNICODE))
+    {
+        throw std::runtime_error("Error setting charmap");
+    }
 }
 
 textLCD::~textLCD()
@@ -24,6 +28,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
     unsigned int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
     wchar_t previous_char = NULL;
+    // taken from python code : #https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py
 
     for (wchar_t c : text)
     {
