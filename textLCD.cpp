@@ -71,7 +71,11 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         FT_Bitmap &bitmap = g->bitmap;
         int y_offset = height - baseline - g->bitmap_top;
         std::wcerr << "char " << c << " y_offset : " << y_offset << " bitmap_top : " << g->bitmap_top << " bitmap_left : " << g->bitmap_left << std::endl;
-
+        if (y_offset < 0)
+        {
+            y_offset = 0;
+            std::cerr << "y_offset < 0" << std::endl;
+        }
         if (previous_char != NULL)
         {
             FT_Vector kerning;
