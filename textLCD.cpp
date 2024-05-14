@@ -36,10 +36,12 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         }
         // get bbox :
         FT_BBox bbox;
-        FT_Glyph_Get_CBox(g, FT_GLYPH_BBOX_PIXELS, &bbox);
+        FT_Glyph glyph;
+        FT_Get_Glyph(g, &glyph);
+        FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
 
-        baseline = std::max(baseline, -(bbox.yMin >> 6));
-        height = std::max(height, (bbox.yMax - bbox.yMin) >> 6);
+        baseline = std::max(baseline, (FT_Int)(-(bbox.yMin >> 6)));
+        height = std::max(height, (FT_Int)(bbox.yMax - bbox.yMin) >> 6);
 
         if (previous_char != NULL)
         {
