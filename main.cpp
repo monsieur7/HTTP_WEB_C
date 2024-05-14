@@ -62,6 +62,7 @@ int main()
     textLCD textlcd = textLCD("../arial.ttf", 12, &lcd);
     std::stringstream ss;
     ss << "Temperature : " << std::setprecision(2) << temperature << " °C";
+    // convert to wstring
     std::string textUTF8 = ss.str();
     std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
     std::wstring text = converter.from_bytes(textUTF8);
