@@ -34,9 +34,12 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         {
             throw std::runtime_error("Error loading character");
         }
+        // get bbox :
+        FT_BBox bbox;
+        FT_Glyph_Get_CBox(g, FT_GLYPH_BBOX_PIXELS, &bbox);
 
-        baseline = std::max(baseline, std::max((FT_Int)0, -(g->bitmap_top - (FT_Int)g->bitmap.rows)));
-        height = std::max(height, (FT_Int)g->bitmap.rows + baseline);
+        baseline = std::max(baseline, -(bbox.yMin >> 6));
+        height = std::max(height, (bbox.yMax - bbox.yMin) >> 6);
 
         if (previous_char != NULL)
         {
