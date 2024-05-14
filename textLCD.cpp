@@ -14,8 +14,6 @@ textLCD::textLCD(std::string font_path, int pixel_size, ST7735 *lcd) : _lcd(lcd)
     {
         throw std::runtime_error("Error setting charmap");
     }
-    // set lcd filter :
-    FT_Library_SetLcdFilter(_ft, FT_LCD_FILTER_LIGHT);
 }
 
 textLCD::~textLCD()
