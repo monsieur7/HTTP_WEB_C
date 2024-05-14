@@ -56,7 +56,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
     {
         FT_Load_Char(_face, c, FT_LOAD_RENDER);
         FT_Bitmap bitmap = g->bitmap;
-        y = height - (g->bitmap_top - baseline);
+        y = height - baseline - g->bitmap_top;
         if (g->bitmap_left < 0 && ct == 0)
         {
             x += g->bitmap_left; // first char
@@ -74,7 +74,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
         {
             for (unsigned int j = 0; j < bitmap.width; j++)
             {
-                buffer[(y + i) * g->bitmap.rows + (g->bitmap_left + x + j)] = bitmap.buffer[i * bitmap.rows + j];
+                buffer[(y + i) * g->bitmap.width + (g->bitmap_left + x + j)] = bitmap.buffer[i * bitmap.width + j];
             }
         }
         x += g->advance.x >> 6;
