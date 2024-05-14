@@ -21,7 +21,7 @@ textLCD::~textLCD()
     FT_Done_Face(_face);
     FT_Done_FreeType(_ft);
 }
-void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
+void textLCD::drawText(std::wstring text, int x, int y, uint32_t color, uint32_t bg_color)
 {
     FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
