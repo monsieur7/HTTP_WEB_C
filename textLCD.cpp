@@ -25,7 +25,7 @@ textLCD::~textLCD()
 void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
 
 {
-    unsigned int baseline = 0, height = 0, width = 0;
+    FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
     wchar_t previous_char = NULL;
     // taken from python code : #https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py
@@ -34,8 +34,8 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
     {
 
         FT_Load_Char(_face, c, FT_LOAD_RENDER);
-        baseline = std::max(baseline, std::max(0u, -(g->bitmap_top - g->bitmap.rows)));
-        height = std::max(height, g->bitmap.rows + baseline);
+        baseline = std::max(baseline, std::max((FT_Int)0, -(g->bitmap_top - (FT_Int)g->bitmap.rows)));
+        height = std::max(height, (FT_Int)g->bitmap.rows + baseline);
         std::wcerr << "char " << c << " height : " << height << " baseline : " << baseline << " bitmap_top : " << g->bitmap_top << " bitmap.rows : " << g->bitmap.rows << std::endl;
         if (previous_char != NULL)
         {
