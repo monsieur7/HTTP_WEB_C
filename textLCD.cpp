@@ -70,7 +70,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
 
         FT_Bitmap &bitmap = g->bitmap;
         int y_offset = height - baseline - g->bitmap_top;
-        std::cerr << "char " << c << " y_offset : " << y_offset << " bitmap_top : " << g->bitmap_top << " bitmap_left : " << g->bitmap_left << std::endl;
+        std::wcerr << "char " << c << " y_offset : " << y_offset << " bitmap_top : " << g->bitmap_top << " bitmap_left : " << g->bitmap_left << std::endl;
 
         if (previous_char != NULL)
         {
