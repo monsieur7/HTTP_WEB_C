@@ -4,6 +4,7 @@
 #include <fstream>
 #include <filesystem>
 #include <bitset>
+#include <sstream>
 // local include
 
 #include "BME280.hpp"
@@ -59,5 +60,7 @@ int main()
     std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
     // text printing with freeType
     textLCD textlcd = textLCD("../arial.ttf", 12, &lcd);
+    std::stringstream ss;
+    ss << "Temperature : " << std::setprecision(2) << temperature << " °C";
     textlcd.drawText(L"Temperature : " + std::to_wstring(temperature) + L" °C", 0, 0, ST7735_WHITE, ST7735_RED);
 }
