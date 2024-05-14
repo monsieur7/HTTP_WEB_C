@@ -40,9 +40,9 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         FT_Get_Glyph(g, &glyph);
         FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
 
-        baseline = std::max(baseline, (FT_Int)(-(bbox.yMin >> 6)));
+        baseline = std::max(baseline, (FT_Int)(-(bbox.yMin >> 6))); // - because yMin is negative and y axis is in reverse
         height = std::max(height, (FT_Int)(bbox.yMax - bbox.yMin) >> 6);
-
+        std::cerr << "height : " << height << " width : " << width << " baseline : " << baseline << " yMax : " << bbox.yMax << " yMin : " << bbox.yMin << std::endl;
         if (previous_char != NULL)
         {
             FT_Vector kerning;
