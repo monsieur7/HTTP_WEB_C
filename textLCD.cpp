@@ -86,7 +86,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
             {
                 if (bitmap.buffer[i * bitmap.width + j])
                 {
-                    buffer[(y_offset + i) * width + current_x + g->bitmap_left + j] = bitmap.buffer[i * bitmap.width + j];
+                    buffer.at((y_offset + i) * width + current_x + g->bitmap_left + j) = bitmap.buffer[i * bitmap.width + j];
                 }
             }
         }
