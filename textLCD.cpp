@@ -32,9 +32,11 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
 
     for (wchar_t c : text)
     {
+
         FT_Load_Char(_face, c, FT_LOAD_RENDER);
         baseline = std::max(baseline, std::max(0u, -(g->bitmap_top - g->bitmap.rows)));
         height = std::max(height, g->bitmap.rows + baseline);
+        std::cerr << "height : " << height << " baseline : " << baseline << " bitmap_top : " << g->bitmap_top << " bitmap.rows : " << g->bitmap.rows << std::endl;
         if (previous_char != NULL)
         {
             FT_Vector kerning;
