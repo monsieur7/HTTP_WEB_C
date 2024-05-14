@@ -21,65 +21,76 @@ textLCD::~textLCD()
     FT_Done_Face(_face);
     FT_Done_FreeType(_ft);
 }
-
 void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
-
 {
     FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
     wchar_t previous_char = NULL;
-    // taken from python code : #https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py
 
+    // Calculate baseline, height, and width
     for (wchar_t c : text)
     {
+        if (FT_Load_Char(_face, c, FT_LOAD_RENDER))
+        {
+            throw std::runtime_error("Error loading character");
+        }
 
-        FT_Load_Char(_face, c, FT_LOAD_RENDER);
         baseline = std::max(baseline, std::max((FT_Int)0, -(g->bitmap_top - (FT_Int)g->bitmap.rows)));
         height = std::max(height, (FT_Int)g->bitmap.rows + baseline);
-        std::wcerr << "char " << c << " height : " << height << " baseline : " << baseline << " bitmap_top : " << g->bitmap_top << " bitmap.rows : " << g->bitmap.rows << std::endl;
+
         if (previous_char != NULL)
         {
             FT_Vector kerning;
-            auto left_glyph = FT_Get_Char_Index(_face, previous_char);
-            auto right_glyph = FT_Get_Char_Index(_face, c);
+            FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
+            FT_UInt right_glyph = FT_Get_Char_Index(_face, c);
             FT_Get_Kerning(_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning);
             width += kerning.x >> 6;
         }
         width += g->advance.x >> 6;
+        previous_char = c;
     }
-    std::cerr << "width : " << width << " height : " << height << "Allocating buffer" << std::endl;
+
     uint8_t *buffer = new uint8_t[width * height];
     memset(buffer, 0, width * height);
-    int ct = 0;
+
+    int current_x = 0;
     previous_char = NULL;
+
     for (wchar_t c : text)
     {
-        FT_Load_Char(_face, c, FT_LOAD_RENDER);
-        FT_Bitmap bitmap = g->bitmap;
-        y = height - baseline - g->bitmap_top;
-        if (g->bitmap_left < 0 && ct == 0)
+        if (FT_Load_Char(_face, c, FT_LOAD_RENDER))
         {
-            x += g->bitmap_left; // first char
+            throw std::runtime_error("Error loading character");
         }
-        if (ct > 0)
+
+        FT_Bitmap &bitmap = g->bitmap;
+        int y_offset = height - baseline - g->bitmap_top;
+
+        if (previous_char != NULL)
         {
             FT_Vector kerning;
-            auto left_glyph = FT_Get_Char_Index(_face, previous_char);
-            auto right_glyph = FT_Get_Char_Index(_face, c);
+            FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
+            FT_UInt right_glyph = FT_Get_Char_Index(_face, c);
             FT_Get_Kerning(_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning);
-            x += kerning.x >> 6;
+            current_x += kerning.x >> 6;
         }
-        previous_char = c; // save previous char
-        for (unsigned int i = 0; i < bitmap.rows; i++)
+
+        for (unsigned int i = 0; i < bitmap.rows; ++i)
         {
-            for (unsigned int j = 0; j < bitmap.width; j++)
+            for (unsigned int j = 0; j < bitmap.width; ++j)
             {
-                buffer[(y + i) * g->bitmap.width + (g->bitmap_left + x + j)] = bitmap.buffer[i * bitmap.width + j];
+                if (bitmap.buffer[i * bitmap.width + j])
+                {
+                    buffer[(y_offset + i) * width + current_x + g->bitmap_left + j] = bitmap.buffer[i * bitmap.width + j];
+                }
             }
         }
-        x += g->advance.x >> 6;
-        ct++;
+
+        current_x += g->advance.x >> 6;
+        previous_char = c;
     }
-    // TODO : line wrap !
+
     _lcd->drawBufferMono(buffer, color, ST7735_BLACK, height, width);
+
+    delete[] buffer;
 }
