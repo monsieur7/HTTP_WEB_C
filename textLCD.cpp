@@ -9,7 +9,7 @@ textLCD::textLCD(std::string font_path, int pixel_size, ST7735 *lcd) : _lcd(lcd)
     {
         throw std::runtime_error("Error loading font");
     }
-    FT_Set_Pixel_Sizes(_face, 0, pixel_size);
+    FT_Set_Char_Size(_face, 0, pixel_size << 6, 0, 0);
     if (FT_Select_Charmap(_face, FT_ENCODING_UNICODE))
     {
         throw std::runtime_error("Error setting charmap");
