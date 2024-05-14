@@ -90,7 +90,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color, uint32_t
         previous_char = c;
     }
 
-    _lcd->drawBufferMono(buffer, color, ST7735_BLACK, height, width);
+    _lcd->drawBufferMono(buffer, color, bg_color, height, width);
 
     delete[] buffer;
 }
