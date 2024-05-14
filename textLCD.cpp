@@ -42,7 +42,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
 
         baseline = std::max(baseline, (FT_Int)(-(bbox.yMin))); // - because yMin is negative and y axis is in reverse
         height = std::max(height, (FT_Int)(bbox.yMax - bbox.yMin));
-        std::cerr << "height : " << height << " width : " << width << " baseline : " << baseline << " yMax : " << bbox.yMax << " yMin : " << bbox.yMin << std::endl;
+        std::wcerr << "char " << c << "height : " << height << " width : " << width << " baseline : " << baseline << " yMax : " << bbox.yMax << " yMin : " << bbox.yMin << std::endl;
         if (previous_char != NULL)
         {
             FT_Vector kerning;
