@@ -58,6 +58,6 @@ int main()
     std::cout << "Lux : " << lux << std::endl;
     std::cout << "Proximity : " << ltr559.getProximity() << std::endl;
     // text printing with freeType
-    textLCD textlcd = textLCD("../arial.ttf", 2, &lcd);
+    textLCD textlcd = textLCD("../arial.ttf", 12, &lcd);
     textlcd.drawText(L"Temperature : " + std::to_wstring(temperature) + L" °C", 0, 0, ST7735_WHITE);
 }
