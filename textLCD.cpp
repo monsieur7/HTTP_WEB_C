@@ -45,6 +45,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint32_t color)
         }
         width += g->advance.x >> 6;
     }
+    std::cerr << "width : " << width << " height : " << height << "Allocating buffer" << std::endl;
     uint8_t *buffer = new uint8_t[width * height];
     memset(buffer, 0, width * height);
     int ct = 0;
