@@ -7,6 +7,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstring>
+
+#include <linux/unistd.h> /* for _syscallX macros/related stuff */
+#include <linux/kernel.h> /* for struct sysinfo */
+#include <sys/sysinfo.h>  /* for sysinfo */
 std::atomic<bool> running(true);
 struct audio_pass_data
 {
@@ -97,8 +101,19 @@ int main()
     q.printJobs();
     // start continous polling as a background thread
     std::thread t(continous_polling, std::ref(q));
-
-    sleep(10);
+    // https://stackoverflow.com/questions/1540627/what-api-do-i-call-to-get-the-system-uptime
+    for (int i = 0; i < 10; i++)
+    {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        // print sysinfo
+        struct sysinfo info;
+        sysinfo(&info);
+        std::cout << "Uptime: " << info.uptime << std::endl;
+        std::cout << "Total RAM: " << std::setprecision(2) << ((float)info.totalram * info.mem_unit) / (1024 * 1024 * 1024) << std::endl;
+        std::cout << "Free RAM: " << std::setprecision(2) << ((float)info.freeram * info.mem_unit) / (1024 * 1024 * 1024) << std::endl;
+        std::cout << "Number of processes: " << info.procs << std::endl;
+        std::cout << "Load average: " << std::setprecision(2) << info.loads[0] / 65536.0f << std::endl;
+    }
     running = false;
     t.join();
 }
