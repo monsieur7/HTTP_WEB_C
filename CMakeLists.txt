@@ -10,6 +10,8 @@ set(SOURCES main.cpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
     ADS1015.hpp ADS1015.cpp ST7735.hpp ST7735.cpp
     MICS6814.hpp MICS6814.cpp
     textLCD.hpp textLCD.cpp
+    redisQueue.hpp redisQueue.cpp
+    job.hpp job.cpp
 )
 
 # set MIN C++ version
@@ -30,6 +32,12 @@ target_link_libraries(${PROJECT_NAME} PkgConfig::GPIOD)
 find_package(Freetype REQUIRED)
 include_directories(${FREETYPE_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} ${FREETYPE_LIBRARIES})
+
+# link against HIREDIS using pkg-config :
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(HIREDIS REQUIRED IMPORTED_TARGET hiredis)
+target_link_libraries(${PROJECT_NAME} PkgConfig::HIREDIS)
+include_directories(${HIREDIS_INCLUDE_DIRS})
 
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
@@ -75,4 +83,9 @@ gtest_discover_tests(unit_tests)
 # compile main_testing :
 add_executable(main_testing main_testing.cpp socketSecure.cpp socketSecure.hpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp)
 target_link_libraries(main_testing ${OPENSSL_LIBRARIES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
+
+# compile redis_queue_testings :
+add_executable(redis_queue_testing redis_queue_testing.cpp redisQueue.hpp redisQueue.cpp job.hpp job.cpp)
+target_link_libraries(redis_queue_testing PkgConfig::HIREDIS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")

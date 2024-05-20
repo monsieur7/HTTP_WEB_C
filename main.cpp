@@ -14,6 +14,7 @@
 #include "MICS6814.hpp"
 
 #include "textLCD.hpp"
+#include "redisQueue.hpp"
 int main()
 {
     BME280 bme280;
