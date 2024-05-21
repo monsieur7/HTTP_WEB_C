@@ -89,3 +89,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2
 add_executable(redis_queue_testing redis_queue_testing.cpp redisQueue.hpp redisQueue.cpp job.hpp job.cpp)
 target_link_libraries(redis_queue_testing PkgConfig::HIREDIS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
+
+# compile w/th json :
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_MakeAvailable(json)
+target_link_libraries(redis_queue_testing nlohmann_json::nlohmann_json)

@@ -89,6 +89,18 @@ void redisQueue::startFirstJob()
         freeReplyObject(reply);
         return;
     }
+    if (reply->type != REDIS_REPLY_STRING && reply->type != REDIS_REPLY_NIL)
+    {
+        std::cerr << "Error: Invalid reply type" << std::endl;
+        std::cerr << "Error: " << reply->type << std::endl;
+        freeReplyObject(reply);
+        throw std::runtime_error("Error: Invalid reply type");
+    }
+    if (reply->str == NULL || reply->type == REDIS_REPLY_NIL)
+    {
+        freeReplyObject(reply);
+        return;
+    }
     int id = strtol(reply->str, NULL, 10);
     freeReplyObject(reply);
     startJob(id);
