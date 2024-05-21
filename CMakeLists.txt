@@ -5,6 +5,17 @@ if(POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif()
 
+# CMAKE google TEST :
+include(FetchContent)
+FetchContent_Declare(
+    googletest
+    URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+FetchContent_MakeAvailable(googletest)
+
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
 project(HTTP_WEB_C)
 set(SOURCES main.cpp BME280.hpp BME280.cpp LTR559.hpp LTR559.cpp
     ADS1015.hpp ADS1015.cpp ST7735.hpp ST7735.cpp
@@ -39,6 +50,9 @@ pkg_check_modules(HIREDIS REQUIRED IMPORTED_TARGET hiredis)
 target_link_libraries(${PROJECT_NAME} PkgConfig::HIREDIS)
 include_directories(${HIREDIS_INCLUDE_DIRS})
 
+# link against json :
+target_link_libraries(${PROJECT_NAME} nlohmann_json::nlohmann_json)
+
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif()
@@ -51,16 +65,8 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wall -Wextra")
 endif()
 
-# CMAKE google TEST :
-include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
-)
-
 # For Windows: Prevent overriding the parent project's compiler/linker settings
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest)
 
 # enable tests :
 enable_testing()
@@ -92,6 +98,5 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2
 
 # compile w/th json :
 include(FetchContent)
-FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz)
-FetchContent_MakeAvailable(json)
+
 target_link_libraries(redis_queue_testing nlohmann_json::nlohmann_json)
