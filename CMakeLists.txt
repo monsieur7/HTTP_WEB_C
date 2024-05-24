@@ -100,3 +100,38 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2
 include(FetchContent)
 
 target_link_libraries(redis_queue_testing nlohmann_json::nlohmann_json)
+
+# api-rest.cpp
+add_executable(api-rest api-rest.cpp
+    BME280.hpp BME280.cpp
+    LTR559.hpp LTR559.cpp
+    ADS1015.hpp ADS1015.cpp
+    ST7735.hpp ST7735.cpp
+    MICS6814.hpp MICS6814.cpp
+    textLCD.hpp textLCD.cpp
+    redisQueue.hpp redisQueue.cpp
+    job.hpp job.cpp
+    socketSecure.cpp socketSecure.hpp
+    socket.cpp socket.hpp
+    parseString.cpp parseString.hpp
+    generateHeaders.cpp generateHeaders.hpp
+    FileTypeDetector.hpp FileTypeDetector.cpp
+)
+target_link_libraries(api-rest ${OPENSSL_LIBRARIES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
+
+# target libgpiod
+target_link_libraries(api-rest PkgConfig::GPIOD)
+include_directories(${GPIOD_INCLUDE_DIRS})
+
+# target freetype
+target_link_libraries(api-rest ${FREETYPE_LIBRARIES})
+include_directories(${FREETYPE_INCLUDE_DIRS})
+
+# target json
+target_link_libraries(api-rest nlohmann_json::nlohmann_json)
+include_directories(${JSON_INCLUDE_DIRS})
+
+# target hiredis
+target_link_libraries(api-rest PkgConfig::HIREDIS)
+include_directories(${HIREDIS_INCLUDE_DIRS})
