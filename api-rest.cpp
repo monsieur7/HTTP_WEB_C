@@ -49,8 +49,7 @@ struct arguments
     std::filesystem::path certPath;
     std::filesystem::path keyPath;
 };
-
-// Parse a single option
+// parser function
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
     struct arguments *arguments = (struct arguments *)state->input;
