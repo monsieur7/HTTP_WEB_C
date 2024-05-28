@@ -61,10 +61,10 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
         arguments->port = arg ? std::stoi(arg) : PORT;
         break;
     case 'c':
-        arguments->certPath = arg ? std::filesystem::path(arg) : "";
+        arguments->certPath = arg ? std::filesystem::absolute(std::filesystem::path(arg)) : "";
         break;
     case 'k':
-        arguments->keyPath = arg ? std::filesystem::path(arg) : "";
+        arguments->keyPath = arg ? std::filesystem::absolute(std::filesystem::path(arg)) : "";
         break;
     case ARGP_KEY_END:
         // check if there are any non opion arguments
@@ -138,7 +138,7 @@ int main(int argc, char **argv)
         certPath = arguments.certPath;
     }
 
-    SocketSecure server(arguments.port, keyPath, certPath);
+    SocketSecure server(arguments.port, certPath, keyPath);
     server.createSocket();
     server.bindSocket();
     ParseString p("");
