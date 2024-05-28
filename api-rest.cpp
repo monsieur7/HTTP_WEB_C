@@ -175,6 +175,10 @@ int main(int argc, char **argv)
             {
                 std::cout << x.first << " : " << x.second << std::endl;
             }
+            // send a dummy response
+            std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 5\r\n\r\nHello";
+            server.sendSocket(response, clients[i]);
+            server.closeSocket(clients[i]); // close the connection !
         }
     }
 
