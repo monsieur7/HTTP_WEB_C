@@ -1,3 +1,12 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+#include <filesystem>
+#include <bitset>
+#include <sstream>
+#include <regex>
+#include <argp.h>
+
 // INTERNAL LIBS :
 #include "ADS1015.hpp"
 #include "BME280.hpp"
@@ -17,58 +26,61 @@
 #include <nlohmann/json.hpp>
 #include "redisQueue.hpp"
 #include "FileTypeDetector.hpp"
-
-// JOBS :
+// #define SENSOR_SUPPORT
+//  JOBS :
 #include "job.hpp"
-// STD LIBS :
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <filesystem>
-#include <bitset>
-#include <sstream>
 
-#include <argp.h>
+// Argument parsing definitions
 #define PORT 8080 // port to listen on
 const char *argp_program_version = "API-REST SERVER, VERSION 0.1";
 const char *argp_program_bug_address = "<nolane.de@gmail.com>";
-static char doc[] = "This is a c++ implementation of a REST API server";
+static char doc[] = "This is a C++ implementation of a REST API server";
 static char args_doc[] = "";
 
 static struct argp_option options[] = {
-    {"port", 'p', "PORT", OPTION_ARG_OPTIONAL, "Set the port to listen on"},
-    {"cert", 'c', "CERT", OPTION_ARG_OPTIONAL, "Set the certificate path"},
+    {"port", 'p', "PORT", 0, "Set the port to listen on"},
+    {"cert", 'c', "CERT", 0, "Set the certificate path"},
     {"key", 'k', "KEY", 0, "Set the key path"},
-    {0}};
+    {0, 0, 0, 0, nullptr}};
 
 struct arguments
 {
     int port;
+    std::filesystem::path certPath;
+    std::filesystem::path keyPath;
 };
 
+// Parse a single option
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
-    struct arguments *arguments = static_cast<struct arguments *>(state->input);
+    struct arguments *arguments = (struct arguments *)state->input;
     switch (key)
+
     {
     case 'p':
-        arguments->port = atoi(arg);
+        arguments->port = arg ? std::stoi(arg) : PORT;
         break;
     case 'c':
-        std::cout << "cert path : " << arg << std::endl;
+        arguments->certPath = arg ? std::filesystem::path(arg) : "";
         break;
     case 'k':
-        std::cout << "key path : " << arg << std::endl;
+        arguments->keyPath = arg ? std::filesystem::path(arg) : "";
+        break;
+    case ARGP_KEY_END:
+        // check if there are any non opion arguments
+        if (arguments->keyPath.empty() || arguments->certPath.empty())
+        {
+            argp_error(state, "You must provide a certificate and a key path");
+            return ARGP_ERR_UNKNOWN;
+        }
         break;
     case ARGP_KEY_ARG:
-        return 0;
-    case ARGP_KEY_END:
-        break;
-    case ARGP_KEY_NO_ARGS:
-        argp_usage(state);
-        break;
-    case ARGP_KEY_ERROR:
-        argp_state_help(state, stderr, ARGP_HELP_STD_ERR);
+        // check if there are any non opion arguments
+        if (state->arg_num > 0)
+        {
+            argp_error(state, "Too many arguments");
+            return ARGP_ERR_UNKNOWN;
+        }
         break;
     default:
         return ARGP_ERR_UNKNOWN;
@@ -76,17 +88,23 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = {options, parse_opt, args_doc, doc, nullptr, nullptr, nullptr};
+static struct argp argp = {options, parse_opt, args_doc, doc};
 
 int main(int argc, char **argv)
 {
     // argument parsing
     struct arguments arguments;
     arguments.port = PORT;
+    arguments.certPath = "";
+    arguments.keyPath = "";
+
     argp_parse(&argp, argc, argv, 0, 0, &arguments);
 
-    /*
+    std::cout << "Key path : " << arguments.keyPath << std::endl;
+    std::cout << "Port : " << arguments.port << std::endl;
+    std::cout << "Cert path : " << arguments.certPath << std::endl;
 
+#ifdef SENSOR_SUPPORT
     // SETUP SENSORS :
     BME280 bme280();
     MICS6814 mics6814();
@@ -104,17 +122,61 @@ int main(int argc, char **argv)
         std::cerr << "Error while initializing BME280" << std::endl;
         return -1;
     }
-    */
-    // HTTPS server setup :
-    //  key :
-    std::filesystem::path keyPath = std::filesystem::current_path();
-    keyPath /= "..";
-    keyPath /= "raspberrypi-fr.local.key";
+#endif
 
-    // crt :
+    // HTTPS server setup
+    std::filesystem::path keyPath = std::filesystem::current_path();
     std::filesystem::path certPath = std::filesystem::current_path();
-    certPath /= "..";
-    certPath /= "raspberrypi-fr.local.crt";
+
+    if (!arguments.keyPath.empty())
+    {
+        keyPath = arguments.keyPath;
+    }
+
+    if (!arguments.certPath.empty())
+    {
+        certPath = arguments.certPath;
+    }
 
     SocketSecure server(arguments.port, keyPath, certPath);
+    server.createSocket();
+    server.bindSocket();
+    ParseString p("");
+    while (true)
+    {
+        server.listenSocket();
+        std::vector<int> clients;
+        try
+        {
+            clients = server.pollClients(1000);
+        }
+        catch (const std::runtime_error &e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        for (std::size_t i = 0; i < clients.size(); i++)
+        {
+            std::cout << server.printClientInfo(clients[i]) << std::endl;
+            std::string received;
+            try
+            {
+                received = server.receiveSocket(clients[i]);
+            }
+            catch (const std::runtime_error &e)
+            {
+                std::cerr << e.what() << '\n';
+                server.closeSocket(clients[i]);
+                continue;
+            }
+
+            p.setData(received);
+            std::map<std::string, std::string> headers = p.parseRequest();
+            for (auto const &x : headers)
+            {
+                std::cout << x.first << " : " << x.second << std::endl;
+            }
+        }
+    }
+
+    return 0;
 }
