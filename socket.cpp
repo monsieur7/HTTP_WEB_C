@@ -1,6 +1,6 @@
 #include "socket.hpp"
 // Signal handler function
-// TODO : move this to a separate file (main.cpp)
+// TODO : see if we need to move this to a separate file (main.cpp)
 void signalHandler(int signum) // https://stackoverflow.com/questions/343219/is-it-possible-to-use-signal-inside-a-c-class
 {
     std::cout << "Caught signal " << signum << std::endl;

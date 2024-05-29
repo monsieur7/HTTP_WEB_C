@@ -6,6 +6,7 @@
 #include <sstream>
 #include <regex>
 #include <argp.h>
+#include <thread>
 
 // INTERNAL LIBS :
 #include "ADS1015.hpp"
@@ -89,6 +90,140 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
+#define file_timeout 30 * 60 // 30 minutes
+// JSON :
+#include <nlohmann/json.hpp>
+std::atomic<bool> running(true);
+struct audio_pass_data
+{
+    int duration;
+    std::filesystem::path outputFile;
+    redisContext *c;
+};
+
+void continous_polling(redisQueue &q)
+{
+    while (running)
+    {
+        q.startFirstJob();
+    }
+    std::cout << "Exiting continous polling" << std::endl;
+}
+
+int recordAudio(int duration, const std::filesystem::path &outputFile, redisContext *c)
+{
+    // Construct the command to record audio
+    std::string command = "arecord -d " + std::to_string(duration) + " -f cd " + outputFile.c_str();
+
+    // Execute the command
+    int result = std::system(command.c_str());
+
+    // Check if the command was successful
+    if (result != 0)
+    {
+        std::cerr << "Error: Failed to record audio." << std::endl;
+        return result;
+    }
+    else
+    {
+        std::cout << "Recording saved to " << outputFile << std::endl;
+        // Add the file to the redis queue
+        std::string key = "audio_file";
+        nlohmann::json j;
+        j["file"] = outputFile.c_str();
+        j["duration"] = duration;
+        j["timeCreated"] = std::time(nullptr);
+        std::string json = j.dump();
+        redisReply *reply = (redisReply *)redisCommand(c, "RPUSH %s %s", key.c_str(), json.c_str());
+        if (reply == NULL)
+        {
+            std::cerr << "Error: Could not add audio file to redis queue" << std::endl;
+            throw std::runtime_error("Error: Could not add audio file to redis queue");
+        }
+        freeReplyObject(reply);
+        return 0;
+    }
+}
+
+void cleanupTempFile(redisContext *c)
+{
+    // get the audio file from the redis queue
+    redisReply *reply = (redisReply *)redisCommand(c, "LRANGE audio_file 0 -1");
+    if (reply == NULL)
+    {
+        std::cerr << "Error: Could not get audio file from redis queue" << std::endl;
+        throw std::runtime_error("Error: Could not get audio file from redis queue");
+    }
+    if (reply->type != REDIS_REPLY_ARRAY && reply->type != REDIS_REPLY_NIL)
+    {
+        std::cerr << "Error: Invalid reply type" << std::endl;
+        std::cerr << "Error: " << reply->type << std::endl;
+        freeReplyObject(reply);
+        throw std::runtime_error("Error: Invalid reply type");
+    }
+    if (reply->elements == 0 || reply->type == REDIS_REPLY_NIL)
+    {
+        std::cerr << "Error: No audio files in the queue" << std::endl;
+        freeReplyObject(reply);
+        return;
+    }
+    for (size_t i = 0; i < reply->elements; i++)
+    {
+        std::string json = reply->element[i]->str;
+        nlohmann::json j = nlohmann::json::parse(json);
+        std::filesystem::path filePath = j["file"];
+        time_t timeCreated = j["timeCreated"];
+        double diff = std::difftime(std::time(nullptr), timeCreated);
+        if (diff > file_timeout)
+        {
+            // delete the file
+            std::filesystem::remove(filePath);
+            // remove the file from the queue
+            redisReply *replyRemove = (redisReply *)redisCommand(c, "LREM audio_file 0 %s", json.c_str());
+            if (replyRemove == NULL)
+            {
+                std::cerr << "Error: Could not remove audio file from redis queue" << std::endl;
+                throw std::runtime_error("Error: Could not remove audio file from redis queue");
+            }
+            freeReplyObject(replyRemove);
+        }
+    }
+    freeReplyObject(reply);
+}
+
+void cleanupTempFiles_process(redisContext *c)
+{
+    while (running)
+    {
+        cleanupTempFile(c);
+        std::cerr << "Cleaning up temporary files" << std::endl;
+        std::this_thread::sleep_for(std::chrono::minutes(5));
+    }
+}
+
+std::filesystem::path createTempFile()
+{
+    // create a temporary file with mktemp
+    char template_name[] = "/tmp/audioXXXXXX";
+    int fd = mkstemp(template_name);
+    if (fd == -1)
+    {
+        std::cerr << "Error: Could not create temporary file" << std::endl;
+        std::cerr << "Error: " << strerror(errno) << std::endl;
+        throw std::runtime_error("Error: Could not create temporary file");
+    }
+
+    std::filesystem::path filePath = std::filesystem::read_symlink("/proc/self/fd/" + std::to_string(fd));
+    // close the file descriptor
+    close(fd);
+    return filePath;
+}
+int record_audio(void *arg)
+{
+    audio_pass_data *data = (audio_pass_data *)arg;
+    return recordAudio(data->duration, data->outputFile, data->c);
+}
+
 int main(int argc, char **argv)
 {
     // argument parsing
@@ -122,8 +257,43 @@ int main(int argc, char **argv)
         return -1;
     }
 #endif
+    // connect to redis :
+    redisContext *c = redisConnect("127.0.0.1", 6379);
+    redisContext *cleanup_context = redisConnect("127.0.0.1", 6379); // 2nd connection for cleanup
+    if (c == NULL || c->err)
+    {
+        if (c)
+        {
+            std::cerr << "Redis Error: " << c->errstr << std::endl;
+            redisFree(c);
+        }
+        else
+        {
+            std::cerr << "Error: Could not allocate redis context" << std::endl;
+        }
+        exit(1);
+    }
+    if (cleanup_context == NULL || cleanup_context->err)
+    {
+        if (cleanup_context)
+        {
+            std::cerr << "Redis Error: " << cleanup_context->errstr << std::endl;
+            redisFree(cleanup_context);
+        }
+        else
+        {
+            std::cerr << "Error: Could not allocate redis context" << std::endl;
+        }
+        exit(1);
+    }
+    redisQueue queue(c);
+    std::cerr << "Starting cleanup thread" << std::endl;
+    std::thread cleanupThread(cleanupTempFiles_process, cleanup_context);
+    std::cerr << "Starting continous polling thread" << std::endl;
+    std::thread continousPollingThread(continous_polling, std::ref(queue));
 
-    // HTTPS server setup
+    // TODO : add api routes
+    //  HTTPS server setup
     std::filesystem::path keyPath = std::filesystem::current_path();
     std::filesystem::path certPath = std::filesystem::current_path();
 
@@ -180,6 +350,11 @@ int main(int argc, char **argv)
             server.closeSocket(clients[i]); // close the connection !
         }
     }
+    // join the threads
+    std::cerr << "Joining threads" << std::endl;
+    running = false;
+    cleanupThread.join();
+    continousPollingThread.join();
 
     return 0;
 }
