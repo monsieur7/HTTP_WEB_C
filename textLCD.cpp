@@ -53,9 +53,11 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
             FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
             FT_UInt right_glyph = FT_Get_Char_Index(_face, c);
             FT_Get_Kerning(_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning);
-            width += kerning.x >> 6;
+            width += kerning.x >> 6; // adjust width with kerning
+            // kerning.x is in 1/64th of a pixel
         }
         width += g->advance.x >> 6;
+        // advance.x is in 1/64th of a pixel
         previous_char = c;
     }
 
