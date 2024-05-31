@@ -413,6 +413,16 @@ int main(int argc, char **argv)
                 j["unit"] = "Ω";
                 ss << j.dump();
             }
+            else if (headers["Path"] == "/display" && headers["Method"] == "POST")
+            {
+                // body is in headers["Body"]
+                // TODO : add the display task to the redis queue !
+            }
+            else if (headers["Path"] == "/structure" && headers["Method"] == "GET")
+            {
+                // TODO : return json structure file !
+            }
+
             // TODO : /display
             // TODO : /structure
             // TODO : /job/<job_id>
