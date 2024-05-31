@@ -344,9 +344,92 @@ int main(int argc, char **argv)
             {
                 std::cout << x.first << " : " << x.second << std::endl;
             }
-            // send a dummy response
-            std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Length: 5\r\n\r\nHello";
-            server.sendSocket(response, clients[i]);
+            // add every route here :
+            std::stringstream ss;
+            ss << "HTTP/1.1 200 OK\r\n";
+            ss << "Content-Type: application/json\r\n";
+            ss << "Connection: close\r\n";
+            ss << "\r\n";
+
+            if (headers["Path"] == "/temperature" && headers["Method"] == "GET")
+            {
+                // return temperature as json
+                nlohmann::json j;
+                j["value"] = "22.5";
+                j["unit"] = "°C";
+                j["timestamp"] = std::time(nullptr);
+                j["frequency"] = "1"; // TODO : complete this with the real frequency
+                ss << j.dump();
+            }
+            else if (headers["Path"] == "/humidity" && headers["Method"] == "GET")
+            {
+                // return humidity as json
+                nlohmann::json j;
+                j["value"] = "50"; // dummy value
+                j["unit"] = "%";
+                j["timestamp"] = std::time(nullptr);
+                j["frequency"] = "1"; // TODO : complete this with the real frequency
+                ss << j.dump();
+            }
+            else if (headers["Path"] == "/pressure" && headers["Method"] == "GET")
+            {
+                // return pressure as json
+                nlohmann::json j;
+                j["value"] = "1013"; // dummy value
+                j["unit"] = "hPa";
+                j["timestamp"] = std::time(nullptr);
+                j["frequency"] = "1"; // TODO : complete this with the real frequency
+                ss << j.dump();
+            }
+            else if (headers["Path"] == "/light" && headers["Method"] == "GET")
+            {
+                // return light as json
+                nlohmann::json j;
+                j["value"] = "100"; // dummy value
+                j["unit"] = "lux";
+                j["timestamp"] = std::time(nullptr);
+                j["frequency"] = "1"; // TODO : complete this with the real frequency
+                ss << j.dump();
+            }
+            else if (headers["Path"] == "/proximity" && headers["Method"] == "GET")
+            {
+                // return proximity as json
+                nlohmann::json j;
+                j["value"] = "10"; // dummy value
+                j["unit"] = "proximity";
+                j["timestamp"] = std::time(nullptr);
+                j["frequency"] = "1"; // TODO : complete this with the real frequency
+                ss << j.dump();
+            }
+            else if (headers["Path"] == "/gas" && headers["Method"] == "GET")
+            {
+                // return gas as json :
+                nlohmann::json j;
+                j["oxidising"] = "0.00"; // dummy value
+                j["reducing"] = "0.00";  // dummy value
+                j["nh3"] = "0.00";       // dummy value
+                j["timestamp"] = std::time(nullptr);
+                j["frequency"] = "1"; // TODO : complete this with the real frequency
+                j["unit"] = "Ω";
+                ss << j.dump();
+            }
+            // TODO : /display
+            // TODO : /structure
+            // TODO : /job/<job_id>
+            // TODO : /recordings/<filename>
+            // TODO : /mic/record (GET)
+            else
+            {
+                ss << "HTTP/1.1 404 Not Found\r\n";
+                ss << "Content-Type: application/json\r\n";
+                ss << "Connection: close\r\n";
+                ss << "\r\n";
+                nlohmann::json j;
+                j["error"] = "Route not found";
+                ss << j.dump();
+            }
+
+            server.sendSocket(ss.str(), clients[i]);
             server.closeSocket(clients[i]); // close the connection !
         }
     }
