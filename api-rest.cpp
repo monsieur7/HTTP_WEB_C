@@ -430,6 +430,7 @@ int main(int argc, char **argv)
             // TODO : /mic/record (GET)
             else
             {
+                ss = std::stringstream(); // reset the stream !
                 ss << "HTTP/1.1 404 Not Found\r\n";
                 ss << "Content-Type: application/json\r\n";
                 ss << "Connection: close\r\n";

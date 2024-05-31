@@ -22,7 +22,11 @@ textLCD::~textLCD()
     FT_Done_FreeType(_ft);
 }
 void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t bg_color)
+// two step rendering :
+// 1st : calculate the text bounding box
+// 2nd : render the text in the bounding box
 {
+    // for all calculations see https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py as a reference (its a good starting point !)
     FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
     wchar_t previous_char = NULL;
