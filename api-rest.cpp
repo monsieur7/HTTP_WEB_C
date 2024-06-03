@@ -32,7 +32,7 @@
 #include "job.hpp"
 
 // Argument parsing definitions
-#define PORT 8080 // port to listen on
+#define PORT 8050 // port to listen on
 const char *argp_program_version = "API-REST SERVER, VERSION 0.1";
 const char *argp_program_bug_address = "<nolane.de@gmail.com>";
 static char doc[] = "This is a C++ implementation of a REST API server";
@@ -359,6 +359,7 @@ int main(int argc, char **argv)
             std::stringstream ss;
             ss << "HTTP/1.1 200 OK\r\n";
             ss << "Content-Type: application/json\r\n";
+            ss << "Access-Control-Allow-Origin: *\r\n"; // TODO : change this to the actual origin
             ss << "Connection: close\r\n";
             ss << "\r\n";
             // reegex declaration :
@@ -450,6 +451,7 @@ int main(int argc, char **argv)
                     ss << "Content-Type: audio/wav\r\n";
                     ss << "Transfer-Encoding: chunked\r\n";
                     ss << "Connection: close\r\n";
+                    ss << "Access-Control-Allow-Origin: *\r\n"; // TODO : change this to the actual origin
                     ss << "\r\n";
 
                     // send the headers
@@ -495,8 +497,6 @@ int main(int argc, char **argv)
             // TODO : /display
             // TODO : /structure
             // TODO : /job/<job_id>
-            // TODO : /recordings/<filename>
-            // TODO : /mic/record (GET)
             else if (headers["Method"] == "OPTIONS")
             {
                 // OPTION request - CORS REQUEST
