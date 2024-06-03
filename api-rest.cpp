@@ -42,6 +42,7 @@ static struct argp_option options[] = {
     {"port", 'p', "PORT", 0, "Set the port to listen on"},
     {"cert", 'c', "CERT", 0, "Set the certificate path"},
     {"key", 'k', "KEY", 0, "Set the key path"},
+    {"recording", 'r', "RECORDING", 0, "Recording Directory"},
     {0, 0, 0, 0, nullptr}};
 
 struct arguments
@@ -49,6 +50,7 @@ struct arguments
     int port;
     std::filesystem::path certPath;
     std::filesystem::path keyPath;
+    std::filesystem::path recordingPath;
 };
 // parser function
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
@@ -66,9 +68,12 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
     case 'k':
         arguments->keyPath = arg ? std::filesystem::absolute(std::filesystem::path(arg)) : "";
         break;
+    case 'r':
+        arguments->recordingPath = arg ? std::filesystem::absolute(std::filesystem::path(arg)) : "";
+        break;
     case ARGP_KEY_END:
         // check if there are any non opion arguments
-        if (arguments->keyPath.empty() || arguments->certPath.empty())
+        if (arguments->keyPath.empty() || arguments->certPath.empty() || arguments->recordingPath.empty())
         {
             argp_error(state, "You must provide a certificate and a key path");
             return ARGP_ERR_UNKNOWN;
@@ -138,7 +143,7 @@ int recordAudio(int duration, const std::filesystem::path &outputFile, redisCont
         if (reply == NULL)
         {
             std::cerr << "Error: Could not add audio file to redis queue" << std::endl;
-            throw std::runtime_error("Error: Could not add audio file to redis queue");
+            return -1;
         }
         freeReplyObject(reply);
         return 0;
@@ -152,14 +157,14 @@ void cleanupTempFile(redisContext *c)
     if (reply == NULL)
     {
         std::cerr << "Error: Could not get audio file from redis queue" << std::endl;
-        throw std::runtime_error("Error: Could not get audio file from redis queue");
+        return;
     }
     if (reply->type != REDIS_REPLY_ARRAY && reply->type != REDIS_REPLY_NIL)
     {
         std::cerr << "Error: Invalid reply type" << std::endl;
         std::cerr << "Error: " << reply->type << std::endl;
         freeReplyObject(reply);
-        throw std::runtime_error("Error: Invalid reply type");
+        return;
     }
     if (reply->elements == 0 || reply->type == REDIS_REPLY_NIL)
     {
@@ -183,7 +188,7 @@ void cleanupTempFile(redisContext *c)
             if (replyRemove == NULL)
             {
                 std::cerr << "Error: Could not remove audio file from redis queue" << std::endl;
-                throw std::runtime_error("Error: Could not remove audio file from redis queue");
+                return;
             }
             freeReplyObject(replyRemove);
         }
@@ -201,31 +206,28 @@ void cleanupTempFiles_process(redisContext *c)
     }
 }
 
-std::filesystem::path createTempFile()
+std::filesystem::path createTempFile(std::filesystem::path directory)
 {
-    // create a temporary file with mktemp
-    char template_name[] = "/tmp/audioXXXXXX";
-    int fd = mkstemp(template_name);
-    if (fd == -1)
-    {
-        std::cerr << "Error: Could not create temporary file" << std::endl;
-        std::cerr << "Error: " << strerror(errno) << std::endl;
-        throw std::runtime_error("Error: Could not create temporary file");
-    }
-
-    std::filesystem::path filePath = std::filesystem::read_symlink("/proc/self/fd/" + std::to_string(fd));
-    // close the file descriptor
-    close(fd);
-    return filePath;
+    // create a temp file based on the current time
+    std::time_t t = std::time(nullptr);
+    std::stringstream ss;
+    ss << directory << "/" << t << ".wav";
+    std::filesystem::path tempFile = ss.str();
+    return tempFile;
 }
 int record_audio(void *arg)
 {
+    std::cerr << "Recording audio" << std::endl;
     audio_pass_data *data = (audio_pass_data *)arg;
     return recordAudio(data->duration, data->outputFile, data->c);
 }
 
 int main(int argc, char **argv)
 {
+    // cheating : adding argument for debug :
+    argc = 7;
+    char *new_argv[] = {argv[0], "--key", "../raspberrypi-fr.local.key", "--cert", "../raspberrypi-fr.local.crt", "-r", "../recordings"};
+    argv = new_argv;
     // argument parsing
     struct arguments arguments;
     arguments.port = PORT;
@@ -259,7 +261,8 @@ int main(int argc, char **argv)
 #endif
     // connect to redis :
     redisContext *c = redisConnect("127.0.0.1", 6379);
-    redisContext *cleanup_context = redisConnect("127.0.0.1", 6379); // 2nd connection for cleanup
+    redisContext *cleanup_context = redisConnect("127.0.0.1", 6379);  // 2nd connection for cleanup
+    redisContext *add_file_cleanup = redisConnect("127.0.0.1", 6379); // 3rd connection for adding files to the cleanup queue
     if (c == NULL || c->err)
     {
         if (c)
@@ -286,7 +289,9 @@ int main(int argc, char **argv)
         }
         exit(1);
     }
+
     redisQueue queue(c);
+
     std::cerr << "Starting cleanup thread" << std::endl;
     std::thread cleanupThread(cleanupTempFiles_process, cleanup_context);
     std::cerr << "Starting continous polling thread" << std::endl;
@@ -296,6 +301,7 @@ int main(int argc, char **argv)
     //  HTTPS server setup
     std::filesystem::path keyPath = std::filesystem::current_path();
     std::filesystem::path certPath = std::filesystem::current_path();
+    std::filesystem::path recordingPath = std::filesystem::current_path();
 
     if (!arguments.keyPath.empty())
     {
@@ -306,11 +312,16 @@ int main(int argc, char **argv)
     {
         certPath = arguments.certPath;
     }
+    if (!arguments.recordingPath.empty())
+    {
+        recordingPath = arguments.recordingPath;
+    }
 
     SocketSecure server(arguments.port, certPath, keyPath);
     server.createSocket();
     server.bindSocket();
     ParseString p("");
+    int id = 0;
     while (true)
     {
         server.listenSocket();
@@ -350,7 +361,9 @@ int main(int argc, char **argv)
             ss << "Content-Type: application/json\r\n";
             ss << "Connection: close\r\n";
             ss << "\r\n";
-
+            // reegex declaration :
+            std::regex record_regex("/recordings/([a-zA-Z0-9]+)");
+            std::smatch match;
             if (headers["Path"] == "/temperature" && headers["Method"] == "GET")
             {
                 // return temperature as json
@@ -422,12 +435,90 @@ int main(int argc, char **argv)
             {
                 // TODO : return json structure file !
             }
+            else if (std::regex_match(headers["Path"], match, record_regex) && headers["Method"] == "GET")
+            {
+                // extract the filename from the path
+                std::string filename = match[1].str();
+                std::filesystem::path filePath = recordingPath / filename;
+                // check if the file exists
+                if (std::filesystem::exists(filePath))
+                {
+                    // file exists
+                    // TODO: handle the GET request for recordings/<filename>
+                    ss = std::stringstream(); // reset the stream !
+                    ss << "HTTP/1.1 200 OK\r\n";
+                    ss << "Content-Type: audio/wav\r\n";
+                    ss << "Transfer-Encoding: chunked\r\n";
+                    ss << "Connection: close\r\n";
+                    ss << "\r\n";
+
+                    // send the headers
+                    server.sendSocket(ss.str(), clients[i]);
+                    // send the file
+                    std::filesystem::directory_entry file(filePath);
+
+                    server.sendFile(file, clients[i]);
+                }
+                else
+                {
+                    // file does not exist
+                    ss = std::stringstream(); // reset the stream !
+                    ss << "HTTP/1.1 404 Not Found\r\n";
+                    ss << "Content-Type: application/json\r\n";
+                    ss << "Connection: close\r\n";
+                    ss << "\r\n";
+                    nlohmann::json j;
+                    j["error"] = "File not found";
+                    ss << j.dump();
+                }
+                // TODO: handle the GET request for recordings/<filename>
+            }
+            else if (headers["Method"] == "GET" && headers["Path"] == "/mic/record")
+            {
+                // TODO
+                std::cerr << "Recording audio for 5 seconds" << std::endl;
+                std::string filename = createTempFile(recordingPath);
+                job record(record_audio, (void *)new audio_pass_data{5, filename, add_file_cleanup}, id);
+                std::cerr << "Job ID: " << record.get_id() << std::endl;
+                id += 1; // increment the id
+                queue.addJob(record);
+                std::cerr << "Job added to queue" << std::endl;
+                nlohmann::json j;
+                j["job_id"] = id;
+                j["filename"] = filename;
+                j["validity"] = 1800;
+                j["unit"] = "s";
+                std::cerr << "Sending JSON" << std::endl;
+                ss << j.dump();
+            }
 
             // TODO : /display
             // TODO : /structure
             // TODO : /job/<job_id>
             // TODO : /recordings/<filename>
             // TODO : /mic/record (GET)
+            else if (headers["Method"] == "OPTIONS")
+            {
+                // OPTION request - CORS REQUEST
+                // See https://developer.mozilla.org/fr/docs/Web/HTTP/Methods/OPTIONS
+                if (headers["Path"] == "")
+                {
+                    ss = std::stringstream(); // reset the stream !
+                    ss << "HTTP/1.1 200 OK\r\n";
+                    ss << "Allow: GET, POST, OPTIONS\r\n";
+                }
+                else
+                {
+                    ss = std::stringstream(); // reset the stream !
+                    ss << "HTTP/1.1 200 OK\r\n";
+                    ss << "Access-Control-Allow-Origin: *\r\n"; // TODO : change this to the actual origin
+                    ss << "Access-Control-Allow-Methods: GET, POST, OPTIONS\r\n";
+                    ss << "Access-Control-Allow-Headers: Content-Type\r\n";
+                    ss << "Connection: close\r\n";
+                }
+                ss << "Content-Length: 0\r\n";
+                ss << "\r\n";
+            }
             else
             {
                 ss = std::stringstream(); // reset the stream !
