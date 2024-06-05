@@ -105,7 +105,12 @@ struct audio_pass_data
     std::filesystem::path outputFile;
     redisContext *c;
 };
-
+struct display_pass_data
+{
+    std::wstring text;
+    textLCD *textDraw;
+    ST7735 *lcd;
+};
 void continous_polling(redisQueue &q)
 {
     while (running)
@@ -204,6 +209,32 @@ void cleanupTempFiles_process(redisContext *c)
         std::cerr << "Cleaning up temporary files" << std::endl;
         std::this_thread::sleep_for(std::chrono::minutes(5));
     }
+}
+int displayText(void *arg)
+{
+    display_pass_data *data = (display_pass_data *)arg;
+    std::wstring text = data->text;
+    textLCD *textDraw = data->textDraw;
+    ST7735 *lcd = data->lcd;
+    lcd->fillScreen(ST7735_BLACK);
+    int width = 0;
+    int height = 0;
+    int x = 0;
+    int y = 0;
+
+    textDraw->textSize(text, &width, &height);
+    if (width <= 0)
+    {
+        std::cerr << "Error: Text width is <= 0" << std::endl;
+        return -1;
+    }
+    for (int i = 0; i <= width + lcd->getWidth(); i++)
+    {
+        lcd->fillScreen(ST7735_BLACK);
+        textDraw->drawText(text, x - i, y, ST7735_WHITE);
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
+    return 0;
 }
 
 std::filesystem::path createTempFile(std::filesystem::path directory)
@@ -429,12 +460,26 @@ int main(int argc, char **argv)
             }
             else if (headers["Path"] == "/display" && headers["Method"] == "POST")
             {
+                std::string body = headers["Body"];
+                // convert it to json
+                nlohmann::json j = nlohmann::json::parse(body);
+                std::wstring text = j["message"];
+#ifdef SENSOR_SUPPORT
+                job display(displayText, (void *)new display_pass_data{text, &textLCD, &lcd}, id);
+                id++;
+                queue.addJob(display);
+                std::cerr << "Launching Text Display !" << std::endl;
+#else
+                std::cerr << "Display not supported" << std::endl;
+#endif
                 // body is in headers["Body"]
                 // TODO : add the display task to the redis queue !
             }
             else if (headers["Path"] == "/structure" && headers["Method"] == "GET")
             {
                 // TODO : return json structure file !
+                std::filesystem::directory_entry file("../structure.json");
+                server.sendFile(file, clients[i]);
             }
             else if (std::regex_match(headers["Path"], match, record_regex) && headers["Method"] == "GET")
             {

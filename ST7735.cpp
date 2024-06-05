@@ -338,3 +338,12 @@ void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, 
         }
     }
 }
+
+int ST7735::getWidth() const
+{
+    return this->_width;
+}
+int ST7735::getHeight() const
+{
+    return this->_height;
+}
