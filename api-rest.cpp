@@ -27,7 +27,7 @@
 #include <nlohmann/json.hpp>
 #include "redisQueue.hpp"
 #include "FileTypeDetector.hpp"
-// #define SENSOR_SUPPORT
+#define SENSOR_SUPPORT
 //  JOBS :
 #include "job.hpp"
 
@@ -273,16 +273,16 @@ int main(int argc, char **argv)
 
 #ifdef SENSOR_SUPPORT
     // SETUP SENSORS :
-    BME280 bme280();
-    MICS6814 mics6814();
-    LTR559 ltr559();
+    BME280 bme280 = BME280();
+    MICS6814 mics6814 = MICS6814();
+    LTR559 ltr559 = LTR559();
 
     // SETUP LCD SCREEN :
     ST7735 lcd = ST7735("/dev/spidev0.1", "gpiochip0", 8, 10000000, 9, -1, 12, 80, 160); // 80x160 (because its rotated !)
     lcd.init();
     lcd.fillScreen(ST7735_BLACK);
 
-    textLCD textLCD = textLCD("../arial.ttf", 24, &lcd);
+    textLCD textWriter = textLCD("../arial.ttf", 24, &lcd);
 
     if (bme280.begin() != 0)
     {
@@ -465,7 +465,7 @@ int main(int argc, char **argv)
                 nlohmann::json j = nlohmann::json::parse(body);
                 std::wstring text = j["message"];
 #ifdef SENSOR_SUPPORT
-                job display(displayText, (void *)new display_pass_data{text, &textLCD, &lcd}, id);
+                job display(displayText, (void *)new display_pass_data{text, &textWriter, &lcd}, id);
                 id++;
                 queue.addJob(display);
                 std::cerr << "Launching Text Display !" << std::endl;
