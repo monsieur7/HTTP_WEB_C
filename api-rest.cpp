@@ -463,7 +463,25 @@ int main(int argc, char **argv)
                 std::string body = headers["Body"];
                 // convert it to json
                 nlohmann::json j = nlohmann::json::parse(body);
-                std::wstring text = j["message"];
+                try
+                {
+                    std::wstring text = j["message"];
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Error: " << e.what() << std::endl;
+                    ss = std::stringstream(); // reset the stream !
+                    ss << "HTTP/1.1 400 Bad Request\r\n";
+                    ss << "Content-Type: application/json\r\n";
+                    ss << "Connection: close\r\n";
+                    ss << "\r\n";
+                    nlohmann::json j;
+                    j["error"] = "Invalid JSON";
+                    ss << j.dump();
+                    server.sendSocket(ss.str(), clients[i]);
+                    server.closeSocket(clients[i]); // close the connection !
+                    continue;
+                }
 #ifdef SENSOR_SUPPORT
                 job display(displayText, (void *)new display_pass_data{text, &textWriter, &lcd}, id);
                 id++;
