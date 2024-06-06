@@ -426,7 +426,7 @@ int main(int argc, char **argv)
             {
                 // return temperature as json
                 nlohmann::json j;
-                j["value"] = "22.5";
+                j["value"] = bme280.readTemp();
                 j["unit"] = "°C";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -436,7 +436,7 @@ int main(int argc, char **argv)
             {
                 // return humidity as json
                 nlohmann::json j;
-                j["value"] = "50"; // dummy value
+                j["value"] = bme280.readHumidity();
                 j["unit"] = "%";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -446,7 +446,7 @@ int main(int argc, char **argv)
             {
                 // return pressure as json
                 nlohmann::json j;
-                j["value"] = "1013"; // dummy value
+                j["value"] = bme280.readPressure();
                 j["unit"] = "hPa";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -456,7 +456,7 @@ int main(int argc, char **argv)
             {
                 // return light as json
                 nlohmann::json j;
-                j["value"] = "100"; // dummy value
+                j["value"] = ltr559.getLux();
                 j["unit"] = "lux";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -466,7 +466,7 @@ int main(int argc, char **argv)
             {
                 // return proximity as json
                 nlohmann::json j;
-                j["value"] = "10"; // dummy value
+                j["value"] = ltr559.getProximity();
                 j["unit"] = "proximity";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -476,9 +476,9 @@ int main(int argc, char **argv)
             {
                 // return gas as json :
                 nlohmann::json j;
-                j["oxidising"] = "0.00"; // dummy value
-                j["reducing"] = "0.00";  // dummy value
-                j["nh3"] = "0.00";       // dummy value
+                j["oxidising"] = mics6814.readOxydising();
+                j["reducing"] = mics6814.readReducing();
+                j["nh3"] = mics6814.readNH3();
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
                 j["unit"] = "Ω";
@@ -529,8 +529,23 @@ int main(int argc, char **argv)
             else if (headers["Path"] == "/structure" && headers["Method"] == "GET")
             {
                 // TODO : return json structure file !
-                std::filesystem::directory_entry file("../structure.json");
-                server.sendFile(file, clients[i]);
+                try
+                {
+                    std::filesystem::directory_entry file("../structure.json");
+                    server.sendFile(file, clients[i]);
+                }
+                catch (const std::exception &e)
+                {
+                    std::cerr << "Error: " << e.what() << std::endl;
+                    ss = std::stringstream(); // reset the stream !
+                    ss << "HTTP/1.1 404 Not Found\r\n";
+                    ss << "Content-Type: application/json\r\n";
+                    ss << "Connection: close\r\n";
+                    ss << "\r\n";
+                    nlohmann::json j;
+                    j["error"] = "File not found";
+                    ss << j.dump();
+                }
             }
             else if (std::regex_match(headers["Path"], match, record_regex) && headers["Method"] == "GET")
             {
