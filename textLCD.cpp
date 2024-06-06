@@ -64,7 +64,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
     uint8_t *buffer = new uint8_t[width * height];
     memset(buffer, 0, width * height);
 
-    int current_x = x;
+    int current_x = 0;
     previous_char = NULL;
 
     for (wchar_t c : text)
@@ -105,8 +105,8 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         current_x += g->advance.x >> 6;
         previous_char = c;
     }
-
-    _lcd->drawBufferMono(buffer, color, bg_color, height, width);
+    // TODO : add offset for x !
+    _lcd->drawBufferMono(buffer, color, bg_color, height, width, x);
 
     delete[] buffer;
 }
