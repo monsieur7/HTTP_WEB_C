@@ -119,7 +119,7 @@ struct display_pass_data
 void continous_polling(redisQueue &q)
 {
     while (running)
-    {
+    { // TODO : unlock the mutex before the job is executed
         // mutex lock
         mtx.lock();
         q.startFirstJob();
