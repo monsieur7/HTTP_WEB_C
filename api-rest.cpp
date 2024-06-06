@@ -462,9 +462,9 @@ int main(int argc, char **argv)
             {
                 std::string body = headers["Body"];
                 // convert it to json
-                nlohmann::json j = nlohmann::json::parse(body);
                 try
                 {
+                    nlohmann::json j = nlohmann::json::parse(body);
                     std::wstring text = j["message"];
                 }
                 catch (const std::exception &e)
