@@ -215,10 +215,14 @@ void cleanupTempFiles_process(redisContext *c)
 }
 int displayText(void *arg)
 {
+    std::cerr << "Displaying text" << std::endl;
     display_pass_data *data = (display_pass_data *)arg;
+
     std::wstring text = data->text;
     textLCD *textDraw = data->textDraw;
     ST7735 *lcd = data->lcd;
+
+    std::cerr << "Text : " << data->text << std::endl;
     lcd->fillScreen(ST7735_BLACK);
     int width = 0;
     int height = 0;
