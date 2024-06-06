@@ -664,6 +664,10 @@ int main(int argc, char **argv)
     running = false;
     cleanupThread.join();
     continousPollingThread.join();
+    // free the redis context
+    redisFree(c);
+    redisFree(cleanup_context);
+    redisFree(add_file_cleanup);
 
     return 0;
 }
