@@ -229,7 +229,7 @@ int displayText(void *arg)
     int x = 0;
     int y = 0;
 
-    textDraw->textSize(text);
+    textDraw->textSize(text, &width, &height);
     if (width <= 0)
     {
         std::cerr << "Error: Text width is <= 0" << std::endl;
