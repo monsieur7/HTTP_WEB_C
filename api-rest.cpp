@@ -31,6 +31,7 @@
 #include "redisQueue.hpp"
 #include "FileTypeDetector.hpp"
 #define SENSOR_SUPPORT
+#define EASY_DEBUG
 //  JOBS :
 #include "job.hpp"
 // MUTEX :
@@ -268,10 +269,13 @@ int record_audio(void *arg)
 
 int main(int argc, char **argv)
 {
-    // cheating : adding argument for debug :
+#ifdef EASY_DEBUG // DEBUGGING
+    // cheating : adding argument for debug : (easy debugging)
     argc = 7;
+    // fixme : find a way to remove those warnings
     char *new_argv[] = {argv[0], "--key", "../raspberrypi-fr.local.key", "--cert", "../raspberrypi-fr.local.crt", "-r", "../recordings"};
     argv = new_argv;
+#endif
     // argument parsing
     struct arguments arguments;
     arguments.port = PORT;
