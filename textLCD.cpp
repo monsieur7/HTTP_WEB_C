@@ -91,9 +91,9 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
             current_x += kerning.x >> 6;
         }
 
-        for (unsigned int i = 0; i < bitmap.rows; ++i)
+        for (unsigned int i = x; i < bitmap.rows; ++i)
         {
-            for (unsigned int j = 0; j < bitmap.width; ++j)
+            for (unsigned int j = y; j < bitmap.width; ++j)
             {
                 if (bitmap.buffer[i * bitmap.width + j])
                 {
