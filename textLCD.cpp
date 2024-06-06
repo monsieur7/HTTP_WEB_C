@@ -111,7 +111,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
     delete[] buffer;
 }
 
-void textLCD::textSize(std::wstring text, int *x, int *y)
+void textLCD::textSize(std::wstring text)
 // two step rendering :
 // 1st : calculate the text bounding box
 // 2nd : render the text in the bounding box
