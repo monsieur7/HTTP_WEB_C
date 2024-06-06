@@ -64,7 +64,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
     uint8_t *buffer = new uint8_t[width * height];
     memset(buffer, 0, width * height);
 
-    int current_x = 0;
+    int current_x = x;
     previous_char = NULL;
 
     for (wchar_t c : text)
@@ -75,7 +75,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         }
 
         FT_Bitmap &bitmap = g->bitmap;
-        int y_offset = height - baseline - g->bitmap_top;
+        int y_offset = height - baseline - g->bitmap_top + y;
         std::wcerr << "char " << c << " y_offset : " << y_offset << " bitmap_top : " << g->bitmap_top << " bitmap_left : " << g->bitmap_left << std::endl;
         if (y_offset < 0)
         {
@@ -91,9 +91,9 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
             current_x += kerning.x >> 6;
         }
 
-        for (unsigned int i = y; i < bitmap.rows; ++i)
+        for (unsigned int i = 0; i < bitmap.rows; ++i)
         {
-            for (unsigned int j = x; j < bitmap.width; ++j)
+            for (unsigned int j = 0; j < bitmap.width; ++j)
             {
                 if (bitmap.buffer[i * bitmap.width + j])
                 {
