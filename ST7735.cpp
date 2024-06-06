@@ -329,11 +329,11 @@ void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, 
         {
             if (buffer[i * width + j] == 0)
             {
-                drawPixel(j - x_offset, i, bg_color);
+                drawPixel(j + x_offset, i, bg_color);
             }
             else
             {
-                drawPixel(j - x_offset, i, color);
+                drawPixel(j + x_offset, i, color);
             }
         }
     }
