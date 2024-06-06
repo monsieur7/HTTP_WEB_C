@@ -20,4 +20,5 @@ public:
     textLCD(std::string font_path, int pixel_size, ST7735 *lcd);
     ~textLCD();
     void drawText(std::wstring text, int x, int y, uint16_t color, uint16_t bg_color = ST7735_BLACK);
+    void textSize(std::wstring text, int *width, int *height);
 };

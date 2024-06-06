@@ -12,13 +12,16 @@
 #define PORT 8080 // port to listen on
 std::filesystem::directory_entry findFile(std::map<std::filesystem::directory_entry, std::string> &files, std::string file)
 {
+    // convert file to path
+    std::filesystem::path path = std::filesystem::path(file);
     if (file[0] != '/')
     {
         return std::filesystem::directory_entry();
     }
     for (const auto &entry : files)
     {
-        if (entry.first.path().filename() == file.substr(1))
+
+        if (entry.first.path().filename().stem() == path.filename().stem())
         {
             return entry.first;
         }
@@ -30,10 +33,10 @@ int main()
     // print pid :
     std::cout << "PID : " << getpid() << std::endl;
     FileTypeDetector ftd;
-    ftd.addSingleFileType("html", "text/html");
-    ftd.addSingleFileType("css", "text/css");
-    ftd.addSingleFileType("js", "text/javascript");
-    ftd.addSingleFileType("txt", "");
+    ftd.addSingleFileType(".html", "text/html");
+    ftd.addSingleFileType(".css", "text/css");
+    ftd.addSingleFileType(".js", "text/javascript");
+    ftd.addSingleFileType(".txt", "");
 
     std::string dir = "www";
     std::filesystem::path path = std::filesystem::current_path();
@@ -112,8 +115,7 @@ int main()
             std::filesystem::directory_entry file = findFile(file_types, headers["Path"]);
             if (file.path().filename() != "")
             {
-                int file_size = file.file_size();
-                std::string response = "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=UTF-8\r\nConnection: Close\r\nContent-Length: " + std::to_string(file_size) + "\r\n\r\n";
+                std::string response = std::string("HTTP/1.1 200 OK\r\nContent-Type: ") + std::string(file_types[file]) + std::string("; charset=UTF-8\r\nTransfer-Encoding: chunked\r\nConnection: Close\r\n\r\n\r\n");
                 s.sendSocket(response.c_str(), response.size(), clients[i]);
                 s.sendFile(file, clients[i]);
                 s.closeSocket(clients[i]); // close the connection

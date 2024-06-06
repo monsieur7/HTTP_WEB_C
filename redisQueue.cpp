@@ -3,6 +3,10 @@ redisQueue::redisQueue(redisContext *r)
 {
     redis = r;
     connect();
+    // clear queue :
+    redisReply *reply;
+    reply = (redisReply *)redisCommand(redis, "DEL jobs");
+    freeReplyObject(reply);
 }
 redisQueue::~redisQueue()
 {
@@ -52,14 +56,14 @@ void redisQueue::getJob(int id)
 void redisQueue::enqueue(job j)
 {
     redisReply *reply;
-    reply = (redisReply *)redisCommand(redis, "RPUSH jobs %d", j.get_id());
+    reply = (redisReply *)redisCommand(redis, "LPUSH jobs %d", j.get_id());
     freeReplyObject(reply);
     jobs[j.get_id()] = j;
 }
 void redisQueue::dequeue()
 {
     redisReply *reply;
-    reply = (redisReply *)redisCommand(redis, "LPOP jobs");
+    reply = (redisReply *)redisCommand(redis, "RPOP jobs");
     freeReplyObject(reply);
 }
 void redisQueue::removeJob(int id)
@@ -89,12 +93,12 @@ void redisQueue::startFirstJob()
         freeReplyObject(reply);
         return;
     }
-    if (reply->type != REDIS_REPLY_STRING && reply->type != REDIS_REPLY_NIL)
+    if (!(reply->type == REDIS_REPLY_STRING || reply->type == REDIS_REPLY_NIL || reply->type == REDIS_REPLY_INTEGER))
     {
-        std::cerr << "Error: Invalid reply type" << std::endl;
+        std::cerr << "Error: Invalid reply type in Redis Queue" << std::endl;
         std::cerr << "Error: " << reply->type << std::endl;
         freeReplyObject(reply);
-        throw std::runtime_error("Error: Invalid reply type");
+        return;
     }
     if (reply->str == NULL || reply->type == REDIS_REPLY_NIL)
     {
@@ -103,5 +107,6 @@ void redisQueue::startFirstJob()
     }
     int id = strtol(reply->str, NULL, 10);
     freeReplyObject(reply);
+    std::cerr << "Starting job with ID: " << id << std::endl;
     startJob(id);
 }

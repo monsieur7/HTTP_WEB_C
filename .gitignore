@@ -5,3 +5,5 @@ build/*
 *.pcapng
 
 .cmake_install.cmake
+recordings/*
+build_pi/*

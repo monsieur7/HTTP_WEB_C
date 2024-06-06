@@ -120,14 +120,42 @@ void SocketSecure::sendFile(std::filesystem::directory_entry file, int client_fd
         return;
     }
     char buf[4096];
+    char encoding[100];
     while (file_stream.read(buf, 4096))
     {
+        // chunked transfer encoding
+        sprintf(encoding, "%x\r\n", 4096);
+        if (SSL_write(_ssl_clients[client_fd], encoding, strlen(encoding)) <= 0)
+        {
+            ERR_print_errors_fp(stderr);
+        }
+
         if (SSL_write(_ssl_clients[client_fd], buf, 4096) <= 0)
         {
             ERR_print_errors_fp(stderr);
         }
+        // write CRLF
+        if (SSL_write(_ssl_clients[client_fd], "\r\n", 2) <= 0)
+        {
+            ERR_print_errors_fp(stderr);
+        }
     }
-    if (SSL_write(_ssl_clients[client_fd], buf, file_stream.gcount()) <= 0)
+    sprintf(encoding, "%x\r\n", file_stream.gcount());
+    if (SSL_write(_ssl_clients[client_fd], encoding, strlen(encoding)) <= 0) // This should be encoding
+    {
+        ERR_print_errors_fp(stderr);
+    }
+    if (SSL_write(_ssl_clients[client_fd], buf, file_stream.gcount()) <= 0) // This should be buf
+    {
+        ERR_print_errors_fp(stderr);
+    }
+    // write CRLF
+    if (SSL_write(_ssl_clients[client_fd], "\r\n", 2) <= 0)
+    {
+        ERR_print_errors_fp(stderr);
+    }
+    // send empty chunk
+    if (SSL_write(_ssl_clients[client_fd], "0\r\n\r\n", 5) <= 0)
     {
         ERR_print_errors_fp(stderr);
     }

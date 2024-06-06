@@ -321,7 +321,9 @@ uint32_t ST7735::alpha_blending(uint32_t color, uint8_t alpha)
     return (r << 16) | (g << 8) | b;
 }
 // TODO optimize this function
-void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, size_t height, size_t width)
+void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, size_t height, size_t width, int x_offset)
+// the screen is rotated by 90° and flipped horizontally !
+// for x offset that means that is in reality a y offset !
 {
     for (int i = 0; i < height; i++)
     {
@@ -329,12 +331,21 @@ void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, 
         {
             if (buffer[i * width + j] == 0)
             {
-                drawPixel(j, i, bg_color);
+                drawPixel(j + x_offset, i, bg_color);
             }
             else
             {
-                drawPixel(j, i, color);
+                drawPixel(j + x_offset, i, color);
             }
         }
     }
+}
+
+int ST7735::getWidth() const
+{
+    return this->_width;
+}
+int ST7735::getHeight() const
+{
+    return this->_height;
 }

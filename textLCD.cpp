@@ -22,7 +22,11 @@ textLCD::~textLCD()
     FT_Done_FreeType(_ft);
 }
 void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t bg_color)
+// two step rendering :
+// 1st : calculate the text bounding box
+// 2nd : render the text in the bounding box
 {
+    // for all calculations see https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py as a reference (its a good starting point !)
     FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
     wchar_t previous_char = NULL;
@@ -49,9 +53,11 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
             FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
             FT_UInt right_glyph = FT_Get_Char_Index(_face, c);
             FT_Get_Kerning(_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning);
-            width += kerning.x >> 6;
+            width += kerning.x >> 6; // adjust width with kerning
+            // kerning.x is in 1/64th of a pixel
         }
         width += g->advance.x >> 6;
+        // advance.x is in 1/64th of a pixel
         previous_char = c;
     }
 
@@ -69,7 +75,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         }
 
         FT_Bitmap &bitmap = g->bitmap;
-        int y_offset = height - baseline - g->bitmap_top;
+        int y_offset = height - baseline - g->bitmap_top + y;
         std::wcerr << "char " << c << " y_offset : " << y_offset << " bitmap_top : " << g->bitmap_top << " bitmap_left : " << g->bitmap_left << std::endl;
         if (y_offset < 0)
         {
@@ -99,8 +105,52 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         current_x += g->advance.x >> 6;
         previous_char = c;
     }
-
-    _lcd->drawBufferMono(buffer, color, bg_color, height, width);
+    // TODO : add offset for x !
+    _lcd->drawBufferMono(buffer, color, bg_color, height, width, x);
 
     delete[] buffer;
+}
+
+void textLCD::textSize(std::wstring text, int *x, int *y)
+// two step rendering :
+// 1st : calculate the text bounding box
+// 2nd : render the text in the bounding box
+{
+    // for all calculations see https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py as a reference (its a good starting point !)
+    FT_Int baseline = 0, height = 0, width = 0;
+    FT_GlyphSlot g = _face->glyph;
+    wchar_t previous_char = NULL;
+
+    // Calculate baseline, height, and width
+    for (wchar_t c : text)
+    {
+        if (FT_Load_Char(_face, c, FT_LOAD_RENDER))
+        {
+            throw std::runtime_error("Error loading character");
+        }
+        // get bbox :
+        FT_BBox bbox;
+        FT_Glyph glyph;
+        FT_Get_Glyph(g, &glyph);
+        FT_Glyph_Get_CBox(glyph, FT_GLYPH_BBOX_PIXELS, &bbox);
+
+        baseline = std::max(baseline, (FT_Int)(-(bbox.yMin))); // - because yMin is negative and y axis is in reverse
+        height = std::max(height, (FT_Int)(bbox.yMax - bbox.yMin));
+        std::wcerr << "char " << c << "height : " << height << " width : " << width << " baseline : " << baseline << " yMax : " << bbox.yMax << " yMin : " << bbox.yMin << std::endl;
+        if (previous_char != NULL)
+        {
+            FT_Vector kerning;
+            FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
+            FT_UInt right_glyph = FT_Get_Char_Index(_face, c);
+            FT_Get_Kerning(_face, left_glyph, right_glyph, FT_KERNING_DEFAULT, &kerning);
+            width += kerning.x >> 6; // adjust width with kerning
+            // kerning.x is in 1/64th of a pixel
+        }
+        width += g->advance.x >> 6;
+        // advance.x is in 1/64th of a pixel
+        previous_char = c;
+    }
+
+    *x = width;
+    *y = height;
 }

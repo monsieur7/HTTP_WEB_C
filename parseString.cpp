@@ -59,7 +59,13 @@ std::map<std::string, std::string> ParseString::parseRequest()
                 value = match[3];
                 result[key] = value;
             }
+            // test for end of header
+            else if (line == "\r\n")
+            {
+                break;
+            }
         }
+        result["Body"] = data_.substr(data_.find("\r\n\r\n") + 4);
     }
 
     return result;

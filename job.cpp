@@ -14,7 +14,12 @@ job::job()
 }
 
 int job::run()
+
 {
+    if (job_func == nullptr)
+    {
+        return -1;
+    }
     return job_func(arg);
 }
 

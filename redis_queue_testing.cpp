@@ -124,7 +124,7 @@ void cleanupTempFiles_process(redisContext *c)
     {
         cleanupTempFile(c);
         std::cerr << "Cleaning up temporary files" << std::endl;
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::minutes(5));
     }
 }
 
