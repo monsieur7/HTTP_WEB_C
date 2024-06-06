@@ -7,7 +7,7 @@
 #include <regex>
 #include <argp.h>
 #include <thread>
-
+#include <mutex>
 #include <codecvt>
 #include <locale>
 
@@ -33,6 +33,8 @@
 #define SENSOR_SUPPORT
 //  JOBS :
 #include "job.hpp"
+// MUTEX :
+std::mutex mtx;
 
 // Argument parsing definitions
 #define PORT 8050 // port to listen on
@@ -118,7 +120,11 @@ void continous_polling(redisQueue &q)
 {
     while (running)
     {
+        // mutex lock
+        mtx.lock();
         q.startFirstJob();
+        mtx.unlock();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     std::cout << "Exiting continous polling" << std::endl;
 }
@@ -510,6 +516,7 @@ int main(int argc, char **argv)
 
                 job display(displayText, (void *)new display_pass_data{wstr, &textWriter, &lcd}, id);
                 id++;
+                std::lock_guard<std::mutex> lock(mtx);
                 queue.addJob(display);
                 std::cerr << "Launching Text Display !" << std::endl;
 #else
@@ -573,6 +580,7 @@ int main(int argc, char **argv)
                 job record(record_audio, (void *)new audio_pass_data{5, filename, add_file_cleanup}, id);
                 std::cerr << "Job ID: " << record.get_id() << std::endl;
                 id += 1; // increment the id
+                std::lock_guard<std::mutex> lock(mtx);
                 queue.addJob(record);
                 std::cerr << "Job added to queue" << std::endl;
                 nlohmann::json j;
