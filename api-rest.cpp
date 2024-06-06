@@ -245,7 +245,7 @@ int displayText(void *arg)
     {
         lcd->fillScreen(ST7735_BLACK);
         textDraw->drawText(text, x + i, y, ST7735_WHITE);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     return 0;
 }
