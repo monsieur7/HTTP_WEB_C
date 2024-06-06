@@ -503,7 +503,8 @@ int main(int argc, char **argv)
                 std::cerr << "Display not supported" << std::endl;
 #endif
                 // body is in headers["Body"]
-                // TODO : add the display task to the redis queue !
+                // respond with json :
+                // TODO !
             }
             else if (headers["Path"] == "/structure" && headers["Method"] == "GET")
             {
