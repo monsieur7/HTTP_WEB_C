@@ -8,6 +8,9 @@
 #include <argp.h>
 #include <thread>
 
+#include <codecvt>
+#include <locale>
+
 // INTERNAL LIBS :
 #include "ADS1015.hpp"
 #include "BME280.hpp"
@@ -461,11 +464,12 @@ int main(int argc, char **argv)
             else if (headers["Path"] == "/display" && headers["Method"] == "POST")
             {
                 std::string body = headers["Body"];
+                std::string text;
                 // convert it to json
                 try
                 {
                     nlohmann::json j = nlohmann::json::parse(body);
-                    std::wstring text = j["message"];
+                    text = j["message"];
                 }
                 catch (const std::exception &e)
                 {
@@ -483,7 +487,11 @@ int main(int argc, char **argv)
                     continue;
                 }
 #ifdef SENSOR_SUPPORT
-                job display(displayText, (void *)new display_pass_data{text, &textWriter, &lcd}, id);
+                // convert text to utf32 std::wstring
+                std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
+                std::wstring wstr = convert.from_bytes(text);
+
+                job display(displayText, (void *)new display_pass_data{wstr, &textWriter, &lcd}, id);
                 id++;
                 queue.addJob(display);
                 std::cerr << "Launching Text Display !" << std::endl;
@@ -523,6 +531,7 @@ int main(int argc, char **argv)
                     std::filesystem::directory_entry file(filePath);
 
                     server.sendFile(file, clients[i]);
+                    ss = std::stringstream(); // reset the stream !
                 }
                 else
                 {
@@ -593,8 +602,15 @@ int main(int argc, char **argv)
                 j["error"] = "Route not found";
                 ss << j.dump();
             }
-
-            server.sendSocket(ss.str(), clients[i]);
+            if (ss.str().empty())
+            {
+                std::cerr << "Error: Empty response" << std::endl;
+                continue;
+            }
+            else
+            {
+                server.sendSocket(ss.str(), clients[i]);
+            }
             server.closeSocket(clients[i]); // close the connection !
         }
     }
