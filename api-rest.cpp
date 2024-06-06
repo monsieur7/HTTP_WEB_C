@@ -222,7 +222,7 @@ int displayText(void *arg)
     textLCD *textDraw = data->textDraw;
     ST7735 *lcd = data->lcd;
 
-    std::cerr << "Text : " << data->text << std::endl;
+    std::wcerr << "Text : " << data->text << std::endl;
     lcd->fillScreen(ST7735_BLACK);
     int width = 0;
     int height = 0;
