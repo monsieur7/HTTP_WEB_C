@@ -322,6 +322,8 @@ uint32_t ST7735::alpha_blending(uint32_t color, uint8_t alpha)
 }
 // TODO optimize this function
 void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, size_t height, size_t width, int x_offset)
+// the screen is rotated by 90° and flipped horizontally !
+// for x offset that means that is in reality a y offset !
 {
     for (int i = 0; i < height; i++)
     {
