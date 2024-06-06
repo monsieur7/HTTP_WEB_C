@@ -238,7 +238,7 @@ int displayText(void *arg)
     for (int i = 0; i <= width + lcd->getWidth(); i++)
     {
         lcd->fillScreen(ST7735_BLACK);
-        textDraw->drawText(text, x - i, y, ST7735_WHITE);
+        textDraw->drawText(text, x + i, y, ST7735_WHITE);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     return 0;
