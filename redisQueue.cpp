@@ -107,5 +107,6 @@ void redisQueue::startFirstJob()
     }
     int id = strtol(reply->str, NULL, 10);
     freeReplyObject(reply);
+    std::cerr << "Starting job with ID: " << id << std::endl;
     startJob(id);
 }
