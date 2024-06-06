@@ -327,6 +327,19 @@ int main(int argc, char **argv)
         }
         exit(1);
     }
+    if (add_file_cleanup == NULL || add_file_cleanup->err)
+    {
+        if (add_file_cleanup)
+        {
+            std::cerr << "Redis Error: " << add_file_cleanup->errstr << std::endl;
+            redisFree(add_file_cleanup);
+        }
+        else
+        {
+            std::cerr << "Error: Could not allocate redis context" << std::endl;
+        }
+        exit(1);
+    }
 
     redisQueue queue(c);
 
