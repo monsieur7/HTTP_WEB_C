@@ -15,7 +15,6 @@ jobs:
       with:
         repository: monsieur7/HTTP_WEB_C
         token: ${{ secrets.B_TOKEN }}
-        path: repo_B
 
     - name: Remove old files
       run: |
@@ -25,12 +24,11 @@ jobs:
       uses: actions/checkout@v3
       with:
         repository: monsieur7/INTELLIJ
-        path: repo_A
         token: ${{ secrets.A_TOKEN }}
 
     - name: Copy files from A to B
       run: |
-        cp -r ${{ github.workspace}}/repo_A/html/* ${{ github.workspace }}/repo_B/www/
+        cp -r ${{ github.workspace}}/INTELLIJ/html/ ${{ github.workspace }}/HTTP_WEB_C/www/
 
     - name: Commit and push changes
       run: |
