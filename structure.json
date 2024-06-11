@@ -1,0 +1,134 @@
+{
+    "endpoints": [
+        {
+            "url": "/temperature",
+            "description": "Endpoint to retrieve current temperature",
+            "method": "GET",
+            "response": {
+                "value": "Number (temperature value in Celsius)",
+                "timestamp": "String (timestamp of the temperature reading)",
+                "frequency": "Number (sensor frequency in Hz)",
+                "unit": "String °C"
+            }
+        },
+        {
+            "url": "/light",
+            "description": "Endpoint to retrieve current light intensity",
+            "method": "GET",
+            "response": {
+                "value": "Number (light intensity value in lux)",
+                "timestamp": "String (timestamp of the light reading)",
+                "frequency": "Number (fixed sensor frequency in Hz)",
+                "unit": "String (lux)"
+            }
+        },
+        {
+            "url": "/proximity",
+            "description": "Endpoint to retrieve current proximity",
+            "method": "GET",
+            "response": {
+                "value": "Number (proximity value in cm)",
+                "timestamp": "String (timestamp of the proximity reading)",
+                "frequency": "Number (sensor frequency in Hz)",
+                "unit": "String (proximity)"
+            }
+        },
+        {
+            "url": "/humidity",
+            "description": "Endpoint to retrieve current humidity",
+            "method": "GET",
+            "response": {
+                "value": "Number (humidity value in percentage)",
+                "timestamp": "String (timestamp of the humidity reading)",
+                "frequency": "Number (sensor frequency in Hz)",
+                "unit": "String (%)"
+            }
+        },
+        {
+            "url": "/pressure",
+            "description": "Endpoint to retrieve current pressure",
+            "method": "GET",
+            "response": {
+                "value": "Number (pressure value in hPa)",
+                "timestamp": "String (timestamp of the pressure reading)",
+                "frequency": "Number (sensor frequency in Hz)",
+                "unit": "String (hPa)"
+            }
+        },
+        {
+            "url": "/altitude",
+            "description": "Endpoint to retrieve current altitude",
+            "method": "GET",
+            "response": {
+                "value": "Number (altitude value in meters)",
+                "timestamp": "String (timestamp of the altitude reading)",
+                "frequency": "Number (sensor frequency in Hz)",
+                "unit": "String (m)"
+            }
+        },
+        {
+            "url": "/gas",
+            "description": "Endpoint to retrieve gas sensor readings",
+            "method": "GET",
+            "response": {
+                "oxidising": "String (oxidising gas value)",
+                "reducing": "String (reducing gas value)",
+                "nh3": "String (NH3 gas value)",
+                "timestamp": "String (timestamp of the gas readings)",
+                "unit": "String (Ω)"
+            }
+        },
+        {
+            "url": "/mic/record",
+            "description": "Endpoint to record audio",
+            "method": "GET",
+            "response": {
+                "job_id": "String (job ID for the audio recording)",
+                "filename": "String (filename of the audio recording)",
+                "validity": "Integer (validity of the audio recording)",
+                "unit": "String (audio)"
+            }
+        },
+        {
+            "url": "/recordings/<filename>",
+            "description": "Endpoint to retrieve audio recordings",
+            "method": "GET",
+            "response": {
+                "file": "audio/wav (audio file)"
+            }
+        },
+        {
+            "url": "/display",
+            "description": "Endpoint to queue a display task",
+            "method": "POST",
+            "request": {
+                "text": "String (text to display)",
+                "duration": "Number (display duration in seconds)"
+            },
+            "response": {
+                "job_id": "String (queued job ID for the display task)"
+            }
+        },
+        {
+            "url": "/structure",
+            "description": "Endpoint to retrieve the structure of the data",
+            "method": "GET",
+            "request": {},
+            "response": {
+                "data": "This file"
+            }
+        },
+        {
+            "url": "/job/<job_id>",
+            "description": "Endpoint to retrieve the status of a job",
+            "method": "GET",
+            "request": {
+                "job_id": "String (job ID)"
+            },
+            "response": {
+                "job_id": "String (job ID)",
+                "status": "String (job status)"
+            }
+        }
+    ]
+}
