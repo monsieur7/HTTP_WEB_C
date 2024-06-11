@@ -29,7 +29,7 @@ jobs:
 
     - name: Copy files from A to B
       run: |
-        cp -r INTELLIJ/html/* ./www/
+        cp -r INTELLIJ/html/* ${{ github.workspace }}/repo_A/www/
 
     - name: Commit and push changes
       run: |
