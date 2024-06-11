@@ -19,7 +19,7 @@ jobs:
     - name: Print Repo B Directory
       run: ls -la
 
-    - name: Print Repo B Directory after Cleanup
+    - name: Print Repo B Directory
       run: ls -la
 
     - name: Checkout Repo A
