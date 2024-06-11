@@ -248,7 +248,7 @@ int displayText(void *arg)
         std::cerr << "Error: Text width is <= 0" << std::endl;
         return -1;
     }
-    for (int i = 0; i <= width + lcd->getWidth(); i += speed)
+    for (size_t i = 0; i <= width + lcd->getWidth(); i += speed)
     {
         lcd->fillScreen(ST7735_BLACK);
         textDraw->drawText(text, x + i, y, color16);

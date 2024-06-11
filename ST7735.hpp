@@ -112,8 +112,8 @@ public:
     uint16_t color565(uint8_t grayscale);
     uint32_t alpha_blending(uint32_t color, uint8_t alpha);
     void drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, size_t height, size_t width, int x_offset = 0);
-    int getWidth() const;
-    int getHeight() const;
+    size_t getWidth() const;
+    size_t getHeight() const;
 };
 
 #endif // ST7735_HPP
