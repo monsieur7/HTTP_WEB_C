@@ -51,5 +51,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: build/* # Adjust the path to the actual location of your built executables
+        tag_name: ${{ github.sha }}
       env:
         GITHUB_TOKEN: ${{ secrets.A_TOKEN }}
