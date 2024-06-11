@@ -432,6 +432,7 @@ int main(int argc, char **argv)
             // reegex declaration :
             std::regex record_regex("/recordings/([a-zA-Z0-9]+)");
             std::smatch match;
+            std::regex job_regex("/job/([0-9]+)");
             if (headers["Path"] == "/temperature" && headers["Method"] == "GET")
             {
                 // return temperature as json
@@ -610,8 +611,6 @@ int main(int argc, char **argv)
             }
             // JOB ID:
             // PATH : /job/<job_id>
-            std::regex job_regex("/job/([0-9]+)");
-            std::smatch match;
             else if (headers["Method"] == "GET" && std::regex_match(headers["Path"], match, job_regex))
             {
                 // extract the job id from the path
@@ -620,7 +619,7 @@ int main(int argc, char **argv)
                 // job_status status = queue.getJobStatus(job_id);
                 // create a json response
                 nlohmann::json j;
-                j["job_id"] = match[1].str();
+                j["job_id"] = job_id;
                 j["status"] = "Not implemented";
                 ss << j.dump();
             }
