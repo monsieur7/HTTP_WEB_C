@@ -87,8 +87,8 @@ include(GoogleTest)
 gtest_discover_tests(unit_tests)
 
 # compile main_testing :
-add_executable(main_testing main_testing.cpp socketSecure.cpp socketSecure.hpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp)
-target_link_libraries(main_testing ${OPENSSL_LIBRARIES})
+add_executable(http_webserver http_webserver.cpp socketSecure.cpp socketSecure.hpp socket.cpp socket.hpp parseString.cpp parseString.hpp generateHeaders.cpp generateHeaders.hpp FileTypeDetector.hpp FileTypeDetector.cpp)
+target_link_libraries(http_webserver ${OPENSSL_LIBRARIES})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Wextra -Wpedantic -std=c++2a")
 
 # compile redis_queue_testings :
