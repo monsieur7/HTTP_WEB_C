@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style/style.css">
     <title>Record Microphone</title>
 </head>
+
 <body>
     <h1>Record Microphone</h1>
     <button id="recordButton">Start Recording</button>
     <audio controls id="audioPlayer" style="display: none;"></audio>
-    <button id="back-button">Retour</button>
+    <button id="back-button">Return</button>
 
     <script>
-        document.getElementById('recordButton').addEventListener('click', function() {
+        document.getElementById('recordButton').addEventListener('click', function () {
             fetch('https://raspberrypi-fr.local:8050/mic/record')
                 .then(response => {
                     if (!response.ok) {
@@ -35,9 +37,10 @@
                 });
         });
 
-        document.getElementById('back-button').addEventListener('click', function() {
+        document.getElementById('back-button').addEventListener('click', function () {
             history.back();
         });
     </script>
 </body>
+
 </html>

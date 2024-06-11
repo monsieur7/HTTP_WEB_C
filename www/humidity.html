@@ -1,30 +1,99 @@
 <!DOCTYPE html>
-<html lang ="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="style/style.css">
-    </head>
-    <title>Humidity Sensor Details</title>
-</head>
-<body>
-    <h1>Humidity Sensor Details</h1>
-    
-    <div id="humidity-details">
-        <h2>Humidity</h2>
-        <p id="humidity-value">Loading...</p>
-        <p id="humidity-date">Loading...</p>
-        <p id="humidity-frequency">Loading...</p>
-    </div>
-    <button id="back-button">Retour</button>
+<html lang="en">
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <title>Humidity Sensor Details</title>
+    <style>
+        /* Add the CSS here for simplicity */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+
+        }
+
+        .container {
+            display: grid;
+            grid-template-areas:
+                "header"
+                "details"
+                "charts"
+                "button";
+            gap: 20px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            grid-area: header;
+            text-align: center;
+        }
+
+        #humidity-details {
+            grid-area: details;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 0 5px 10px rgba(167, 167, 167, 0.3);
+        }
+
+        #charts {
+            grid-area: charts;
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Humidity Sensor Details</h1>
+
+        <div id="humidity-details">
+            <h2>Humidity</h2>
+            <p id="humidity-value">Loading...</p>
+            <p id="humidity-date">Loading...</p>
+            <p id="humidity-frequency">Loading...</p>
+        </div>
+        <div id="charts">
+        </div>
+        <button id="back-button">Return</button>
+    </div>
     <script>
-        let frequency=10;
+        // Load the Visualization API and the corechart package.
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(initChart);
+        let frequency = 10;
+        let dataTable = {};
+        let chart = {};
+        let container = {};
+
         function getHumidityData() {
             fetch('https://raspberrypi-fr.local:8050/humidity')
                 .then(response => response.json())
                 .then(data => {
-                    document.getElementById('humidity-value').textContent = `Value: ${data.value}%`;
+                    if (Object.keys(dataTable).length !== 0) { // If data has been loaded (Google Charts also)
+                        let timestamp = new Date(data.timestamp);
+                        dataTable.addRow([timestamp, data.value]);
+                        if (dataTable.getNumberOfRows() > 50) {
+                            dataTable.removeRow(0);
+                        }
+                        drawChart();
+                    }
+                    document.getElementById('humidity-value').textContent = `Value: ${data.value} ${data.unit}`;
                     document.getElementById('humidity-date').textContent = `Date: ${data.timestamp}`;
                     document.getElementById('humidity-frequency').textContent = `Frequency: ${data.frequency} Hz`;
                     frequency = parseInt(data.frequency)
@@ -32,14 +101,39 @@
                 .catch(error => console.error('Error fetching humidity data:', error));
 
         }
+        function drawChart() {
+            chart.draw(dataTable, {
+                title: 'Humidity Sensor',
+                curveType: 'function',
+                legend: { position: 'bottom' },
+                hAxis: {
+                    title: 'Time',
+                    format: 'HH:mm:ss'
+                },
+                vAxis: {
+                    title: 'Humidity (%)',
+                    format: '#\'%\''
+                },
+                width: '100%',
+                height: '100%'
+            });
+        }
+        function initChart() {
+            dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('datetime', 'Time');
+            dataTable.addColumn('number', 'Humidity');
+            container = document.getElementById('charts');
+            chart = new google.visualization.LineChart(container);
+        }
 
         getHumidityData();
 
-        setInterval(getHumidityData, 1000/frequency);
+        setInterval(getHumidityData, 1000);
 
-        document.getElementById('back-button').addEventListener('click', function() {
+        document.getElementById('back-button').addEventListener('click', function () {
             history.back();
         });
     </script>
 </body>
+
 </html>
