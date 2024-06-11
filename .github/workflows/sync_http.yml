@@ -16,19 +16,32 @@ jobs:
         repository: monsieur7/HTTP_WEB_C
         token: ${{ secrets.B_TOKEN }}
 
+    - name: Print Repo B Directory
+      run: ls -la
+
     - name: Remove old files
       run: |
         rm -rf ./*
+
+    - name: Print Repo B Directory after Cleanup
+      run: ls -la
 
     - name: Checkout Repo A
       uses: actions/checkout@v3
       with:
         repository: monsieur7/INTELLIJ
+        path: repo_A
         token: ${{ secrets.A_TOKEN }}
+
+    - name: Print Repo A Directory
+      run: ls -la repo_A
 
     - name: Copy files from A to B
       run: |
-        cp -r ${{ github.workspace}}/INTELLIJ/html/ ${{ github.workspace }}/HTTP_WEB_C/www/
+        cp -r repo_A/html/* ./www/
+
+    - name: Print Repo B Directory after Copy
+      run: ls -la
 
     - name: Commit and push changes
       run: |
