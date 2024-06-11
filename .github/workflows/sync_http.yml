@@ -38,7 +38,7 @@ jobs:
 
     - name: Copy files from A to B
       run: |
-        cp -r repo_A/html/* ./www/
+        cp -r repo_A/PROJECT_CODE/html/* ./www/
 
     - name: Print Repo B Directory after Copy
       run: ls -la
