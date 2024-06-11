@@ -608,6 +608,21 @@ int main(int argc, char **argv)
                 }
                 // TODO: handle the GET request for recordings/<filename>
             }
+            // JOB ID:
+            // PATH : /job/<job_id>
+            std::regex job_regex("/job/([0-9]+)");
+            else if (headers["Method"] == "GET" && std::regex_match(headers["Path"], match, job_regex))
+            {
+                // extract the job id from the path
+                int job_id = std::stoi(match[1].str());
+                // get the job status
+                job_status status = queue.getJobStatus(job_id);
+                // create a json response
+                nlohmann::json j;
+                j["job_id"] = job_id;
+                j["status"] = status;
+                ss << j.dump();
+            }
             else if (headers["Method"] == "GET" && headers["Path"] == "/mic/record")
             {
                 // TODO
