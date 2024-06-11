@@ -30,7 +30,7 @@ jobs:
 
     - name: Copy files from A to B
       run: |
-        cp -r ${{ github.workspace}}/repo_B/html/* ${{ github.workspace }}/repo_A/www/
+        cp -r ${{ github.workspace}}/repo_A/html/* ${{ github.workspace }}/repo_B/www/
 
     - name: Commit and push changes
       run: |
