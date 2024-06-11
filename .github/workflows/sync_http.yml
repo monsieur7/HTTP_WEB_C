@@ -19,10 +19,6 @@ jobs:
     - name: Print Repo B Directory
       run: ls -la
 
-    - name: Remove old files
-      run: |
-        rm -rf ./*
-
     - name: Print Repo B Directory after Cleanup
       run: ls -la
 
