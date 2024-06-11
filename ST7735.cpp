@@ -325,9 +325,9 @@ void ST7735::drawBufferMono(uint8_t *buffer, uint16_t color, uint16_t bg_color, 
 // the screen is rotated by 90° and flipped horizontally !
 // for x offset that means that is in reality a y offset !
 {
-    for (int i = 0; i < height; i++)
+    for (size_t i = 0; i < height; i++)
     {
-        for (int j = 0; j < width; j++)
+        for (size_t j = 0; j < width; j++)
         {
             if (buffer[i * width + j] == 0)
             {
