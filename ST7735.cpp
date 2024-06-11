@@ -278,7 +278,7 @@ void ST7735::setWindow(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1)
 void ST7735::fillScreen(u_int16_t color)
 {
     setWindow(0, 0, this->_width - 1, this->_height - 1);
-    for (int i = 0; i < this->_width * this->_height; i++)
+    for (size_t i = 0; i < this->_width * this->_height; i++)
     {
         writeData(color >> 8);
         writeData(color & 0xFF);
@@ -288,7 +288,7 @@ void ST7735::fillScreen(u_int16_t color)
 void ST7735::drawFullScreen(uint16_t *buffer)
 {
     setWindow(0, 0, this->_height - 1, this->_width - 1);
-    for (int i = 0; i < this->_width * this->_height; i++)
+    for (size_t i = 0; i < this->_width * this->_height; i++)
     {
         writeData(buffer[i] >> 8);
         writeData(buffer[i] & 0xFF);
