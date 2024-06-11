@@ -13,7 +13,7 @@ jobs:
     - name: Checkout Repo B
       uses: actions/checkout@v3
       with:
-        repository: monsieur7/INTELLIJ
+        repository: monsieur7/HTTP_WEB_C
         token: ${{ secrets.B_TOKEN }}
 
     - name: Remove old files
@@ -23,7 +23,7 @@ jobs:
     - name: Checkout Repo A
       uses: actions/checkout@v3
       with:
-        repository: monsieur7/HTTP_WEB_C
+        repository: monsieur7/INTELLIJ
         path: repo_A
         token: ${{ secrets.A_TOKEN }}
 
