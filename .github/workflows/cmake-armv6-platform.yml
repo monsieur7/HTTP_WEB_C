@@ -45,3 +45,16 @@ jobs:
             # Configure and build the project
             cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
             cmake --build build --config ${{env.BUILD_TYPE}}
+    
+    - name: Upload built executables
+      uses: actions/upload-artifact@v3
+      with:
+        name: my-built-executables
+        path: build/* # Adjust the path to the actual location of your built executables
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/* # Adjust the path to the actual location of your built executables
+      env:
+        GITHUB_TOKEN: ${{ secrets.A_TOKEN }}
