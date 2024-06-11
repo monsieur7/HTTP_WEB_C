@@ -1,16 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style/style.css">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>Gas Sensor Details</title>
+    <style>
+        /* Add the CSS here for simplicity */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            display: grid;
+            grid-template-areas:
+                "header"
+                "details"
+                "charts"
+                "button";
+            gap: 20px;
+            width: 90%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            grid-area: header;
+            text-align: center;
+        }
+
+        #gas-details {
+            grid-area: details;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 0 5px 10px rgba(167, 167, 167, 0.3);
+        }
+
+        #chart_div {
+            grid-area: charts;
+            width: 100%;
+            height: 400px;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Gas Details</h1>
-        
-        <!-- Conteneur pour les détails du capteur de lumière -->
+
         <div id="gas-details">
             <h2>Gas</h2>
             <p id="oxidising">Loading...</p>
@@ -19,34 +69,80 @@
             <p id="gas-date">Loading...</p>
         </div>
 
-        <!-- Bouton Retour -->
+        <!-- Container for the Graph -->
+        <div id="chart_div"></div>
+
+        <!-- Back Button -->
         <button id="back-button">Retour</button>
     </div>
 
     <script>
-        // Récupération des données du capteur de lumière
+        google.charts.load('current', { packages: ['corechart'] });
+        google.charts.setOnLoadCallback(initChart);
+
+        let dataTable = {};
+        let chart = {};
+        let container = {};
+
         function getGas() {
-            fetch('https://raspberrypi-fr.local:8050/gas', {headers: {'Accept': 'application/json'}})
+            fetch('https://raspberrypi-fr.local:8050/gas', { headers: { 'Accept': 'application/json' } })
                 .then(response => response.json())
                 .then(data => {
-                    // Affichage des données dans la page
-                    document.getElementById('oxidising').textContent = `Oxidising: ${data.oxidising} Ohms`;
-                    document.getElementById('reducing').textContent = `Reducing: ${data.reducing} Ohms`;
-                    document.getElementById('nh3').textContent = `NH3: ${data.nh3} Ohms`;
-                    document.getElementById('gas-date').textContent = `Date: ${data.timestamp}`;
+                    //put data in french format
+
+                    let timestamp = new Date(data.timestamp);
+
+                    dataTable.addRow([timestamp, Number(data.oxidising) / 1000, Number(data.reducing) / 1000, Number(data.nh3) / 1000]);
+
+                    if (dataTable.getNumberOfRows() > 50) {
+                        dataTable.removeRow(0);
+                    }
+
+                    drawChart();
+
+                    document.getElementById('oxidising').textContent = `Oxidising: ${Number(data.oxidising / 1000).toFixed(2)} ${data.unit}`;
+                    document.getElementById('reducing').textContent = `Reducing: ${Number(data.reducing / 1000).toFixed(2)} ${data.unit}`;
+                    document.getElementById('nh3').textContent = `NH3: ${Number(data.nh3 / 1000).toFixed(2)} ${data.unit}`;
+                    document.getElementById('gas-date').textContent = `Date: ${timestamp.toLocaleString()}`;
                 })
-                .catch(error => console.error('Error fetching temperature data:', error));
-                
+                .catch(error => console.error('Error fetching gas data:', error));
         }
 
-            getGas();
-            setInterval(getGas,100);
+        function drawChart() {
+            chart.draw(dataTable, {
+                title: 'Gas Sensor Data',
+                curveType: 'function',
+                legend: { position: 'bottom' },
+                hAxis: {
+                    title: 'Time',
+                    format: 'HH:mm:ss'
+                },
+                vAxis: {
+                    title: 'Resistance',
+                    format: '#\'KΩ\''
+                }
+            });
+        }
 
-        // Ajout d'un gestionnaire d'événements pour le bouton Retour
-        document.getElementById('back-button').addEventListener('click', function() {
-            // Redirection vers la page précédente
+        function initChart() {
+            dataTable = new google.visualization.DataTable();
+            dataTable.addColumn('datetime', 'Timestamp');
+            dataTable.addColumn('number', 'Oxidising');
+            dataTable.addColumn('number', 'Reducing');
+            dataTable.addColumn('number', 'NH3');
+
+            container = document.getElementById('charts');
+            chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+
+            getGas();
+            setInterval(getGas, 1000);
+        }
+
+        // Adding an event handler for the Back button
+        document.getElementById('back-button').addEventListener('click', function () {
             history.back();
         });
     </script>
 </body>
+
 </html>
