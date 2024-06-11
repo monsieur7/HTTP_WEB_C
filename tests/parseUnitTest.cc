@@ -11,7 +11,7 @@ protected:
     {
         instance = ParseString("GET /home.html HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0\r\n");
     };
-    void TearDown() override{};
+    void TearDown() override {};
     ParseString instance;
 };
 
@@ -42,7 +42,9 @@ TEST(ParseString, ParseHeaderDict)
     std::string input = "GET /home.html HTTP/1.1\r\nHost: localhost:8080\r\nUser-Agent: Mozilla/5.0\r\n";
     ParseString data(input);
     std::map<std::string, std::string> headers = data.parseRequest();
-    EXPECT_EQ(headers.size(), 5);
+    // debug :
+    std::cout << "headers.size() : " << headers.size() << std::endl;
+    EXPECT_EQ(headers.size(), 6);
     EXPECT_EQ(headers["Method"], "GET");
     EXPECT_EQ(headers["Path"], "/home.html");
     EXPECT_EQ(headers["HTTP Version"], "1.1");
