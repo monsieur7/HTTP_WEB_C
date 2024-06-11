@@ -620,8 +620,8 @@ int main(int argc, char **argv)
                 // job_status status = queue.getJobStatus(job_id);
                 // create a json response
                 nlohmann::json j;
-                j["job_id"] = job_id;
-                j["status"] = status;
+                j["job_id"] = match[1].str();
+                j["status"] = "Not implemented";
                 ss << j.dump();
             }
             else if (headers["Method"] == "GET" && headers["Path"] == "/mic/record")
