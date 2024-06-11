@@ -93,8 +93,8 @@ private:
     uint8_t _spi_mode;
     uint8_t _spi_bits_per_word;
     uint32_t _spi_speed;
-    int _width;
-    int _height;
+    size_t _width;
+    size_t _height;
     int _offset_x; // OFFSET LEFT
     int _offset_y; // OFFSET TOP
 
