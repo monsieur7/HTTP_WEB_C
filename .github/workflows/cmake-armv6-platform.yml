@@ -1,0 +1,46 @@
+name: CMake on a single platform
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run on ARMv6
+      uses: uraimo/run-on-arch-action@v2
+      with:
+        arch: armv6
+        distro: bookworm
+        run: |
+            sudo apt-get -y update 
+            sudo apt-get -y install libboost-all-dev
+            sudo apt-get -y install libgpiod-dev libgpiod2
+            sudo apt-get -y install libfreetype6-dev libfreetype6
+            sudo apt-get -y install pkg-config
+            sudo apt-get -y install libssl-dev
+
+            # Clone and build hiredis
+            git clone https://github.com/redis/hiredis
+            cd hiredis
+            mkdir build && cd build
+            cmake ..
+            make
+            sudo make install
+            sudo ldconfig
+
+            # Go back to the root directory of the project
+            cd $GITHUB_WORKSPACE
+
+            # Configure and build the project
+            cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+            cmake --build build --config ${{env.BUILD_TYPE}}
