@@ -116,6 +116,8 @@ struct display_pass_data
     std::wstring text;
     textLCD *textDraw;
     ST7735 *lcd;
+    int speed;
+    std::array<int, 3> color;
 };
 void continous_polling(redisQueue &q)
 {
@@ -228,6 +230,10 @@ int displayText(void *arg)
     std::wstring text = data->text;
     textLCD *textDraw = data->textDraw;
     ST7735 *lcd = data->lcd;
+    int speed = data->speed;
+    std::array<int, 3> color = data->color;
+    // 24bit to 16bit color :
+    uint16_t color16 = (color[0] & 0xF8) << 8 | (color[1] & 0xFC) << 3 | (color[2] & 0xF8) >> 3;
 
     std::wcerr << "Text : " << data->text << std::endl;
     lcd->fillScreen(ST7735_BLACK);
@@ -242,10 +248,10 @@ int displayText(void *arg)
         std::cerr << "Error: Text width is <= 0" << std::endl;
         return -1;
     }
-    for (int i = 0; i <= width + lcd->getWidth(); i++)
+    for (int i = 0; i <= width + lcd->getWidth(); i += speed)
     {
         lcd->fillScreen(ST7735_BLACK);
-        textDraw->drawText(text, x + i, y, ST7735_WHITE);
+        textDraw->drawText(text, x + i, y, color16);
         // std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
     return 0;
@@ -492,11 +498,18 @@ int main(int argc, char **argv)
             {
                 std::string body = headers["Body"];
                 std::string text;
+                std::array<int, 3> color = {255, 255, 255};
+                int speed = 1;
                 // convert it to json
                 try
                 {
                     nlohmann::json j = nlohmann::json::parse(body);
                     text = j["message"];
+                    speed = j["speed"];
+
+                    color[0] = j["color"][0];
+                    color[1] = j["color"][1];
+                    color[2] = j["color"][2];
                 }
                 catch (const std::exception &e)
                 {
@@ -513,12 +526,16 @@ int main(int argc, char **argv)
                     server.closeSocket(clients[i]); // close the connection !
                     continue;
                 }
+                if (speed <= 0) // input validation
+                {
+                    speed = 1;
+                }
 #ifdef SENSOR_SUPPORT
                 // convert text to utf32 std::wstring
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
                 std::wstring wstr = convert.from_bytes(text);
 
-                job display(displayText, (void *)new display_pass_data{wstr, &textWriter, &lcd}, id);
+                job display(displayText, (void *)new display_pass_data{wstr, &textWriter, &lcd, speed, color}, id);
                 id++;
                 std::lock_guard<std::mutex> lock(mtx);
                 queue.addJob(display);
