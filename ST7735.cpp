@@ -105,14 +105,14 @@ void ST7735::writeCommand(uint8_t command)
 {
     uint8_t tx[1] = {command};
     uint8_t rx[1] = {0};
-    struct spi_ioc_transfer tr = {
-        .tx_buf = (unsigned long)tx,
-        .rx_buf = (unsigned long)rx,
-        .len = 1,
-        .speed_hz = this->_spi_speed,
-        .delay_usecs = 0,
-        .bits_per_word = this->_spi_bits_per_word,
-    };
+    struct spi_ioc_transfer tr = {0}; // Zero-initialize all members
+    tr.tx_buf = (unsigned long)tx;
+    tr.rx_buf = (unsigned long)rx;
+    tr.len = 1;
+    tr.speed_hz = this->_spi_speed;
+    tr.delay_usecs = 0;
+    tr.bits_per_word = this->_spi_bits_per_word;
+
     // set DC pin low for command :
     gpiod_line_set_value(this->_dc_line, 0);
     // write command :
