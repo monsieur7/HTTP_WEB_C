@@ -4,6 +4,7 @@
 #include <string>
 #include <stdint.h>
 #include <stdexcept>
+#include <cstring>
 // linux includes
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -11,6 +12,7 @@
 #include <linux/spi/spidev.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
 // libgpiod :
 #include <gpiod.h>
 // Defines
