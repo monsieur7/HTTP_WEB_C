@@ -29,7 +29,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
     // for all calculations see https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py as a reference (its a good starting point !)
     FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
-    wchar_t previous_char = nullptr;
+    wchar_t previous_char = NULL;
 
     // Calculate baseline, height, and width
     for (wchar_t c : text)
@@ -47,7 +47,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
         baseline = std::max(baseline, (FT_Int)(-(bbox.yMin))); // - because yMin is negative and y axis is in reverse
         height = std::max(height, (FT_Int)(bbox.yMax - bbox.yMin));
         std::wcerr << "char " << c << "height : " << height << " width : " << width << " baseline : " << baseline << " yMax : " << bbox.yMax << " yMin : " << bbox.yMin << std::endl;
-        if (previous_char != nullptr)
+        if (previous_char != NULL)
         {
             FT_Vector kerning;
             FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
@@ -65,7 +65,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
     memset(buffer, 0, width * height);
 
     int current_x = 0;
-    previous_char = nullptr;
+    previous_char = NULL;
 
     for (wchar_t c : text)
     {
@@ -82,7 +82,7 @@ void textLCD::drawText(std::wstring text, int x, int y, uint16_t color, uint16_t
             y_offset = 0;
             std::cerr << "y_offset < 0" << std::endl;
         }
-        if (previous_char != nullptr)
+        if (previous_char != NULL)
         {
             FT_Vector kerning;
             FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);
@@ -119,7 +119,7 @@ void textLCD::textSize(std::wstring text, int *x, int *y)
     // for all calculations see https://github.com/rougier/freetype-py/blob/master/examples/hello-world.py as a reference (its a good starting point !)
     FT_Int baseline = 0, height = 0, width = 0;
     FT_GlyphSlot g = _face->glyph;
-    wchar_t previous_char = nullptr;
+    wchar_t previous_char = NULL;
 
     // Calculate baseline, height, and width
     for (wchar_t c : text)
@@ -137,7 +137,7 @@ void textLCD::textSize(std::wstring text, int *x, int *y)
         baseline = std::max(baseline, (FT_Int)(-(bbox.yMin))); // - because yMin is negative and y axis is in reverse
         height = std::max(height, (FT_Int)(bbox.yMax - bbox.yMin));
         std::wcerr << "char " << c << "height : " << height << " width : " << width << " baseline : " << baseline << " yMax : " << bbox.yMax << " yMin : " << bbox.yMin << std::endl;
-        if (previous_char != nullptr)
+        if (previous_char != NULL)
         {
             FT_Vector kerning;
             FT_UInt left_glyph = FT_Get_Char_Index(_face, previous_char);

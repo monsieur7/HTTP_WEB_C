@@ -30,7 +30,7 @@
 #include <nlohmann/json.hpp>
 #include "redisQueue.hpp"
 #include "FileTypeDetector.hpp"
-#define SENSOR_SUPPORT
+// #define SENSOR_SUPPORT
 #define EASY_DEBUG
 //  JOBS :
 #include "job.hpp"
@@ -125,8 +125,14 @@ void continous_polling(redisQueue &q)
     { // TODO : unlock the mutex before the job is executed
         // mutex lock
         mtx.lock();
-        q.startFirstJob();
-        mtx.unlock();
+        int id = q.startFirstJob(mtx);
+        // mutex unlock done in startFirstJob
+        if (id >= 0)
+        {
+            mtx.lock();
+            q.finishJob(id);
+            mtx.unlock();
+        }
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     std::cout << "Exiting continous polling" << std::endl;
@@ -254,6 +260,7 @@ int displayText(void *arg)
         textDraw->drawText(text, x + i, y, color16);
         // std::this_thread::sleep_for(std::chrono::milliseconds(1));
     }
+
     return 0;
 }
 
@@ -430,14 +437,18 @@ int main(int argc, char **argv)
             ss << "Connection: close\r\n";
             ss << "\r\n";
             // reegex declaration :
-            std::regex record_regex("/recordings/([a-zA-Z0-9]+)");
+            std::regex record_regex(R"(^/recordings/([a-zA-Z0-9]+.wav))");
             std::smatch match;
-            std::regex job_regex("/job/([0-9]+)");
+            std::regex job_regex(R"(^/job/([0-9]+))");
             if (headers["Path"] == "/temperature" && headers["Method"] == "GET")
             {
                 // return temperature as json
                 nlohmann::json j;
+#ifdef SENSOR_SUPPORT
                 j["value"] = bme280.readTemp();
+#else
+                j["value"] = 0;
+#endif
                 j["unit"] = "°C";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -447,7 +458,11 @@ int main(int argc, char **argv)
             {
                 // return humidity as json
                 nlohmann::json j;
+#ifdef SENSOR_SUPPORT
                 j["value"] = bme280.readHumidity();
+#else
+                j["value"] = 0;
+#endif
                 j["unit"] = "%";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -457,7 +472,11 @@ int main(int argc, char **argv)
             {
                 // return pressure as json
                 nlohmann::json j;
+#ifdef SENSOR_SUPPORT
                 j["value"] = bme280.readPressure();
+#else
+                j["value"] = 0;
+#endif
                 j["unit"] = "hPa";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -467,7 +486,12 @@ int main(int argc, char **argv)
             {
                 // return light as json
                 nlohmann::json j;
+#ifdef SENSOR_SUPPORT
                 j["value"] = ltr559.getLux();
+#else
+                j["value"] = 0;
+#endif
+
                 j["unit"] = "lux";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -477,7 +501,11 @@ int main(int argc, char **argv)
             {
                 // return proximity as json
                 nlohmann::json j;
+#ifdef SENSOR_SUPPORT
                 j["value"] = ltr559.getProximity();
+#else
+                j["value"] = 0;
+#endif
                 j["unit"] = "proximity";
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
@@ -487,9 +515,15 @@ int main(int argc, char **argv)
             {
                 // return gas as json :
                 nlohmann::json j;
+#ifdef SENSOR_SUPPORT
                 j["oxidising"] = mics6814.readOxydising();
                 j["reducing"] = mics6814.readReducing();
                 j["nh3"] = mics6814.readNH3();
+#else
+                j["oxidising"] = 0;
+                j["reducing"] = 0;
+                j["nh3"] = 0;
+#endif
                 j["timestamp"] = std::time(nullptr);
                 j["frequency"] = "1"; // TODO : complete this with the real frequency
                 j["unit"] = "Ω";
@@ -553,6 +587,9 @@ int main(int argc, char **argv)
                 // TODO : return json structure file !
                 try
                 {
+                    // send the headers
+                    server.sendSocket(ss.str(), clients[i]);
+                    // send the file
                     std::filesystem::directory_entry file("../structure.json");
                     server.sendFile(file, clients[i]);
                 }
@@ -620,7 +657,7 @@ int main(int argc, char **argv)
                 // create a json response
                 nlohmann::json j;
                 j["job_id"] = job_id;
-                j["status"] = "Not implemented";
+                j["status"] = queue.getJobStatus(job_id);
                 ss << j.dump();
             }
             else if (headers["Method"] == "GET" && headers["Path"] == "/mic/record")
@@ -631,16 +668,19 @@ int main(int argc, char **argv)
                 job record(record_audio, (void *)new audio_pass_data{5, filename, add_file_cleanup}, id);
                 std::cerr << "Job ID: " << record.get_id() << std::endl;
                 id += 1; // increment the id
+                // lock the mutex
                 std::lock_guard<std::mutex> lock(mtx);
                 queue.addJob(record);
                 std::cerr << "Job added to queue" << std::endl;
                 nlohmann::json j;
+                std::string filename_without_path = std::filesystem::path(filename).filename();
                 j["job_id"] = id;
-                j["filename"] = filename;
+                j["filename"] = filename_without_path;
                 j["validity"] = 1800;
                 j["unit"] = "s";
                 std::cerr << "Sending JSON" << std::endl;
                 ss << j.dump();
+                // mutex will now be unlocked
             }
 
             // TODO : /display

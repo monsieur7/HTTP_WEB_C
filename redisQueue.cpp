@@ -27,6 +27,7 @@ void redisQueue::disconnect()
 void redisQueue::addJob(job j)
 {
     enqueue(j);
+    curr_id++;
 }
 
 void redisQueue::printJobs()
@@ -84,29 +85,79 @@ void redisQueue::startJob(int id)
     j.run();
 }
 
-void redisQueue::startFirstJob()
+int redisQueue::startFirstJob(std::mutex &m)
 {
     redisReply *reply;
-    reply = (redisReply *)redisCommand(redis, "LPOP jobs");
+    // using LMOVE :
+    reply = (redisReply *)redisCommand(redis, "LMOVE jobs jobs_temp RIGHT LEFT");
     if (reply->type == REDIS_REPLY_NIL)
     {
+        std::cerr << "No jobs in queue" << std::endl;
         freeReplyObject(reply);
-        return;
+        m.unlock();
+        return -1;
     }
-    if (!(reply->type == REDIS_REPLY_STRING || reply->type == REDIS_REPLY_NIL || reply->type == REDIS_REPLY_INTEGER))
+    if (reply->type != REDIS_REPLY_STRING)
     {
-        std::cerr << "Error: Invalid reply type in Redis Queue" << std::endl;
-        std::cerr << "Error: " << reply->type << std::endl;
+        std::cerr << "Error moving job" << std::endl;
         freeReplyObject(reply);
-        return;
+        m.unlock();
+        return -1;
     }
-    if (reply->str == NULL || reply->type == REDIS_REPLY_NIL)
-    {
-        freeReplyObject(reply);
-        return;
-    }
+
     int id = strtol(reply->str, NULL, 10);
     freeReplyObject(reply);
     std::cerr << "Starting job with ID: " << id << std::endl;
+    m.unlock();
     startJob(id);
+    return id;
+}
+void redisQueue::finishJob(int id)
+{
+
+    // remove job from jobs_temp :
+    redisReply *reply;
+    reply = (redisReply *)redisCommand(redis, "LREM jobs_temp 1 %d", id);
+    if (reply->integer == 0)
+    {
+        std::cerr << "Job not found in jobs_temp" << std::endl;
+        freeReplyObject(reply);
+        return;
+    }
+    freeReplyObject(reply);
+    return;
+}
+
+job_status redisQueue::getJobStatus(int id)
+{
+    if (id > this->curr_id || id < 0)
+    {
+        return ERROR;
+    }
+    // test if job is is in jobs :
+    redisReply *reply;
+    reply = (redisReply *)redisCommand(redis, "LRANGE jobs 0 -1");
+    for (size_t i = 0; i < reply->elements; i++)
+    {
+        int job_id = strtol(reply->element[i]->str, NULL, 10);
+        if (job_id == id)
+        {
+            freeReplyObject(reply);
+            return PENDING;
+        }
+    }
+    freeReplyObject(reply);
+    // test if job is in jobs_temp :
+    reply = (redisReply *)redisCommand(redis, "LRANGE jobs_temp 0 -1");
+    for (size_t i = 0; i < reply->elements; i++)
+    {
+        int job_id = strtol(reply->element[i]->str, NULL, 10);
+        if (job_id == id)
+        {
+            freeReplyObject(reply);
+            return RUNNING;
+        }
+    }
+    freeReplyObject(reply);
+    return FINISHED;
 }

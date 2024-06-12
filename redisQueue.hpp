@@ -3,7 +3,15 @@
 #include <map>
 #include <hiredis/hiredis.h>
 #include "job.hpp"
+#include <mutex>
 #pragma once
+enum job_status
+{
+    PENDING,
+    RUNNING,
+    FINISHED,
+    ERROR
+};
 class redisQueue
 {
 private:
@@ -25,5 +33,7 @@ public:
     void getJobs();
     void getJob(int id);
     void startJob(int id);
-    void startFirstJob();
+    int startFirstJob(std::mutex &m);
+    void finishJob(int id);
+    job_status getJobStatus(int id);
 };
