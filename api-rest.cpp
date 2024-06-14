@@ -122,19 +122,20 @@ struct display_pass_data
 void continous_polling(redisQueue &q)
 {
     while (running)
+    {
         // mutex lock
         mtx.lock();
-    int id = q.startFirstJob(mtx);
-    // mutex unlock done in startFirstJob
-    if (id >= 0)
-    {
-        mtx.lock();
-        q.finishJob(id);
-        mtx.unlock();
+        int id = q.startFirstJob(mtx);
+        // mutex unlock done in startFirstJob
+        if (id >= 0)
+        {
+            mtx.lock();
+            q.finishJob(id);
+            mtx.unlock();
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-}
-std::cout << "Exiting continous polling" << std::endl;
+    std::cout << "Exiting continous polling" << std::endl;
 }
 
 int recordAudio(int duration, const std::filesystem::path &outputFile, redisContext *c)
