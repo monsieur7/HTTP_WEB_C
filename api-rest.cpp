@@ -30,7 +30,7 @@
 #include <nlohmann/json.hpp>
 #include "redisQueue.hpp"
 #include "FileTypeDetector.hpp"
-// #define SENSOR_SUPPORT
+#define SENSOR_SUPPORT
 #define EASY_DEBUG
 //  JOBS :
 #include "job.hpp"
@@ -572,7 +572,6 @@ int main(int argc, char **argv)
                 {
                     color = {255, 255, 255};
                 }
-
 #ifdef SENSOR_SUPPORT
                 // convert text to utf32 std::wstring
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
