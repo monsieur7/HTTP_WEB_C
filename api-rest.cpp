@@ -239,7 +239,7 @@ int displayText(void *arg)
     int speed = data->speed;
     std::array<int, 3> color = data->color;
     // 24bit to 16bit color :
-    uint16_t color16 = (color[0] & 0xF8) << 8 | (color[1] & 0xFC) << 3 | (color[2] & 0xF8) >> 3;
+    uint16_t color16 = lcd->color565(color[0], color[1], color[2]);
 
     std::wcerr << "Text : " << data->text << std::endl;
     lcd->fillScreen(ST7735_BLACK);
