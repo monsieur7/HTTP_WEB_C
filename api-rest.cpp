@@ -568,6 +568,11 @@ int main(int argc, char **argv)
                 {
                     speed = 1;
                 }
+                if (color[0] < 0 || color[0] > 255 || color[1] < 0 || color[1] > 255 || color[2] < 0 || color[2] > 255)
+                {
+                    color = {255, 255, 255};
+                }
+
 #ifdef SENSOR_SUPPORT
                 // convert text to utf32 std::wstring
                 std::wstring_convert<std::codecvt_utf8<wchar_t>> convert;
